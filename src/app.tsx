@@ -3,6 +3,7 @@ import { Provider } from "mobx-react";
 import Taro from "@tarojs/taro";
 
 import counterStore from "./store/counter";
+// import { loadFont } from "./utils/fontLoader";
 
 import "./app.css";
 
@@ -18,6 +19,10 @@ class App extends Component<PropsWithChildren> {
       // OR reference the font through the cloud storage path/CDN
       // Local references don't work directly with wx.loadFontFace
 
+      // loadFont(
+      //   "Atma",
+      //   "https://blog-1321748307.cos.ap-shanghai.myqcloud.com/Atma-font/Atma-Regular.ttf"
+      // );
       Taro.loadFontFace({
         family: "Atma",
         // For mini programs, you need a network address instead of local file path
