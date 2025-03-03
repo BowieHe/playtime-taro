@@ -1,9 +1,9 @@
 import { Component, PropsWithChildren } from "react";
 import { Provider } from "mobx-react";
-import Taro from "@tarojs/taro";
+// import Taro from "@tarojs/taro";
 
 import counterStore from "./store/counter";
-// import { loadFont } from "./utils/fontLoader";
+import { loadFont } from "./utils/fontLoader";
 
 import "./app.css";
 
@@ -19,26 +19,26 @@ class App extends Component<PropsWithChildren> {
       // OR reference the font through the cloud storage path/CDN
       // Local references don't work directly with wx.loadFontFace
 
-      // loadFont(
-      //   "Atma",
-      //   "https://blog-1321748307.cos.ap-shanghai.myqcloud.com/Atma-font/Atma-Regular.ttf"
-      // );
-      Taro.loadFontFace({
-        family: "Atma",
-        // For mini programs, you need a network address instead of local file path
-        // Options:
-        // 1. Upload to CDN and use that URL
-        source:
-          'url("https://blog-1321748307.cos.ap-shanghai.myqcloud.com/Atma-font/Atma-Regular.ttf")',
-        // 2. If using WeChat cloud storage:
-        // source: 'url("cloud://your-env.your-path/Atma-Regular.ttf")',
-        success: (res) => {
-          console.log("Font loaded successfully", res);
-        },
-        fail: (err) => {
-          console.error("Failed to load font", err);
-        },
-      });
+      loadFont(
+        "Atma",
+        "https://blog-1321748307.cos.ap-shanghai.myqcloud.com/Atma-font/Atma-Regular.ttf"
+      );
+      // Taro.loadFontFace({
+      //   family: "Atma",
+      //   // For mini programs, you need a network address instead of local file path
+      //   // Options:
+      //   // 1. Upload to CDN and use that URL
+      //   source:
+      //     'url("https://blog-1321748307.cos.ap-shanghai.myqcloud.com/Atma-font/Atma-Regular.ttf")',
+      //   // 2. If using WeChat cloud storage:
+      //   // source: 'url("cloud://your-env.your-path/Atma-Regular.ttf")',
+      //   success: (res) => {
+      //     console.log("Font loaded successfully", res);
+      //   },
+      //   fail: (err) => {
+      //     console.error("Failed to load font", err);
+      //   },
+      // });
     }
   }
 
