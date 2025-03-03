@@ -1,6 +1,7 @@
 import { Component, PropsWithChildren } from "react";
 import { View, Button, Text } from "@tarojs/components";
 import { observer, inject } from "mobx-react";
+import Taro from "@tarojs/taro";
 
 import "./index.css";
 
@@ -41,6 +42,12 @@ class Index extends Component<PageProps> {
     counterStore.incrementAsync();
   };
 
+  navigateToIndex = () => {
+    Taro.switchTab({
+      url: "/pages/pet/index",
+    });
+  };
+
   render() {
     const {
       counterStore: { counter },
@@ -51,6 +58,10 @@ class Index extends Component<PageProps> {
         <Button onClick={this.decrement}>-</Button>
         <Button onClick={this.incrementAsync}>Add Async</Button>
         <Text>{counter}</Text>
+
+        <Button className="nav-button" onClick={this.navigateToIndex}>
+          Go to Pet Page
+        </Button>
       </View>
     );
   }

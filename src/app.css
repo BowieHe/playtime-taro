@@ -1,0 +1,26 @@
+/* Import the font definitions */
+@import 'assets/fonts/fonts.css';
+
+/* Apply the font globally */
+page {
+  font-family: 'Atma', sans-serif;
+}
+
+/* Define CSS variables for consistent font usage throughout the app */
+:root {
+  --font-primary: 'Atma', sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+}
+
+/* Apply to common elements */
+text, view, button, input {
+  font-family: var(--font-primary);
+}
+
+/* You can define specific styles for headings */
+.heading {
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-bold);
+}
