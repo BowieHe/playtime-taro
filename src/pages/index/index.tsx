@@ -2,17 +2,15 @@ import { Component, PropsWithChildren } from "react";
 import { View, Button, Text, Image, Input } from "@tarojs/components";
 import { observer, inject } from "mobx-react";
 import Taro from "@tarojs/taro";
+import { CounterStore } from "src/types/storeType";
 
 import "./index.css";
+import { getPhoneNumber } from "@/service/wechatService";
+import { PhoneInfo } from "@/types/wechat";
 
 interface PageProps extends PropsWithChildren {
   store: {
-    counterStore: {
-      counter: number;
-      increment: Function;
-      decrement: Function;
-      incrementAsync: Function;
-    };
+    counterStore: CounterStore;
   };
 }
 
@@ -75,22 +73,22 @@ class Index extends Component<PageProps, PageState> {
     });
   };
 
-  getUserProfile = () => {
-    // Note: getUserProfile requires the user to tap a button first
-    Taro.getUserProfile({
-      desc: "用于完善会员资料", // Explain why you need user info
-      success: (res) => {
-        this.setState({
-          userInfo: res.userInfo,
-          hasUserInfo: true,
-        });
-        console.log("User profile retrieved:", res.userInfo);
-      },
-      fail: (err) => {
-        console.error("Failed to get user profile:", err);
-      },
-    });
-  };
+  // getUserProfile = () => {
+  //   // Note: getUserProfile requires the user to tap a button first
+  //   Taro.getUserProfile({
+  //     desc: "用于完善会员资料", // Explain why you need user info
+  //     success: (res) => {
+  //       this.setState({
+  //         userInfo: res.userInfo,
+  //         hasUserInfo: true,
+  //       });
+  //       console.log("User profile retrieved:", res.userInfo);
+  //     },
+  //     fail: (err) => {
+  //       console.error("Failed to get user profile:", err);
+  //     },
+  //   });
+  // };
 
   onChooseAvatar = (e) => {
     const tempAvatarUrl = e.detail.avatarUrl;
@@ -112,21 +110,20 @@ class Index extends Component<PageProps, PageState> {
     if (e.detail.errMsg === "getPhoneNumber:ok") {
       // 手机号码需要通过后端解密获取，这里需要将加密数据发送到后端
       // 这里仅作为示例，将加密数据存储起来
-      const { encryptedData, iv } = e.detail;
-
-      console.log("Encrypted data:", encryptedData, "IV:", iv);
-
+      const { encryptedData, iv, code } = e.detail;
+      console.log("Encrypted data:", encryptedData, "IV:", iv, "code:", code);
       // 实际场景中，你需要发送 encryptedData 和 iv 到后端进行解密
       // 这里模拟获取到手机号
       Taro.showLoading({ title: "获取手机号中..." });
 
       // 模拟后端请求
-      setTimeout(() => {
+      setTimeout(async () => {
+        const phone: PhoneInfo = await getPhoneNumber(code);
         // 实际项目中，这里应该是后端返回解密后的手机号
-        const mockPhoneNumber = "1380013xxxx"; // 实际中这个值应该是后端解密后返回的
+        // const mockPhoneNumber = "1380013xxxx"; // 实际中这个值应该是后端解密后返回的
 
         this.setState({
-          phoneNumber: mockPhoneNumber,
+          phoneNumber: phone.purePhoneNumber,
         });
 
         Taro.hideLoading();

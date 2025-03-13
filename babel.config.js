@@ -7,5 +7,15 @@ module.exports = {
       ts: true,
       compiler: 'vite',
     }]
+  ],
+  plugins: [
+    [
+      'module-resolver',
+      {
+        alias: {
+          '@': './src'
+        }
+      }
+    ]
   ]
 }
