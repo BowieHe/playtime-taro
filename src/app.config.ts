@@ -1,11 +1,19 @@
 export default defineAppConfig({
-  pages: ["pages/index/index", "pages/pet/index", "pages/map/index"],
+  pages: [
+    "pages/index/index",
+    "pages/userCreate/index",
+    "pages/debug/index",
+    "pages/pet/index",
+    "pages/map/index",
+    "pages/test/index",
+  ],
   window: {
     backgroundTextStyle: "light",
     navigationBarBackgroundColor: "#fff",
     navigationBarTitleText: "WeChat",
     navigationBarTextStyle: "black",
   },
+  // Comment out TabBar temporarily for testing navigation
   tabBar: {
     list: [
       {

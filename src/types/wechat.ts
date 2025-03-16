@@ -9,7 +9,15 @@ export interface PhoneInfo {
 }
 
 export interface PhoneResponse {
-  errMsg: string;
-  errCode: number;
-  phoneInfo: PhoneInfo;
+  errmsg: string;
+  errcode: number;
+  phone_info: PhoneInfo;
+}
+
+export interface LoginRes {
+  errcode: number;
+  errmsg: string;
+  session_key: string;
+  openid: string;
+  unionid: string;
 }

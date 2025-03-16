@@ -1,6 +1,7 @@
 {
   "projectname": "playtime-taro",
   "setting": {
-    "compileHotReLoad": true
+    "compileHotReLoad": true,
+    "urlCheck": false
   }
 }

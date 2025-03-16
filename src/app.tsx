@@ -1,14 +1,11 @@
 import { Component, PropsWithChildren } from "react";
 import { Provider } from "mobx-react";
-// import Taro from "@tarojs/taro";
-
-import counterStore from "./store/counter";
+import userStore from "./store/user";
 import { loadFont } from "./utils/fontLoader";
-
 import "./app.css";
 
 const store = {
-  counterStore,
+  userStore,
 };
 
 class App extends Component<PropsWithChildren> {
@@ -42,11 +39,48 @@ class App extends Component<PropsWithChildren> {
     }
   }
 
+  onLaunch() {
+    console.log("App launched");
+    // this.checkUserLogin();
+  }
+
   componentDidShow() {}
 
   componentDidHide() {}
 
-  // this.props.children 就是要渲染的页面
+  // async checkUserLogin() {
+  //   console.log("Checking user login...");
+
+  //   try {
+  //     const loginRes = await Taro.login();
+  //     console.log("Login response:", loginRes);
+
+  //     const sessionRes = await getLoginSession(loginRes.code);
+  //     const user = await getUserByOpenId(sessionRes.openid);
+
+  //     if (user == null) {
+  //       console.log("User not found, need to create profile");
+
+  //       store.userStore.setWechatId(sessionRes.openid, sessionRes.unionid);
+
+  //       Taro.navigateTo({
+  //         url: "/pages/userCreate/index",
+  //       });
+  //     } else {
+  //       console.log("User:", user);
+  //       Taro.showToast({
+  //         title: "Welcome back",
+  //         icon: "success",
+  //       });
+  //       store.userStore.setUser(user);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to login:", error);
+  //   }
+  //   // Check if user is already logged in
+  //   // If not, start the login flow
+  // }
+
   render() {
     return <Provider store={store}>{this.props.children}</Provider>;
   }
