@@ -174,7 +174,6 @@ class UserCreate extends Component<PageProps, PageState> {
 
     return (
       <View className="user-create-page">
-        <Text className="title">User Create Page Loaded!</Text>
         <Text className="subtitle">This is a simplified test page</Text>
 
         <View className="user-profile-form">

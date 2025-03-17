@@ -11,15 +11,22 @@
   --color-accent: #3a86ff;
 }
 
-/* Apply the font globally */
+/* Apply the font globally and prevent horizontal scrolling */
 page {
   background-color: #f8f9fa;
   font-family: var(--font-primary);
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 /* Apply to common elements */
 text, view, button, input {
   font-family: var(--font-primary);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* You can define specific styles for headings */
