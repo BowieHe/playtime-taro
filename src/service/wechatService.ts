@@ -1,20 +1,8 @@
-// import { BACKEND_URL } from "@/utils/constants";
-// import Taro from "@tarojs/taro";
 import { PhoneInfo, PhoneResponse } from "src/types/wechat";
 import { LoginRes } from "src/types/wechat";
 import { getRequest, postRequest } from "@/utils/httpRequest";
 
-// Add http:// or https:// to the base URL
-
 export const getLoginSession = async (code: string): Promise<LoginRes> => {
-  // TODO delete
-  // return {
-  //   errcode: 0,
-  //   errmsg: "",
-  //   session_key: "4Yk949PCy9rYuFHkajLGxg==",
-  //   openid: "ollLS5AfSB0-eMwENlfGcp5XcejU",
-  //   unionid: "ojpHh6qv3jdyZYwhisa080lG8s40",
-  // };
   try {
     const data = await getRequest<LoginRes>(`wechat/login?code=${code}`);
 
@@ -31,19 +19,6 @@ export const getPhoneNumber = async (code: string): Promise<PhoneInfo> => {
     const phoneResponse = await postRequest<PhoneResponse>("phone", {
       code: code,
     });
-    // const res = await Taro.request({
-    //   url,
-    //   method: "POST",
-    //   data: { code: code },
-    //   header: {
-    //     "content-type": "application/json",
-    //   },
-    // });
-    // const data = res.data as PhoneResponse;
-    // console.log("Phone number response:", data);
-    // if (data.errcode != 0) {
-    //   throw new Error(data.errmsg);
-    // }
     return phoneResponse.phone_info;
     // return {
     //   phoneNumber: "12345678901",

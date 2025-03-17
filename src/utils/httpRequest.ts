@@ -37,7 +37,7 @@ export const postRequest = async <T>(uri: string, data: any): Promise<T> => {
     }
 
     const { code, message, ...response } = httpRes.data;
-    return response as T;
+    return response.data as T;
   } catch (error) {
     console.error("Failed to make POST request:", error);
     throw error;

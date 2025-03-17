@@ -5,12 +5,12 @@ import Taro from "@tarojs/taro";
 import { UserStore } from "@/store/user";
 
 import "./index.css";
-import { getPhoneNumber } from "@/service/wechatService";
+import "@/app.css";
 import { getLoginSession } from "@/service/wechatService";
-import { getUserByOpenId } from "@/service/userService";
-
-// You might want to create these API methods in a separate service file
-import { User } from "@/types/user";
+import { getUserByOpenId, validLogin } from "@/service/userService";
+// Import components
+import Header from "@/components/header";
+import PlayButton from "@/components/playButton";
 
 interface PageProps extends PropsWithChildren {
   store: {
@@ -33,8 +33,6 @@ class Index extends Component<PageProps> {
       Taro.showLoading({ title: "登录中..." });
 
       const loginRes = await Taro.login();
-      // TODO: delete hard code
-      // const loginRes = { code: "aa" };
       console.log("Login response:", loginRes);
 
       const sessionRes = await getLoginSession(loginRes.code);
@@ -64,22 +62,19 @@ class Index extends Component<PageProps> {
         console.log("User not found, need to create profile");
         Taro.hideLoading();
 
-        // Simplify the navigation approach - try a direct approach first
         console.log("Attempting to navigate to user create page");
 
         try {
-          // Try the simple approach first
           Taro.navigateTo({
-            url: `/pages/userCreate/index?openId=${sessionRes.openid}&unionId=${sessionRes.unionid}`,
+            url: `/pages/userCreate/index?openId=${sessionRes.openid}&unionId=${
+              sessionRes.unionid || ""
+            }`,
             success: () => {
               console.log("Navigation successful");
             },
             fail: (err) => {
               console.error("Navigation failed:", err);
 
-              // Try alternative navigation methods as fallback
-              console.log("Trying alternative navigation...");
-              // Attempt a simple redirect with minimal parameters
               Taro.redirectTo({
                 url: "/pages/userCreate/index",
                 success: () => {
@@ -110,27 +105,44 @@ class Index extends Component<PageProps> {
   }
 
   componentDidMount() {
-    // Add a delay before checking login to ensure full page initialization
-    setTimeout(() => {
-      this.checkUserLogin();
-    }, 500);
-
     // Listen for page show event to refresh user info if needed
-    Taro.eventCenter.on("pageShow", this.onPageShow);
+    // Taro.eventCenter.on("pageShow", this.onPageShow);
+    console.log("index component mounted");
   }
 
   componentWillUnmount() {
-    Taro.eventCenter.off("pageShow", this.onPageShow);
+    // Taro.eventCenter.off("pageShow", this.onPageShow);
+    console.log("index component will unmount");
   }
 
-  onPageShow = () => {};
+  componentDidShow() {
+    // This runs every time the page becomes visible
+    console.log("Index page shown, checking user login status");
+    this.checkUserLoginStatus();
+  }
+
+  checkUserLoginStatus = async () => {
+    try {
+      const user = await validLogin();
+      console.log("Valid login check result:", user);
+      this.props.store.userStore.setUser(user);
+    } catch (error) {
+      console.error("Error checking login status:", error);
+    }
+  };
+
+  // onPageShow = async () => {
+  //   console.log("Index page shown, checking user login status");
+  //   const user = await validLogin();
+
+  //   this.props.store.userStore.setUser(user);
+  // };
 
   // Navigate to user creation page manually if needed
   navigateToUserCreate = () => {
     try {
       console.log("Manually navigating to user create page");
 
-      // Simpler approach with less parameters
       Taro.navigateTo({
         url: "/pages/userCreate/index",
         success: () => console.log("Navigation successful"),
@@ -147,35 +159,126 @@ class Index extends Component<PageProps> {
     }
   };
 
+  // Handle main button click
+  handleMainButtonClick = async () => {
+    console.log("Main button clicked");
+
+    const { userStore } = this.props.store;
+    const { user } = userStore;
+
+    // Check if user is logged in
+    if (user && user.openId) {
+      console.log("User is logged in, navigating to map page");
+      Taro.navigateTo({
+        url: "/pages/map/index",
+        success: () => console.log("Navigation to map successful"),
+        fail: (err) => {
+          console.error("Navigation to map failed:", err);
+          Taro.showToast({
+            title: "页面跳转失败",
+            icon: "none",
+          });
+        },
+      });
+    } else {
+      console.log("User not logged in, checking login status");
+      // User is not logged in, try to login
+      try {
+        Taro.showLoading({ title: "正在检查登录..." });
+
+        const loginRes = await Taro.login();
+        console.log("Login response:", loginRes);
+
+        const sessionRes = await getLoginSession(loginRes.code);
+        console.log("Session response:", sessionRes);
+
+        // Store these values in the user store
+        userStore.setWechatId(sessionRes.openid, sessionRes.unionid || "");
+
+        try {
+          // Try to get user info
+          const user = await getUserByOpenId(sessionRes.openid);
+
+          if (user) {
+            console.log("User found:", user);
+            Taro.hideLoading();
+            userStore.setUser(user);
+
+            // Navigate to map page
+            Taro.navigateTo({
+              url: "/pages/map/index",
+            });
+          } else {
+            throw new Error("User not found");
+          }
+        } catch (error) {
+          console.log("User not found, navigating to user create page");
+          Taro.hideLoading();
+
+          // Navigate to user create page
+          Taro.navigateTo({
+            url: `/pages/userCreate/index?openId=${sessionRes.openid}&unionId=${
+              sessionRes.unionid || ""
+            }`,
+            fail: (err) => {
+              console.error("Navigation failed:", err);
+              Taro.showToast({
+                title: "页面跳转失败",
+                icon: "none",
+              });
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Login check failed:", error);
+        Taro.hideLoading();
+        Taro.showToast({
+          title: "登录失败，请重试",
+          icon: "none",
+        });
+      }
+    }
+  };
+
+  // Handle user login from the PlayButton component
+  handleUserLogin = (user) => {
+    this.props.store.userStore.setUser(user);
+  };
+
   render() {
     const { userStore } = this.props.store;
     const { user } = userStore;
 
     return (
       <View className="index">
-        {/* Debug button for direct navigation testing */}
-        <Button onClick={this.navigateToUserCreate} type="primary">
-          Navigate to User Create
-        </Button>
+        <Header className="index-header" />
 
-        <View className="user-info-display">
-          <Text className="welcome-text">欢迎回来！</Text>
-          <Image
-            className="avatar"
-            src={user?.avatarUrl || ""}
-            mode="aspectFit"
-          />
-          <Text className="nickname">昵称: {user?.nickName}</Text>
-          {user?.phoneNumber && (
-            <Text className="phone">手机号: {user?.phoneNumber}</Text>
+        {/* Main content area */}
+        <View className="index-content">
+          {user && user.openId && (
+            <View className="user-info-display">
+              <Text className="welcome-text">欢迎回来！</Text>
+              <Image
+                className="avatar"
+                src={user?.avatarUrl || ""}
+                mode="aspectFit"
+              />
+              <Text className="nickname">昵称: {user?.nickName}</Text>
+              {user?.phoneNumber && (
+                <Text className="phone">手机号: {user?.phoneNumber}</Text>
+              )}
+              <Button
+                className="update-profile-btn"
+                onClick={() => this.navigateToUserCreate()}
+              >
+                修改个人资料
+              </Button>
+            </View>
           )}
-          <Button
-            className="update-profile-btn"
-            onClick={() => this.navigateToUserCreate()}
-          >
-            修改个人资料
-          </Button>
         </View>
+
+        {/* Play button at the bottom of the page */}
+        <PlayButton user={user} onUserLogin={this.handleUserLogin} />
       </View>
     );
   }
