@@ -6,62 +6,66 @@ import Taro from "@tarojs/taro";
 import "./app.css";
 
 const store = {
-  userStore,
+    userStore,
 };
 
 class App extends Component<PropsWithChildren> {
-  componentDidMount() {
-    // Load custom font for WeChat Mini Program
-    this.loadCustomFonts();
-  }
-
-  loadCustomFonts = () => {
-    if (process.env.TARO_ENV === "weapp") {
-      // For WeChat Mini Program
-      console.log("Loading font for WeChat Mini Program...");
-
-      // Try to load font with our utility first
-      loadFont(
-        "Atma",
-        "https://blog-1321748307.cos.ap-shanghai.myqcloud.com/Atma-font/Atma-Regular.ttf",
-        () => {
-          console.log("Font loaded successfully with utility");
-        },
-        (err) => {
-          console.error("Failed to load font with utility", err);
-
-          // Fallback to direct Taro API
-          Taro.loadFontFace({
-            family: "Atma",
-            source:
-              'url("https://blog-1321748307.cos.ap-shanghai.myqcloud.com/Atma-font/Atma-Regular.ttf")',
-            success: (res) => {
-              console.log("Font loaded successfully with direct API", res);
-            },
-            fail: (err) => {
-              console.error("Failed to load font with direct API", err);
-            },
-            complete: () => {
-              // Force a re-render to apply font
-              this.forceUpdate();
-            },
-          });
-        }
-      );
+    componentDidMount() {
+        // Load custom font for WeChat Mini Program
+        this.loadCustomFonts("Capriola", "https://blog-1321748307.cos.ap-shanghai.myqcloud.com/Atma-font/Capriola-Regular.ttf");
+        this.loadCustomFonts("LXGWWenKai", "https://blog-1321748307.cos.ap-shanghai.myqcloud.com/Atma-font/LXGWWenKai-Regular.ttf");
+        this.loadCustomFonts("Atma", "https://blog-1321748307.cos.ap-shanghai.myqcloud.com/Atma-font/Atma-Regular.ttf")
     }
-  };
 
-  onLaunch() {
-    console.log("App launched");
-  }
+    loadCustomFonts = (family: string, source: string) => {
+        if (process.env.TARO_ENV === "weapp") {
+            // For WeChat Mini Program
+            console.log("Loading font for WeChat Mini Program...");
 
-  componentDidShow() {}
+            // Try to load font with our utility first
+            loadFont(
+                family,
+                source,
+                () => {
+                    console.log("Font loaded successfully with utility");
+                },
+                (err) => {
+                    console.error("Failed to load font with utility", err);
 
-  componentDidHide() {}
+                    // Fallback to direct Taro API
+                    Taro.loadFontFace({
+                        family: family,
+                        source:
+                            `url("${source}")`,
+                        success: (res) => {
+                            console.log("Font loaded successfully with direct API", res);
+                        },
+                        fail: (err) => {
+                            console.error("Failed to load font with direct API", err);
+                        },
+                        complete: () => {
+                            // Force a re-render to apply font
+                            this.forceUpdate();
+                        },
+                    });
+                }
+            );
+        }
+    };
 
-  render() {
-    return <Provider store={store}>{this.props.children}</Provider>;
-  }
+
+
+    onLaunch() {
+        console.log("App launched");
+    }
+
+    componentDidShow() { }
+
+    componentDidHide() { }
+
+    render() {
+        return <Provider store={store}>{this.props.children}</Provider>;
+    }
 }
 
 export default App;

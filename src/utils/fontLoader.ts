@@ -40,3 +40,4 @@ export const loadFont = (
     if (onSuccess) onSuccess();
   }
 };
+
