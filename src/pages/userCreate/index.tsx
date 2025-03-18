@@ -6,7 +6,7 @@ import "./index.css";
 import { getPhoneNumber } from "@/service/wechatService";
 import { User } from "@/types/user";
 import { createUser } from "@/service/userService";
-import { UserStore } from "@/store/user";
+import userStore, { UserStore } from "@/store/user";
 import { inject, observer } from "mobx-react";
 
 interface PageProps {
@@ -44,10 +44,21 @@ class UserCreate extends Component<PageProps, PageState> {
     // Log the router params
     const params = Taro.getCurrentInstance().router?.params;
     console.log("Params received:", params);
+    // this is create
     if (params && params.openId) {
       this.setState({
         openId: params.openId,
         unionId: params.unionId || "",
+      });
+    } else {
+      console.log("no params received, editing user");
+      const user = userStore.getUser();
+      this.setState({
+        avatarUrl: user.avatarUrl,
+        nickName: user.nickName,
+        phoneNumber: user.phoneNumber,
+        openId: user.openId,
+        unionId: user.unionId,
       });
     }
   }
@@ -150,13 +161,6 @@ class UserCreate extends Component<PageProps, PageState> {
               success: () => console.log("Successfully redirected to index"),
               fail: (error) => {
                 console.error("Failed to redirect:", error);
-
-                // Fallback: Try switchTab if index is in tabBar
-                Taro.switchTab({
-                  url: "/pages/index/index",
-                  fail: (switchErr) =>
-                    console.error("Tab switch also failed:", switchErr),
-                });
               },
             });
           }, 500); // Short delay after toast
@@ -174,8 +178,6 @@ class UserCreate extends Component<PageProps, PageState> {
 
     return (
       <View className="user-create-page">
-        <Text className="subtitle">This is a simplified test page</Text>
-
         <View className="user-profile-form">
           {/* Avatar selection button */}
           <Button
@@ -209,23 +211,21 @@ class UserCreate extends Component<PageProps, PageState> {
           {/* Phone number button */}
           <View className="form-item">
             <Text className="label">手机号：</Text>
-            <View className="phone-input-group">
-              <Input
-                type="number"
-                placeholder="请输入手机号"
-                value={phoneNumber}
-                onInput={(e) => this.setState({ phoneNumber: e.detail.value })}
-                className="phone-input"
-              />
-              <Button
-                open-type="getPhoneNumber"
-                onGetPhoneNumber={this.onGetPhoneNumber}
-                type="default"
-                className="phone-button"
-              >
-                获取微信手机号
-              </Button>
-            </View>
+            <Input
+              type="number"
+              placeholder="请输入手机号"
+              value={phoneNumber}
+              onInput={(e) => this.setState({ phoneNumber: e.detail.value })}
+              className="phone-input"
+            />
+            <Button
+              open-type="getPhoneNumber"
+              onGetPhoneNumber={this.onGetPhoneNumber}
+              type="default"
+              className="phone-button"
+            >
+              获取微信手机号
+            </Button>
           </View>
 
           {/* Save button */}

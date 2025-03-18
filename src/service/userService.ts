@@ -31,10 +31,21 @@ export const validLogin = async () => {
   console.log("Checking user login...");
 
   try {
-    // Show loading indicator while we check the login status
-    // Taro.showLoading({ title: "登录中..." });
-
-    const loginRes = await Taro.login();
+    console.log("Attempting to login");
+    const loginRes = await Taro.login({
+      complete: (res: TaroGeneral.CallbackResult) => {
+        console.log("Login complete");
+        console.log("Login complete response:", res);
+      },
+      success: () => {
+        console.log("Login successful");
+      },
+      fail: (res: TaroGeneral.CallbackResult) => {
+        console.error("Login failed with error:", res);
+        console.error("Login failed");
+      },
+      timeout: 10000,
+    });
     console.log("Login response:", loginRes);
 
     const sessionRes = await getLoginSession(loginRes.code);
@@ -122,6 +133,10 @@ export const validLogin = async () => {
   }
     */
   } catch (error) {
+    Taro.showToast({
+      title: "登录失败，请重试",
+      icon: "none",
+    });
     console.error("Failed to login:", error);
     throw error;
   }

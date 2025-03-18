@@ -1,13 +1,13 @@
 /* Import the font definitions */
-@import 'assets/fonts/fonts.css';
 
 /* Define CSS variables for consistent font usage throughout the app */
 :root {
-  --font-primary: 'Atma', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-primary: "Maple Mono", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 700;
-  --color-primary: #4CAF50;
+  --color-primary: #4caf50;
   --color-accent: #3a86ff;
 }
 
@@ -23,7 +23,10 @@ page {
 }
 
 /* Apply to common elements */
-text, view, button, input {
+text,
+view,
+button,
+input {
   font-family: var(--font-primary);
   max-width: 100%;
   box-sizing: border-box;
@@ -39,7 +42,7 @@ text, view, button, input {
   text-align: center;
   font-size: 36px;
   font-weight: bold;
-  color: #4CAF50;
+  color: #4caf50;
   padding: 20px;
   /* box-sizing: border-box; */
   /* background-color: white; */

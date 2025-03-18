@@ -1,6 +1,7 @@
 import { PhoneInfo, PhoneResponse } from "src/types/wechat";
 import { LoginRes } from "src/types/wechat";
 import { getRequest, postRequest } from "@/utils/httpRequest";
+import Taro from "@tarojs/taro";
 
 export const getLoginSession = async (code: string): Promise<LoginRes> => {
   try {
@@ -33,4 +34,22 @@ export const getPhoneNumber = async (code: string): Promise<PhoneInfo> => {
     console.error("Failed to get phone number:", error);
     throw error;
   }
+};
+
+export const login = async () => {
+  const loginRes = await Taro.login({
+    complete: (res: TaroGeneral.CallbackResult) => {
+      console.log("Login complete response:", res);
+    },
+    success: (res: TaroGeneral.CallbackResult) => {
+      console.log("Login successful", res);
+    },
+    fail: (res: TaroGeneral.CallbackResult) => {
+      console.error("Login failed with error:", res);
+    },
+    timeout: 10000,
+  });
+
+  const sessionRes = await getLoginSession(loginRes.code);
+  console.log("Session response:", sessionRes);
 };
