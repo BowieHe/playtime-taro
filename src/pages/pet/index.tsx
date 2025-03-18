@@ -6,7 +6,6 @@ import { createPet, updatePet, getPetById } from "@/service/petService";
 
 import "./index.css";
 import { Pet as PetInfo, PetGender, PetSize } from "@/types/pet";
-import { get } from "mobx";
 
 interface SelectorOption<T> {
   display: string;

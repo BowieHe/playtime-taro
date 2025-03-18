@@ -39,10 +39,12 @@ export const createPet = async (pet: Pet): Promise<Pet> => {
  */
 export const getPetsByOwner = async (ownerId: string): Promise<Pet[]> => {
   try {
-    return await getRequest<Pet[]>(`pet?ownerId=${ownerId}`);
+    const petList = await getRequest<Pet[]>(`pet?ownerId=${ownerId}`);
+    console.log("Get pets by owner:", petList);
+    return petList;
   } catch (error) {
     console.error("Error getting pets by owner:", error);
-    throw error;
+    return [];
   }
 };
 

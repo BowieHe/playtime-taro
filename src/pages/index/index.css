@@ -1,3 +1,4 @@
+/* Layout */
 .index {
   display: flex;
   flex-direction: column;
@@ -16,7 +17,6 @@
   margin-bottom: 20px;
   width: 100%;
   box-sizing: border-box;
-  max-width: 100%;
 }
 
 .index-content {
@@ -26,28 +26,18 @@
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  max-width: 100%;
-  overflow-x: hidden;
 }
 
-.nav-button {
-  margin-top: 15px;
-  background-color: #3a86ff;
-  color: white;
-}
-
-.user-profile-section {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.user-info {
+/* User Profile Section */
+.user-info-display {
   margin-top: 20px;
+  margin-bottom: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 24px;
+  width: 90%;
+  /* Removed: background-color, border-radius, box-shadow */
 }
 
 .avatar {
@@ -58,47 +48,15 @@
   border: 3px solid #e8f4e9;
 }
 
-.nickname {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #444;
-}
+/* Removed: .welcome-text, .nickname, .phone */
 
-/* User info display */
-.user-info-display {
-  margin-top: 20px;
-  margin-bottom: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 24px;
-  background-color: #fff;
-  border-radius: 16px;
-  width: 90%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.welcome-text {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  font-family: var(--font-primary, "Maple Mono", sans-serif);
-  color: #3a86ff;
-}
-
-.phone {
-  font-size: 14px;
-  margin-bottom: 20px;
-  color: #666;
-}
-
-/* Button group */
+/* Button Group */
 .button-group {
   display: flex;
   width: 100%;
   justify-content: center;
   gap: 15px;
+  margin-top: 15px; /* Added for better spacing after avatar */
 }
 
 .update-profile-btn,
@@ -108,89 +66,11 @@
   padding: 10px !important;
   border-radius: 8px !important;
   font-size: 14px !important;
+  background-color: #e8f4e9 !important; /* Light green background for both buttons */
+  color: #388e3c !important; /* Dark green text for better contrast */
 }
 
-.update-profile-btn {
-  background-color: #e8f4e9 !important;
-  color: #388e3c !important;
-}
-
-.add-pet-btn {
-  background-color: #4caf50 !important;
-  color: white !important;
-}
-
-.user-info-prompt {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-}
-
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  width: 100%;
-  font-size: 18px;
-}
-
-/* Main Action Button Styles */
-.main-button-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin: 40px 0;
-  padding: 20px 0;
-}
-
-.main-action-button {
-  width: 200px !important;
-  height: 200px !important;
-  border-radius: 100px !important;
-  background-color: #3a86ff !important;
-  box-shadow: 0 8px 16px rgba(58, 134, 255, 0.4);
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  transition: all 0.3s ease;
-  overflow: visible !important;
-  padding: 0 !important;
-  position: relative;
-}
-
-.main-action-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 4px 8px rgba(58, 134, 255, 0.3);
-}
-
-.button-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.paw-icon {
-  font-size: 80px;
-  margin-bottom: 10px;
-  color: white;
-  line-height: 1;
-}
-
-.button-text {
-  font-size: 24px;
-  font-weight: bold;
-  color: white;
-}
-
-/* Pet section styling */
+/* Pet List Section */
 .pet-section {
   width: 100%;
   padding: 0 10px;
@@ -230,4 +110,19 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.loading-indicator {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.add-first-pet-btn {
+  margin-top: 15px;
+  background-color: #4caf50 !important;
+  color: white !important;
+  font-size: 14px !important;
+  padding: 10px 20px !important;
+  border-radius: 8px !important;
 }

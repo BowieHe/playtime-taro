@@ -1,3 +1,5 @@
 export default definePageConfig({
-  navigationBarTitleText: '首页'
-})
+  navigationBarTitleText: "PlayTime",
+  enablePullDownRefresh: true,
+  backgroundColor: "#f8f9fa",
+});
