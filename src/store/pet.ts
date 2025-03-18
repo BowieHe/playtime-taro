@@ -4,8 +4,6 @@ import { Pet } from "@/types/pet";
 export class PetStore {
   @observable pets: Pet[] = [];
   @observable currentPet: Pet | null = null;
-  @observable isLoading = false;
-  @observable error: string | null = null;
 
   @action
   setPets(pets: Pet[]) {
@@ -35,16 +33,6 @@ export class PetStore {
     this.currentPet = pet;
   }
 
-  @action
-  setLoading(loading: boolean) {
-    this.isLoading = loading;
-  }
-
-  @action
-  setError(error: string | null) {
-    this.error = error;
-  }
-
   @computed
   get petCount() {
     return this.pets.length;
@@ -60,6 +48,19 @@ export class PetStore {
   get petsByOwner() {
     return (ownerId: string) =>
       this.pets.filter((pet) => pet.ownerId === ownerId);
+  }
+
+  // Method to find a pet by ID
+  @computed
+  getPetById(id: string) {
+    return this.pets.find((pet) => pet.id === id) || null;
+  }
+
+  // Method to reset the store
+  @action
+  resetStore() {
+    this.pets = [];
+    this.currentPet = null;
   }
 }
 
