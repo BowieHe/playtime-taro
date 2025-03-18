@@ -1,12 +1,13 @@
 import { Component, PropsWithChildren } from "react";
 import { Provider } from "mobx-react";
 import userStore from "./store/user";
+import petStore from "./store/pet"; // Import the pet store
 import { loadFont } from "./utils/fontLoader";
-// import Taro from "@tarojs/taro";
 import "./app.css";
 
 const store = {
   userStore,
+  petStore, // Add pet store to the stores object
 };
 
 class App extends Component<PropsWithChildren> {

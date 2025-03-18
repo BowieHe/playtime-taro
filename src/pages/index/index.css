@@ -4,22 +4,17 @@
   align-items: center;
   width: 100%;
   padding: 20px;
-  /* Add min-height to ensure there's room for the fixed button at bottom */
   min-height: calc(100vh - 40px);
   position: relative;
   padding-bottom: 240px;
-  /* Extra padding at bottom to make room for the fixed button */
-  /* Prevent horizontal scrolling */
   overflow-x: hidden;
   box-sizing: border-box;
-  /* Include padding and border in element's width and height */
   max-width: 100vw;
 }
 
 .index-header {
   margin-bottom: 20px;
   width: 100%;
-  /* Ensure header doesn't overflow */
   box-sizing: border-box;
   max-width: 100%;
 }
@@ -30,7 +25,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Prevent content from causing horizontal scroll */
   box-sizing: border-box;
   max-width: 100%;
   overflow-x: hidden;
@@ -60,27 +54,29 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  border: 3px solid #e8f4e9;
 }
 
 .nickname {
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  color: #444;
 }
 
-/* New styles */
+/* User info display */
 .user-info-display {
-  margin-top: 30px;
+  margin-top: 20px;
+  margin-bottom: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 16px;
+  width: 90%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .welcome-text {
@@ -92,15 +88,36 @@
 }
 
 .phone {
-  margin-top: 5px;
+  font-size: 14px;
   margin-bottom: 20px;
+  color: #666;
+}
+
+/* Button group */
+.button-group {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 15px;
+}
+
+.update-profile-btn,
+.add-pet-btn {
+  flex: 1;
+  max-width: 45%;
+  padding: 10px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
 }
 
 .update-profile-btn {
-  margin-top: 20px;
-  background-color: #f0f0f0;
-  font-family: var(--font-primary, "Maple Mono", sans-serif);
-  color: #333;
+  background-color: #e8f4e9 !important;
+  color: #388e3c !important;
+}
+
+.add-pet-btn {
+  background-color: #4caf50 !important;
+  color: white !important;
 }
 
 .user-info-prompt {
@@ -171,4 +188,46 @@
   font-size: 24px;
   font-weight: bold;
   color: white;
+}
+
+/* Pet section styling */
+.pet-section {
+  width: 100%;
+  padding: 0 10px;
+  margin-bottom: 60px;
+}
+
+.section-header {
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.section-subtitle {
+  font-size: 14px;
+  color: #666;
+  display: block;
+}
+
+.pet-cards-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.no-pets-message {
+  padding: 30px 0;
+  text-align: center;
+  color: #666;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }

@@ -5,7 +5,7 @@ import Taro from "@tarojs/taro";
 import "./index.css";
 import { getPhoneNumber } from "@/service/wechatService";
 import { User } from "@/types/user";
-import { createUser } from "@/service/userService";
+import { createUser, updateUser } from "@/service/userService";
 import userStore, { UserStore } from "@/store/user";
 import { inject, observer } from "mobx-react";
 
@@ -125,7 +125,7 @@ class UserCreate extends Component<PageProps, PageState> {
     }
   };
 
-  onUpsertUser = async () => {
+  onUpsertUser = async (userStore: UserStore) => {
     try {
       Taro.showLoading({ title: "保存中..." });
       const { avatarUrl, nickName, phoneNumber, unionId, openId } = this.state;
@@ -137,12 +137,18 @@ class UserCreate extends Component<PageProps, PageState> {
         unionId: unionId,
       };
 
-      const createdUser = await createUser(newUserInfo);
-      console.log("User created:", createdUser);
+      const { isCreate } = this.state;
+      if (!isCreate) {
+        const id = userStore.getUser().id;
+        console.log("update user with id:", id);
+        const updatedUser = await updateUser(newUserInfo, id?.toString() || "");
+        userStore.setUser(updatedUser);
+      } else {
+        console.log("create user");
+        const createdUser = await createUser(newUserInfo);
+        userStore.setUser(createdUser);
+      }
       Taro.hideLoading();
-      // Taro.showToast({ title: "保存成功", icon: "success" });
-      const { userStore } = this.props.store;
-      userStore.setUser(createdUser);
 
       // Show success message
       Taro.showToast({
@@ -174,6 +180,7 @@ class UserCreate extends Component<PageProps, PageState> {
 
   render() {
     const { avatarUrl, nickName, phoneNumber, isCreate } = this.state;
+    const { userStore } = this.props.store;
 
     return (
       <View className="user-create-page">
@@ -226,20 +233,10 @@ class UserCreate extends Component<PageProps, PageState> {
               获取微信手机号
             </Button>
           </View>
-
-          {/* Save button */}
-          {/* <Button
-            type="primary"
-            onClick={this.saveUserInfo}
-            disabled={!avatarUrl || !nickName}
-            className="save-button"
-          >
-            保存个人信息
-          </Button> */}
         </View>
 
         <View style={{ marginTop: "50px" }}>
-          <Button onClick={this.onUpsertUser} type="primary">
+          <Button onClick={() => this.onUpsertUser(userStore)} type="primary">
             {isCreate ? "Create User" : "Update User"}
           </Button>
         </View>

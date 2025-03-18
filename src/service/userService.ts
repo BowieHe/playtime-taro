@@ -1,5 +1,5 @@
 import { User } from "@/types/user";
-import { getRequest, postRequest } from "@/utils/httpRequest";
+import { getRequest, postRequest, putRequest } from "@/utils/httpRequest";
 import Taro from "@tarojs/taro";
 import { getLoginSession } from "./wechatService";
 
@@ -23,6 +23,17 @@ export const createUser = async (user: User) => {
     return response;
   } catch (error) {
     console.error("Failed to create user:", error);
+    throw error;
+  }
+};
+
+export const updateUser = async (user: User, id: string) => {
+  try {
+    const response = await putRequest<User>(`user/${id}`, user);
+    console.log("User update response:", response);
+    return response;
+  } catch (error) {
+    console.error("Failed to update user:", error);
     throw error;
   }
 };

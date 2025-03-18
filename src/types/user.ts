@@ -4,4 +4,5 @@ export interface User {
   phoneNumber: string;
   openId: string;
   unionId: string;
+  id?: string;
 }
