@@ -21,6 +21,7 @@ interface PageState {
   phoneNumber: string;
   unionId: string;
   openId: string;
+  isCreate: boolean;
 }
 
 // Simplified version for testing navigation
@@ -35,6 +36,7 @@ class UserCreate extends Component<PageProps, PageState> {
       phoneNumber: "",
       unionId: "",
       openId: "",
+      isCreate: true,
     };
   }
 
@@ -59,6 +61,7 @@ class UserCreate extends Component<PageProps, PageState> {
         phoneNumber: user.phoneNumber,
         openId: user.openId,
         unionId: user.unionId,
+        isCreate: false,
       });
     }
   }
@@ -82,8 +85,6 @@ class UserCreate extends Component<PageProps, PageState> {
   };
 
   onNicknameInput = (e) => {
-    console.log("Nickname input event:", e);
-
     // Make sure we're accessing the value correctly
     const value = e.detail.value;
     console.log("Input value detected:", value);
@@ -94,8 +95,6 @@ class UserCreate extends Component<PageProps, PageState> {
   };
 
   onGetPhoneNumber = async (e) => {
-    console.log("Phone number event:", e);
-
     if (e.detail.errMsg === "getPhoneNumber:ok") {
       const { code } = e.detail;
 
@@ -126,7 +125,7 @@ class UserCreate extends Component<PageProps, PageState> {
     }
   };
 
-  onCreateUser = async () => {
+  onUpsertUser = async () => {
     try {
       Taro.showLoading({ title: "保存中..." });
       const { avatarUrl, nickName, phoneNumber, unionId, openId } = this.state;
@@ -174,7 +173,7 @@ class UserCreate extends Component<PageProps, PageState> {
   };
 
   render() {
-    const { avatarUrl, nickName, phoneNumber } = this.state;
+    const { avatarUrl, nickName, phoneNumber, isCreate } = this.state;
 
     return (
       <View className="user-create-page">
@@ -240,8 +239,8 @@ class UserCreate extends Component<PageProps, PageState> {
         </View>
 
         <View style={{ marginTop: "50px" }}>
-          <Button onClick={this.onCreateUser} type="primary">
-            Create User
+          <Button onClick={this.onUpsertUser} type="primary">
+            {isCreate ? "Create User" : "Update User"}
           </Button>
         </View>
         <View style={{ marginTop: "50px" }}>

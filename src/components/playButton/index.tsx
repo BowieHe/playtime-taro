@@ -2,11 +2,7 @@ import React from "react";
 import { View, Text, Button } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { User } from "@/types/user";
-// import { getLoginSession } from "@/service/wechatService";
-// import { getUserByOpenId } from "@/service/userService";
-// import { inject, observer } from "mobx-react";
 import "./index.css";
-// import { UserStore } from "@/store/user";
 
 interface PlayButtonProps {
   user: User;
