@@ -40,6 +40,15 @@
   line-height: 1;
 }
 
+.create-button {
+  background-color: #3a86ff !important;
+  box-shadow: 0 8px 16px rgba(58, 134, 255, 0.4);
+}
+
+.create-button .play-button-text {
+  font-size: 36px;
+}
+
 /* Media queries for different screen sizes */
 @media screen and (min-width: 768px) {
   .play-button {

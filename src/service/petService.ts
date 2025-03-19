@@ -6,17 +6,6 @@ import {
 } from "@/utils/httpRequest";
 import Taro from "@tarojs/taro";
 import { Pet } from "@/types/pet";
-// export interface Pet {
-//   id?: string;
-//   name: string;
-//   gender: "male" | "female";
-//   avatar: string;
-//   size: "small" | "medium" | "large";
-//   breed?: string;
-//   desc?: string;
-//   age?: number;
-//   ownerId: string;
-// }
 
 /**
  * Create a new pet
@@ -41,6 +30,9 @@ export const getPetsByOwner = async (ownerId: string): Promise<Pet[]> => {
   try {
     const petList = await getRequest<Pet[]>(`pet?ownerId=${ownerId}`);
     console.log("Get pets by owner:", petList);
+    if (!petList) {
+      return [];
+    }
     return petList;
   } catch (error) {
     console.error("Error getting pets by owner:", error);

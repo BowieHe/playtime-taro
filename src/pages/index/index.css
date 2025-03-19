@@ -70,6 +70,17 @@
   color: #388e3c !important; /* Dark green text for better contrast */
 }
 
+/* User buttons */
+.create-user-btn {
+  width: 80% !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  font-size: 16px !important;
+  background-color: #4caf50 !important;
+  color: white !important;
+  font-weight: bold !important;
+}
+
 /* Pet List Section */
 .pet-section {
   width: 100%;
@@ -125,4 +136,26 @@
   font-size: 14px !important;
   padding: 10px 20px !important;
   border-radius: 8px !important;
+}
+
+/* Welcome message for new users */
+.welcome-message {
+  width: 100%;
+  padding: 30px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.welcome-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #4caf50;
+}
+
+.welcome-subtitle {
+  font-size: 16px;
+  color: #666;
 }

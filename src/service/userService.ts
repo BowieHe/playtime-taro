@@ -16,6 +16,19 @@ export const getUserByOpenId = async (openId: string) => {
   }
 };
 
+export const getUserById = async (id: string) => {
+  try {
+    const user = await getRequest<User>(`user/${id}`);
+    return user;
+  } catch (error) {
+    if (error.message === "User not found") {
+      return null;
+    }
+    console.error("Failed to get user session:", error);
+    throw error;
+  }
+};
+
 export const createUser = async (user: User) => {
   try {
     const response = await postRequest<User>("user", user);

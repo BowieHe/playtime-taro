@@ -30,7 +30,8 @@ export default defineAppConfig({
   // },
   permission: {
     "scope.userLocation": {
-      desc: "您的位置信息将用于显示您附近的宠物友好场所",
+      desc: "您的位置信息将用于查找附近的宠物友好场所和服务", // Updated description
     },
   },
+  requiredPrivateInfos: ["getLocation"],
 });

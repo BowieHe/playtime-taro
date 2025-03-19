@@ -5,7 +5,7 @@ import Taro from "@tarojs/taro";
 import "./index.css";
 import { getPhoneNumber } from "@/service/wechatService";
 import { User } from "@/types/user";
-import { createUser, updateUser } from "@/service/userService";
+import { createUser, updateUser, getUserById } from "@/service/userService";
 import userStore, { UserStore } from "@/store/user";
 import { inject, observer } from "mobx-react";
 
@@ -16,6 +16,7 @@ interface PageProps {
 }
 
 interface PageState {
+  id: string;
   avatarUrl: string;
   nickName: string;
   phoneNumber: string;
@@ -31,6 +32,7 @@ class UserCreate extends Component<PageProps, PageState> {
   constructor(props) {
     super(props);
     this.state = {
+      id: "",
       avatarUrl: "",
       nickName: "",
       phoneNumber: "",
@@ -41,21 +43,92 @@ class UserCreate extends Component<PageProps, PageState> {
   }
 
   componentDidMount() {
-    console.log("UserCreate simple page mounted!");
+    console.log("UserCreate page mounted!");
 
     // Log the router params
     const params = Taro.getCurrentInstance().router?.params;
     console.log("Params received:", params);
-    // this is create
-    if (params && params.openId) {
-      this.setState({
-        openId: params.openId,
-        unionId: params.unionId || "",
-      });
+
+    // Get the user store for access to openId/unionId
+    const { userStore } = this.props.store;
+    const currentUser = userStore.getUser();
+
+    // Different initialization logic based on parameters
+    if (params) {
+      // Case 1: We have an ID - this is an update operation
+      if (params.id) {
+        console.log("Editing user with ID:", params.id);
+        this.loadUserById(params.id);
+      }
+      // Case 2: We have openId/unionId - this is a create operation
+      else if (params.openId || currentUser.openId) {
+        console.log(
+          "Creating new user with openId:",
+          params.openId || currentUser.openId
+        );
+        this.setState({
+          openId: params.openId || currentUser.openId,
+          unionId: params.unionId || currentUser.unionId,
+          isCreate: true,
+        });
+      }
+      // Case 3: No parameters - default to using store data
+      else {
+        this.initFromStore();
+      }
     } else {
-      console.log("no params received, editing user");
-      const user = userStore.getUser();
+      // No params - default to using store data
+      this.initFromStore();
+    }
+  }
+
+  // Load user by ID for editing
+  loadUserById = async (id: string) => {
+    try {
+      Taro.showLoading({ title: "Loading user data..." });
+
+      const user = await getUserById(id);
+
+      if (user) {
+        this.setState({
+          id: user.id || "",
+          avatarUrl: user.avatarUrl || "",
+          nickName: user.nickName || "",
+          phoneNumber: user.phoneNumber || "",
+          openId: user.openId || "",
+          unionId: user.unionId || "",
+          isCreate: false,
+        });
+
+        console.log("User data loaded for editing:", user);
+      } else {
+        console.error("User not found with ID:", id);
+        Taro.showToast({
+          title: "User not found",
+          icon: "none",
+        });
+      }
+
+      Taro.hideLoading();
+    } catch (error) {
+      console.error("Error loading user:", error);
+      Taro.hideLoading();
+      Taro.showToast({
+        title: "Failed to load user data",
+        icon: "none",
+      });
+    }
+  };
+
+  // Initialize from the user store
+  initFromStore = () => {
+    const { userStore } = this.props.store;
+    const user = userStore.getUser();
+
+    // If we have a user in the store with an ID, it's an edit operation
+    if (user && user.id) {
       this.setState({
+        id: user.id,
         avatarUrl: user.avatarUrl,
         nickName: user.nickName,
         phoneNumber: user.phoneNumber,
@@ -64,18 +137,29 @@ class UserCreate extends Component<PageProps, PageState> {
         isCreate: false,
       });
     }
-  }
-
-  goBack = () => {
-    try {
-      Taro.navigateBack();
-    } catch (e) {
-      console.error("Failed to navigate back:", e);
-      Taro.redirectTo({
-        url: "/pages/index/index",
+    // Otherwise it's a create operation with whatever data we have
+    else {
+      this.setState({
+        avatarUrl: user.avatarUrl || "",
+        nickName: user.nickName || "",
+        phoneNumber: user.phoneNumber || "",
+        openId: user.openId || "",
+        unionId: user.unionId || "",
+        isCreate: true,
       });
     }
   };
+
+  // goBack = () => {
+  //   try {
+  //     Taro.navigateBack();
+  //   } catch (e) {
+  //     console.error("Failed to navigate back:", e);
+  //     Taro.redirectTo({
+  //       url: "/pages/index/index",
+  //     });
+  //   }
+  // };
 
   onChooseAvatar = (e) => {
     const tempAvatarUrl = e.detail.avatarUrl;
@@ -128,47 +212,47 @@ class UserCreate extends Component<PageProps, PageState> {
   onUpsertUser = async (userStore: UserStore) => {
     try {
       Taro.showLoading({ title: "保存中..." });
-      const { avatarUrl, nickName, phoneNumber, unionId, openId } = this.state;
-      const newUserInfo: User = {
+      const {
         avatarUrl,
         nickName,
         phoneNumber,
-        openId: openId,
-        unionId: unionId,
+        unionId,
+        openId,
+        id,
+        isCreate,
+      } = this.state;
+      const userInfo: User = {
+        avatarUrl,
+        nickName,
+        phoneNumber,
+        openId,
+        unionId,
       };
 
-      const { isCreate } = this.state;
-      if (!isCreate) {
-        const id = userStore.getUser().id;
-        console.log("update user with id:", id);
-        const updatedUser = await updateUser(newUserInfo, id?.toString() || "");
-        userStore.setUser(updatedUser);
+      let savedUser: User;
+
+      if (!isCreate && id) {
+        console.log("Updating user with id:", id);
+        savedUser = await updateUser(userInfo, id);
       } else {
-        console.log("create user");
-        const createdUser = await createUser(newUserInfo);
-        userStore.setUser(createdUser);
+        console.log("Creating new user with openId:", openId);
+        savedUser = await createUser(userInfo);
       }
+
+      // Update the store with the saved user data
+      userStore.setUser(savedUser);
+
       Taro.hideLoading();
-
-      // Show success message
       Taro.showToast({
-        title: "保存成功",
+        title: isCreate ? "创建成功" : "更新成功",
         icon: "success",
-        duration: 1500, // Display for 1.5 seconds
+        duration: 1500,
         complete: () => {
-          // Navigate back to index page after toast completes
           setTimeout(() => {
-            console.log("Navigating back to index page...");
-
-            // Option 1: Use redirectTo to replace current page with index
             Taro.redirectTo({
               url: "/pages/index/index",
-              success: () => console.log("Successfully redirected to index"),
-              fail: (error) => {
-                console.error("Failed to redirect:", error);
-              },
             });
-          }, 500); // Short delay after toast
+          }, 500);
         },
       });
     } catch (error) {
@@ -192,11 +276,7 @@ class UserCreate extends Component<PageProps, PageState> {
             className="avatar-button"
           >
             {avatarUrl ? (
-              <Image
-                className="avatar-preview"
-                src={avatarUrl}
-                mode="aspectFit"
-              />
+              <Image className="avatar" src={avatarUrl} mode="aspectFit" />
             ) : (
               "选择头像"
             )}
@@ -240,11 +320,11 @@ class UserCreate extends Component<PageProps, PageState> {
             {isCreate ? "Create User" : "Update User"}
           </Button>
         </View>
-        <View style={{ marginTop: "50px" }}>
+        {/* <View style={{ marginTop: "50px" }}>
           <Button onClick={this.goBack} type="primary">
             Go Back to Index
           </Button>
-        </View>
+        </View> */}
       </View>
     );
   }

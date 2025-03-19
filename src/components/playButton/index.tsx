@@ -12,7 +12,7 @@ interface PlayButtonProps {
 const PlayButton: React.FC<PlayButtonProps> = ({ user, className = "" }) => {
   const handleClick = async (user: User) => {
     try {
-      // If user is already logged in
+      // If user has a complete profile
       if (user.nickName) {
         navigateToMap();
         return;
@@ -65,5 +65,4 @@ const PlayButton: React.FC<PlayButtonProps> = ({ user, className = "" }) => {
   );
 };
 
-// export default inject("store")(observer(PlayButton));
 export default PlayButton;
