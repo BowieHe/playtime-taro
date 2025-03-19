@@ -4,6 +4,7 @@ export default defineAppConfig({
     "pages/userCreate/index",
     "pages/pet/index",
     "pages/map/index",
+    "pages/location/index",
   ],
   window: {
     backgroundTextStyle: "light",

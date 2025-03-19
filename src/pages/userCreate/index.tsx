@@ -6,7 +6,7 @@ import "./index.css";
 import { getPhoneNumber } from "@/service/wechatService";
 import { User } from "@/types/user";
 import { createUser, updateUser, getUserById } from "@/service/userService";
-import userStore, { UserStore } from "@/store/user";
+import { UserStore } from "@/store/user";
 import { inject, observer } from "mobx-react";
 
 interface PageProps {

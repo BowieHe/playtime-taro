@@ -1,8 +1,9 @@
 import { Component, PropsWithChildren } from "react";
-import { View, Text, Map } from "@tarojs/components";
+import { View, Text, Map, Button } from "@tarojs/components";
 import { observer } from "mobx-react";
 import Taro from "@tarojs/taro";
 import PopUpWindow from "@/components/popUpWindow";
+import { reverseGeocode } from "@/service/mapService";
 import "./index.css";
 
 interface MapState {
@@ -14,6 +15,13 @@ interface MapState {
   isMapLoaded: boolean;
   showPermissionPopup: boolean;
   permissionDenied: boolean;
+  showAddLocationPopup: boolean;
+  selectedLocation: {
+    latitude: number;
+    longitude: number;
+    address: string;
+    name: string;
+  } | null;
 }
 
 @observer
@@ -27,6 +35,8 @@ class MapPage extends Component<PropsWithChildren, MapState> {
     isMapLoaded: false,
     showPermissionPopup: true, // Show permission popup by default
     permissionDenied: false,
+    showAddLocationPopup: false,
+    selectedLocation: null,
   };
 
   componentDidMount() {
@@ -112,13 +122,15 @@ class MapPage extends Component<PropsWithChildren, MapState> {
         const latitude = res.latitude;
         const longitude = res.longitude;
         console.log("Got location:", latitude, longitude);
-        Taro.openLocation({
+
+        // Update state with user location instead of opening location chooser
+        this.setState({
           latitude,
           longitude,
-          scale: 18,
         });
-        // const { latitude, longitude } = res;
-        // this.loadMarkersAroundLocation(latitude, longitude);
+
+        // Load markers around the user's current location
+        this.loadMarkersAroundLocation(latitude, longitude);
       },
       fail: (err) => {
         console.error("Failed to get location:", err);
@@ -197,12 +209,11 @@ class MapPage extends Component<PropsWithChildren, MapState> {
         latitude: latitude + 0.01,
         longitude: longitude + 0.01,
         callout: {
-          content: "Pet Park",
-          color: "#000000",
-          fontSize: 14,
-          borderRadius: 4,
-          padding: 5,
-          display: "ALWAYS",
+          content: "我是callout",
+          bgColor: "#0f0f0f22",
+          borderColor: "#0f0f0faa",
+          borderWidth: 10,
+          textAlign: "left",
         },
         width: 25,
         height: 25,
@@ -250,6 +261,68 @@ class MapPage extends Component<PropsWithChildren, MapState> {
     }
   };
 
+  onTapMap = async (e) => {
+    console.log("Map tapped:", e);
+    const { latitude, longitude } = e.detail;
+
+    try {
+      // Use our mapService to get location information
+      const locationInfo = await reverseGeocode(latitude, longitude);
+
+      this.setState({
+        selectedLocation: {
+          latitude,
+          longitude,
+          address:
+            locationInfo.address ||
+            `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+          name: locationInfo.name || "New Location",
+        },
+        showAddLocationPopup: true,
+      });
+    } catch (error) {
+      console.error("Failed to get location info:", error);
+
+      // Fallback to basic location info
+      this.setState({
+        selectedLocation: {
+          latitude,
+          longitude,
+          address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+          name: "New Location",
+        },
+        showAddLocationPopup: true,
+      });
+    }
+  };
+
+  handleAddLocation = () => {
+    const { selectedLocation } = this.state;
+
+    if (selectedLocation) {
+      // Navigate to location creation page with the selected location data
+      Taro.navigateTo({
+        url: `/pages/location/index?latitude=${
+          selectedLocation.latitude
+        }&longitude=${selectedLocation.longitude}&address=${encodeURIComponent(
+          selectedLocation.address
+        )}&name=${encodeURIComponent(selectedLocation.name)}`,
+      });
+
+      // Close the popup
+      this.setState({
+        showAddLocationPopup: false,
+      });
+    }
+  };
+
+  handleCancelAddLocation = () => {
+    this.setState({
+      showAddLocationPopup: false,
+      selectedLocation: null,
+    });
+  };
+
   handleMapError = (e) => {
     console.error("Map error:", e);
     Taro.showToast({
@@ -271,6 +344,8 @@ class MapPage extends Component<PropsWithChildren, MapState> {
       isMapLoaded,
       showPermissionPopup,
       permissionDenied,
+      showAddLocationPopup,
+      selectedLocation,
     } = this.state;
 
     return (
@@ -297,6 +372,29 @@ class MapPage extends Component<PropsWithChildren, MapState> {
           onReject={this.handleRejectPermission}
         />
 
+        {/* Add Location Popup */}
+        <PopUpWindow
+          visible={showAddLocationPopup}
+          title="添加新地点"
+          content={
+            <View className="add-location-popup">
+              <Text className="location-name">
+                {selectedLocation?.name || "Unnamed location"}
+              </Text>
+              <Text className="location-address">
+                {selectedLocation?.address || ""}
+              </Text>
+              <Text className="add-location-hint">
+                将此地点添加到宠物友好场所?
+              </Text>
+            </View>
+          }
+          acceptText="添加地点"
+          rejectText="取消"
+          onAccept={this.handleAddLocation}
+          onReject={this.handleCancelAddLocation}
+        />
+
         <View className="map-container">
           {/* <Text className="map-title">附近宠物场所</Text> */}
 
@@ -316,6 +414,7 @@ class MapPage extends Component<PropsWithChildren, MapState> {
               includePoints={includePoints}
               showLocation={!permissionDenied}
               onMarkerTap={this.onMarkerTap}
+              onTap={this.onTapMap}
               enableRotate={true}
               enableZoom={true}
               onError={this.handleMapError}

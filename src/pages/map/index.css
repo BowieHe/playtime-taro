@@ -92,7 +92,7 @@
 .permission-image {
   width: 150px;
   height: 150px;
-  background-image: url("https://img.icons8.com/cotton/256/000000/dog-location.png");
+  /* background-image: url("https://img.icons8.com/cotton/256/000000/dog-location.png"); */
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
