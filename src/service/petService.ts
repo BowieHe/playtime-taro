@@ -115,26 +115,85 @@ export const getAllPets = async (): Promise<Pet[]> => {
  */
 export const uploadPetAvatar = async (filePath: string): Promise<string> => {
   try {
-    // Since file upload requires a different approach than JSON requests,
-    // we'll keep using Taro.uploadFile directly
+    console.log("Uploading pet avatar image:", filePath);
+
+    const contentType = getContentTypeFromFilePath(filePath);
+    console.log(`Detected content type: ${contentType}`);
+    // Upload file using Taro's upload file API
     const uploadResponse = await Taro.uploadFile({
-      url: "https://trip.playtime.pet/upload",
+      url: "https://trip.playtime.pet/wechat/upload",
       filePath: filePath,
       name: "file",
+      header: {
+        "Content-Type": contentType,
+      },
       formData: {
         type: "pet-avatar",
       },
     });
 
-    if (uploadResponse.statusCode === 200) {
-      const data = JSON.parse(uploadResponse.data);
-      console.log("Avatar uploaded successfully:", data.url);
-      return data.url;
-    } else {
-      throw new Error(`Failed to upload avatar: ${uploadResponse.statusCode}`);
+    if (uploadResponse.statusCode !== 200) {
+      throw new Error(
+        `Upload failed with status code ${uploadResponse.statusCode}`
+      );
     }
+
+    // Parse response to get the image URL
+    const result = JSON.parse(uploadResponse.data);
+
+    if (result.code !== 0) {
+      throw new Error(result.message || "Failed to upload image");
+    }
+
+    console.log("Avatar uploaded successfully:", result.data.url);
+    return result.data.url;
   } catch (error) {
     console.error("Error uploading pet avatar:", error);
-    throw error;
+    throw new Error("Failed to upload image: " + error.message);
   }
 };
+
+/**
+ * Helper function to determine content type from file path
+ * @param filePath Path to the file
+ * @returns Content-Type string
+ */
+function getContentTypeFromFilePath(filePath: string): string {
+  // Default content type for images
+  let contentType = "image/jpeg";
+
+  // Get file extension (convert to lowercase)
+  const ext = filePath.substring(filePath.lastIndexOf(".") + 1).toLowerCase();
+
+  // Map extensions to content types
+  switch (ext) {
+    case "png":
+      contentType = "image/png";
+      break;
+    case "jpg":
+    case "jpeg":
+      contentType = "image/jpeg";
+      break;
+    case "gif":
+      contentType = "image/gif";
+      break;
+    case "webp":
+      contentType = "image/webp";
+      break;
+    case "bmp":
+      contentType = "image/bmp";
+      break;
+    case "heic":
+      contentType = "image/heic";
+      break;
+    case "svg":
+      contentType = "image/svg+xml";
+      break;
+    default:
+      console.warn(
+        `Unknown file extension: ${ext}, using default content type`
+      );
+  }
+
+  return contentType;
+}

@@ -5,7 +5,7 @@ import Taro from "@tarojs/taro";
 import { PetStore } from "@/store/pet";
 import "./index.css";
 import { Pet as PetInfo, PetSize, PetGender } from "@/types/pet";
-import { createPet, updatePet } from "@/service/petService";
+import { createPet, updatePet, uploadPetAvatar } from "@/service/petService";
 
 interface PageProps extends PropsWithChildren {
   store: {
@@ -116,12 +116,52 @@ class Pet extends Component<PageProps, PageState> {
       count: 1,
       sizeType: ["compressed"],
       sourceType: ["album", "camera"],
-      success: (res) => {
-        this.setState({
-          pet: {
-            ...this.state.pet,
-            avatar: res.tempFilePaths[0],
-          },
+      success: async (res) => {
+        const tempFilePath = res.tempFilePaths[0];
+
+        // Show loading state
+        Taro.showLoading({ title: "Uploading image..." });
+
+        try {
+          // Upload the image and get the server URL
+          const avatarUrl = await uploadPetAvatar(tempFilePath);
+
+          // Update state with the returned URL
+          this.setState({
+            pet: {
+              ...this.state.pet,
+              avatar: avatarUrl,
+            },
+          });
+
+          Taro.hideLoading();
+          Taro.showToast({
+            title: "Image uploaded successfully",
+            icon: "success",
+          });
+        } catch (error) {
+          console.error("Failed to upload image:", error);
+          Taro.hideLoading();
+
+          // Update state with local path temporarily
+          this.setState({
+            pet: {
+              ...this.state.pet,
+              avatar: tempFilePath, // Use local path as fallback
+            },
+          });
+
+          Taro.showToast({
+            title: "Failed to upload image",
+            icon: "none",
+          });
+        }
+      },
+      fail: (error) => {
+        console.error("Image selection failed:", error);
+        Taro.showToast({
+          title: "Failed to select image",
+          icon: "none",
         });
       },
     });
