@@ -65,7 +65,6 @@ export const validLogin = async () => {
     const user = await getUserByOpenId(sessionRes.openid);
 
     if (user) {
-      console.log("User found:", user);
       return user;
     } else {
       return {
