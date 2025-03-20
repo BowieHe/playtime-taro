@@ -50,8 +50,8 @@ export class PetStore {
       this.pets.filter((pet) => pet.ownerId === ownerId);
   }
 
-  // Fix: Change from @computed to a regular method
-  getPetById(id: string): Pet | null {
+  // Method to find a pet by ID - convert from @computed to regular method
+  getPetById(id: string) {
     return this.pets.find((pet) => pet.id === id) || null;
   }
 
