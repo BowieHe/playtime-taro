@@ -2,12 +2,16 @@ import { Component } from 'react';
 import { View, Text, Input, Button, Radio, RadioGroup, Label, Textarea } from '@tarojs/components';
 import Taro, { Current } from '@tarojs/taro';
 import './index.css';
+import { addPetFriendlyPlace, reverseGeocode } from '@/service/mapService';
+import { AddressComponent, AdInfo } from '@/types/map';
 
 interface LocationState {
     name: string;
     address: string;
     latitude: number;
     longitude: number;
+    adInfo: AdInfo | null;
+    addressComponent: AddressComponent | null;
     isPetFriendly: boolean;
     petSize: 'small' | 'medium' | 'large' | '';
     petType: 'cat' | 'dog' | 'dragon' | '';
@@ -22,6 +26,8 @@ class LocationPage extends Component<{}, LocationState> {
         address: '',
         latitude: 0,
         longitude: 0,
+        adInfo: null,
+        addressComponent: null,
         isPetFriendly: false,
         petSize: '',
         petType: '',
@@ -34,14 +40,27 @@ class LocationPage extends Component<{}, LocationState> {
         // Get params from the URL
         const params = Current.router?.params;
         if (params) {
-            this.setState({
-                name: decodeURIComponent(params.name || ''),
-                address: decodeURIComponent(params.address || ''),
-                latitude: parseFloat(params.latitude || '0'),
-                longitude: parseFloat(params.longitude || '0'),
-            });
+            console.log('URL params:', params);
+            const latitude = parseFloat(params.latitude || '0');
+            const longitude = parseFloat(params.longitude || '0');
+            // const name = decodeURIComponent(params.name || '');
+            // Reverse geocode the coordinates
+            this.fulFillLocationInfo(latitude, longitude);
         }
     }
+
+    fulFillLocationInfo = async (latitude: number, longitude: number) => {
+        const locationInfo = await reverseGeocode(latitude, longitude);
+        console.log('Get Location info and fulfill the address:', locationInfo);
+        this.setState({
+            name: locationInfo.formatted_addresses?.rough || '',
+            latitude: latitude,
+            longitude: longitude,
+            address: locationInfo.address,
+            adInfo: locationInfo.ad_info,
+            addressComponent: locationInfo.address_component,
+        });
+    };
 
     handleInputChange = (field: keyof LocationState, value: any) => {
         this.setState({ [field]: value } as unknown as Pick<LocationState, keyof LocationState>);
@@ -76,9 +95,11 @@ class LocationPage extends Component<{}, LocationState> {
         this.setState({ isSubmitting: true });
 
         try {
+            const { isSubmitting, ...locationData } = this.state;
             // In a real app, this would send the data to your backend
-            // For now, we'll just simulate a successful submission
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            console.log('Submitting location:', locationData);
+            const result = await addPetFriendlyPlace(locationData);
+            console.log('Location added:', result);
 
             Taro.showToast({
                 title: '添加成功！',

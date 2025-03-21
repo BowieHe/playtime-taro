@@ -58,7 +58,6 @@ export const validLogin = async () => {
         console.log('Attempting to login');
         const loginRes = await Taro.login({
             complete: (res: TaroGeneral.CallbackResult) => {
-                console.log('Login complete');
                 console.log('Login complete response:', res);
             },
             success: () => {
@@ -66,7 +65,6 @@ export const validLogin = async () => {
             },
             fail: (res: TaroGeneral.CallbackResult) => {
                 console.error('Login failed with error:', res);
-                console.error('Login failed');
             },
             timeout: 10000,
         });

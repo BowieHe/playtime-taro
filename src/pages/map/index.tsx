@@ -3,8 +3,9 @@ import { View, Text, Map } from '@tarojs/components';
 import { observer } from 'mobx-react';
 import Taro from '@tarojs/taro';
 import PopUpWindow from '@/components/popUpWindow';
-import { reverseGeocode } from '@/service/mapService';
+// import { reverseGeocode } from '@/service/mapService';
 import './index.css';
+import { AddressComponent, AdInfo } from '@/types/map';
 
 interface MapState {
     latitude: number;
@@ -19,8 +20,10 @@ interface MapState {
     selectedLocation: {
         latitude: number;
         longitude: number;
-        address: string;
+        // address: string;
         name: string;
+        adInfo?: AdInfo;
+        addressComponent?: AddressComponent;
     } | null;
 }
 
@@ -125,7 +128,7 @@ class MapPage extends Component<PropsWithChildren, MapState> {
 
                 // Update state with user location instead of opening location chooser
                 this.setState({
-                    latitude,
+                    latitude: res.latitude,
                     longitude,
                 });
 
@@ -261,51 +264,32 @@ class MapPage extends Component<PropsWithChildren, MapState> {
         }
     };
 
-    onTapMap = async e => {
-        console.log('Map tapped:', e);
-        const { latitude, longitude } = e.detail;
+    // Rename from onTapMap to onPoiTap
+    onPoiTap = async e => {
+        console.log('POI tapped:', e);
+        // POI tap events provide different data structure than regular map taps
+        const { name, latitude, longitude } = e.detail;
 
-        try {
-            // Use our mapService to get location information
-            const locationInfo = await reverseGeocode(latitude, longitude);
-
-            this.setState({
-                selectedLocation: {
-                    latitude,
-                    longitude,
-                    address:
-                        locationInfo.address || `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
-                    name: locationInfo.name || 'New Location',
-                },
-                showAddLocationPopup: true,
-            });
-        } catch (error) {
-            console.error('Failed to get location info:', error);
-
-            // Fallback to basic location info
-            this.setState({
-                selectedLocation: {
-                    latitude,
-                    longitude,
-                    address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
-                    name: 'New Location',
-                },
-                showAddLocationPopup: true,
-            });
-        }
+        this.setState({
+            selectedLocation: {
+                latitude: latitude,
+                longitude: longitude,
+                name: name,
+            },
+            showAddLocationPopup: true,
+        });
     };
 
     handleAddLocation = () => {
         const { selectedLocation } = this.state;
 
         if (selectedLocation) {
+            console.log('Add location:', selectedLocation);
             // Navigate to location creation page with the selected location data
             Taro.navigateTo({
                 url: `/pages/location/index?latitude=${selectedLocation.latitude}&longitude=${
                     selectedLocation.longitude
-                }&address=${encodeURIComponent(selectedLocation.address)}&name=${encodeURIComponent(
-                    selectedLocation.name
-                )}`,
+                }&name=${encodeURIComponent(selectedLocation.name)}`,
             });
 
             // Close the popup
@@ -380,9 +364,9 @@ class MapPage extends Component<PropsWithChildren, MapState> {
                             <Text className="location-name">
                                 {selectedLocation?.name || 'Unnamed location'}
                             </Text>
-                            <Text className="location-address">
+                            {/* <Text className="location-address">
                                 {selectedLocation?.address || ''}
-                            </Text>
+                            </Text> */}
                             <Text className="add-location-hint">将此地点添加到宠物友好场所?</Text>
                         </View>
                     }
@@ -411,7 +395,8 @@ class MapPage extends Component<PropsWithChildren, MapState> {
                             includePoints={includePoints}
                             showLocation={!permissionDenied}
                             onMarkerTap={this.onMarkerTap}
-                            onTap={this.onTapMap}
+                            onPoiTap={this.onPoiTap}
+                            // onTap={this.onTapMap} // Comment out or remove the general map tap handler
                             enableRotate={true}
                             enableZoom={true}
                             onError={this.handleMapError}
