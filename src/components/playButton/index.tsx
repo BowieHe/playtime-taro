@@ -18,7 +18,7 @@ const PlayButton: React.FC<PlayButtonProps> = ({ user, className = "" }) => {
         return;
       } else {
         Taro.hideLoading();
-        navigateToUserCreate(user.openId, user.unionId);
+        navigateToUser(user.openId, user.unionId);
       }
     } catch (error) {
       console.error("Login process failed:", error);
@@ -38,9 +38,9 @@ const PlayButton: React.FC<PlayButtonProps> = ({ user, className = "" }) => {
     });
   };
 
-  const navigateToUserCreate = (openId: string, unionId: string = "") => {
+  const navigateToUser = (openId: string, unionId: string = "") => {
     Taro.navigateTo({
-      url: `/pages/userCreate/index?openId=${openId}&unionId=${unionId}`,
+      url: `/pages/user/index?openId=${openId}&unionId=${unionId}`,
       fail: handleNavigationError,
     });
   };

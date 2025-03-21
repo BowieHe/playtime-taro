@@ -1,17 +1,17 @@
-import { Component, PropsWithChildren } from "react";
-import { View, Button, Text, Image } from "@tarojs/components";
-import { observer, inject } from "mobx-react";
-import Taro from "@tarojs/taro";
-import { UserStore } from "@/store/user";
-import { PetStore } from "@/store/pet";
-import { validLogin } from "@/service/userService";
-import { getPetsByOwner } from "@/service/petService";
-import "./index.css";
-import Header from "@/components/header";
-import PlayButton from "@/components/playButton";
-import PetCard from "@/components/petCard";
-import { reaction } from "mobx";
-import { User } from "@/types/user";
+import { Component, PropsWithChildren } from 'react';
+import { View, Button, Text, Image } from '@tarojs/components';
+import { observer, inject } from 'mobx-react';
+import Taro from '@tarojs/taro';
+import { UserStore } from '@/store/user';
+import { PetStore } from '@/store/pet';
+import { validLogin } from '@/service/userService';
+import { getPetsByOwner } from '@/service/petService';
+import './index.css';
+import Header from '@/components/header';
+import PlayButton from '@/components/playButton';
+import PetCard from '@/components/petCard';
+import { reaction } from 'mobx';
+import { User } from '@/types/user';
 
 interface PageProps extends PropsWithChildren {
     store: {
@@ -24,7 +24,7 @@ interface PageState {
     isLoading: boolean;
 }
 
-@inject("store")
+@inject('store')
 @observer
 class Index extends Component<PageProps, PageState> {
     // Store the reaction disposer so we can clean it up later
@@ -32,7 +32,7 @@ class Index extends Component<PageProps, PageState> {
     private initialCheckDone = false;
 
     state = {
-        isLoading: false
+        isLoading: false,
     };
 
     componentDidMount() {
@@ -41,8 +41,8 @@ class Index extends Component<PageProps, PageState> {
             // Track the user.id property
             () => this.props.store.userStore.user?.id,
             // React when it changes
-            (userId) => {
-                console.log("User ID changed in reaction:", userId);
+            userId => {
+                console.log('User ID changed in reaction:', userId);
                 if (userId) {
                     this.loadUserPets(userId);
                 }
@@ -70,69 +70,69 @@ class Index extends Component<PageProps, PageState> {
 
     // Only refresh data in componentDidShow, without redundant login checks
     componentDidShow() {
-        console.log("Index page shown");
+        console.log('Index page shown');
         const { user } = this.props.store.userStore;
 
         // If we already have a user, just refresh their pets
         if (user && user.id) {
-            console.log("User exists, refreshing pet data");
+            console.log('User exists, refreshing pet data');
             this.loadUserPets(user.id);
         }
         // Only check login again if we don't have a user and haven't done initial check
         else if (!this.initialCheckDone) {
-            console.log(
-                "No user yet and initial check not done, checking login status"
-            );
+            console.log('No user yet and initial check not done, checking login status');
             this.checkUserLoginStatus();
         }
     }
 
     loadUserPets = async (userId: string) => {
         try {
-            console.log("Loading pets for user ID:", userId);
+            console.log('Loading pets for user ID:', userId);
             const { petStore } = this.props.store;
             this.setState({ isLoading: true });
             const pets = await getPetsByOwner(userId);
-            console.log("Pets loaded:", pets);
+            console.log('Pets loaded:', pets);
             petStore.setPets(pets);
         } catch (error) {
-            console.error("Error loading pets:", error);
-            Taro.showToast({ title: "无法加载宠物信息", icon: "none" });
+            console.error('Error loading pets:', error);
+            Taro.showToast({ title: '无法加载宠物信息', icon: 'none' });
         } finally {
             this.setState({ isLoading: false });
         }
     };
 
     checkUserLoginStatus = async () => {
+        Taro.showLoading({ title: '检查登录状态...' });
         const { userStore } = this.props.store;
         if (userStore.user && userStore.user.nickName) {
-            console.log("User already logged in, skipping login check");
+            console.log('User already logged in, skipping login check');
             return;
         }
 
         try {
-            console.log("Checking user login status...");
+            console.log('Checking user login status...');
             const user = await validLogin();
-            console.log("Login check successful, user:", user);
+            console.log('Login check successful, user:', user);
             userStore.setUser(user);
             // Note: No need to manually call loadUserPets here as the reaction will handle it
         } catch (error) {
-            console.error("Login check failed:", error);
+            console.error('Login check failed:', error);
         }
+        Taro.hideLoading();
     };
 
     navigateTo = (url: string) => {
         Taro.navigateTo({
             url,
-            fail: (err) => {
-                console.error("Navigation failed:", err);
-                Taro.showToast({ title: "页面跳转失败", icon: "none" });
+            fail: err => {
+                console.error('Navigation failed:', err);
+                Taro.showToast({ title: '页面跳转失败', icon: 'none' });
             },
         });
     };
 
-    navigateToUserCreate = (user: User) => {
-        this.navigateTo(`/pages/userCreate/index?id=${user?.id || ""}`);
+    navigateToUser = (user: User) => {
+        this.navigateTo(`/pages/user/index?id=${user?.id || ''}`);
     };
 
     navigateToPetCreate = (ownerId: string) => {
@@ -149,18 +149,18 @@ class Index extends Component<PageProps, PageState> {
 
         return (
             <View className="user-info-display">
-                <Image className="avatar" src={user.avatarUrl || ""} mode="aspectFit" />
+                <Image className="avatar" src={user.avatarUrl || ''} mode="aspectFit" />
 
                 <View className="button-group">
                     <Button
                         className="update-profile-btn"
-                        onClick={() => this.navigateToUserCreate(user)}
+                        onClick={() => this.navigateToUser(user)}
                     >
                         修改资料
                     </Button>
                     <Button
                         className="add-pet-btn"
-                        onClick={() => this.navigateToPetCreate(user.id || "")}
+                        onClick={() => this.navigateToPetCreate(user.id || '')}
                     >
                         添加宠物
                     </Button>
@@ -186,12 +186,12 @@ class Index extends Component<PageProps, PageState> {
                     <View className="loading-indicator">加载中...</View>
                 ) : userPets.length > 0 ? (
                     <View className="pet-cards-container">
-                        {userPets.map((pet) => (
+                        {userPets.map(pet => (
                             <PetCard
                                 key={pet.id}
                                 pet={pet}
                                 onClick={() =>
-                                    this.handlePetCardClick(pet.id || "", user?.id || "")
+                                    this.handlePetCardClick(pet.id || '', user?.id || '')
                                 }
                             />
                         ))}
@@ -202,7 +202,7 @@ class Index extends Component<PageProps, PageState> {
                         <Text>You haven't added any pets yet</Text>
                         <Button
                             className="add-first-pet-btn"
-                            onClick={() => this.navigateToPetCreate(user?.id || "")}
+                            onClick={() => this.navigateToPetCreate(user?.id || '')}
                         >
                             添加第一个宠物
                         </Button>

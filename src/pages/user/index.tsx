@@ -1,14 +1,12 @@
-// This is a backup of the original userCreate/index.tsx file
-import { Component } from "react";
-import { View, Button, Text, Image, Input } from "@tarojs/components";
-import Taro from "@tarojs/taro";
-import "./index.css";
-import { getPhoneNumber } from "@/service/wechatService";
-import { User } from "@/types/user";
-import { createUser, updateUser, getUserById, uploadAvatar } from "@/service/userService";
-import { UserStore } from "@/store/user";
-import { inject, observer } from "mobx-react";
-import { uploadFile } from "@/service/uploadService"; // Add this import
+import { Component } from 'react';
+import { View, Button, Text, Image, Input } from '@tarojs/components';
+import Taro from '@tarojs/taro';
+import './index.css';
+import { getPhoneNumber } from '@/service/wechatService';
+import { User as UserType } from '@/types/user';
+import { createUser, updateUser, getUserById, uploadAvatar } from '@/service/userService';
+import { UserStore } from '@/store/user';
+import { inject, observer } from 'mobx-react';
 
 interface PageProps {
     store: {
@@ -27,28 +25,28 @@ interface PageState {
 }
 
 // Simplified version for testing navigation
-@inject("store")
+@inject('store')
 @observer
-class UserCreate extends Component<PageProps, PageState> {
+class User extends Component<PageProps, PageState> {
     constructor(props) {
         super(props);
         this.state = {
-            id: "",
-            avatarUrl: "",
-            nickName: "",
-            phoneNumber: "",
-            unionId: "",
-            openId: "",
+            id: '',
+            avatarUrl: '',
+            nickName: '',
+            phoneNumber: '',
+            unionId: '',
+            openId: '',
             isCreate: true,
         };
     }
 
     componentDidMount() {
-        console.log("UserCreate page mounted!");
+        console.log('User page mounted!');
 
         // Log the router params
         const params = Taro.getCurrentInstance().router?.params;
-        console.log("Params received:", params);
+        console.log('Params received:', params);
 
         // Get the user store for access to openId/unionId
         const { userStore } = this.props.store;
@@ -57,16 +55,13 @@ class UserCreate extends Component<PageProps, PageState> {
         // Different initialization logic based on parameters
         if (params) {
             // Case 1: We have an ID - this is an update operation
-            if (params.id && params.id !== "") {
-                console.log("Editing user with ID:", params.id);
+            if (params.id && params.id !== '') {
+                console.log('Editing user with ID:', params.id);
                 this.loadUserById(params.id);
             }
             // Case 2: We have openId/unionId - this is a create operation
             else if (params.openId || currentUser.openId) {
-                console.log(
-                    "Creating new user with openId:",
-                    params.openId || currentUser.openId
-                );
+                console.log('Creating new user with openId:', params.openId || currentUser.openId);
                 this.setState({
                     openId: params.openId || currentUser.openId,
                     unionId: params.unionId || currentUser.unionId,
@@ -86,37 +81,37 @@ class UserCreate extends Component<PageProps, PageState> {
     // Load user by ID for editing
     loadUserById = async (id: string) => {
         try {
-            Taro.showLoading({ title: "Loading user data..." });
+            Taro.showLoading({ title: 'Loading user data...' });
 
             const user = await getUserById(id);
 
             if (user) {
                 this.setState({
-                    id: user.id || "",
-                    avatarUrl: user.avatarUrl || "",
-                    nickName: user.nickName || "",
-                    phoneNumber: user.phoneNumber || "",
-                    openId: user.openId || "",
-                    unionId: user.unionId || "",
+                    id: user.id || '',
+                    avatarUrl: user.avatarUrl || '',
+                    nickName: user.nickName || '',
+                    phoneNumber: user.phoneNumber || '',
+                    openId: user.openId || '',
+                    unionId: user.unionId || '',
                     isCreate: false,
                 });
 
-                console.log("User data loaded for editing:", user);
+                console.log('User data loaded for editing:', user);
             } else {
-                console.error("User not found with ID:", id);
+                console.error('User not found with ID:', id);
                 Taro.showToast({
-                    title: "User not found",
-                    icon: "none",
+                    title: 'User not found',
+                    icon: 'none',
                 });
             }
 
             Taro.hideLoading();
         } catch (error) {
-            console.error("Error loading user:", error);
+            console.error('Error loading user:', error);
             Taro.hideLoading();
             Taro.showToast({
-                title: "Failed to load user data",
-                icon: "none",
+                title: 'Failed to load user data',
+                icon: 'none',
             });
         }
     };
@@ -141,24 +136,23 @@ class UserCreate extends Component<PageProps, PageState> {
         // Otherwise it's a create operation with whatever data we have
         else {
             this.setState({
-                avatarUrl: user.avatarUrl || "",
-                nickName: user.nickName || "",
-                phoneNumber: user.phoneNumber || "",
-                openId: user.openId || "",
-                unionId: user.unionId || "",
+                avatarUrl: user.avatarUrl || '',
+                nickName: user.nickName || '',
+                phoneNumber: user.phoneNumber || '',
+                openId: user.openId || '',
+                unionId: user.unionId || '',
                 isCreate: true,
             });
         }
     };
 
-    onChooseAvatar = async (e) => {
+    onChooseAvatar = async e => {
         const tempAvatarUrl = e.detail.avatarUrl;
 
         // Show loading indicator
-        Taro.showLoading({ title: "上传头像中..." });
+        Taro.showLoading({ title: '上传头像中...' });
 
         try {
-            // Upload the avatar and get a permanent URL
             const permanentUrl = await uploadAvatar(tempAvatarUrl);
 
             // Update state with the permanent URL
@@ -168,11 +162,11 @@ class UserCreate extends Component<PageProps, PageState> {
 
             Taro.hideLoading();
             Taro.showToast({
-                title: "头像上传成功",
-                icon: "success",
+                title: '头像上传成功',
+                icon: 'success',
             });
         } catch (error) {
-            console.error("Failed to upload avatar:", error);
+            console.error('Failed to upload avatar:', error);
 
             // If upload fails, still use the temporary URL
             this.setState({
@@ -181,57 +175,31 @@ class UserCreate extends Component<PageProps, PageState> {
 
             Taro.hideLoading();
             Taro.showToast({
-                title: "头像上传失败，将使用临时文件",
-                icon: "none",
+                title: '头像上传失败，将使用临时文件',
+                icon: 'none',
             });
         }
     };
 
-    // New method to handle avatar upload
-    uploadAvatar = async (tempFilePath: string): Promise<string> => {
-        if (!tempFilePath || !tempFilePath.startsWith('/tmp')) {
-            // If it's not a temporary file, just return the URL
-            return tempFilePath;
-        }
-
-        try {
-            // Upload the file to your server and get a permanent URL
-            const result = await uploadFile({
-                filePath: tempFilePath,
-                name: 'avatar',
-                formData: {
-                    'user_id': this.state.id || 'new',
-                    'file_type': 'avatar'
-                }
-            });
-
-            // Return the permanent URL from the server response
-            return result.fileUrl;
-        } catch (error) {
-            console.error("Error uploading avatar:", error);
-            throw error;
-        }
-    };
-
-    onNicknameInput = (e) => {
+    onNicknameInput = e => {
         // Make sure we're accessing the value correctly
         const value = e.detail.value;
-        console.log("Input value detected:", value);
+        console.log('Input value detected:', value);
 
         this.setState({
             nickName: value,
         });
     };
 
-    onGetPhoneNumber = async (e) => {
-        if (e.detail.errMsg === "getPhoneNumber:ok") {
+    onGetPhoneNumber = async e => {
+        if (e.detail.errMsg === 'getPhoneNumber:ok') {
             const { code } = e.detail;
 
             try {
-                Taro.showLoading({ title: "获取手机号中..." });
+                Taro.showLoading({ title: '获取手机号中...' });
                 const phone = await getPhoneNumber(code);
 
-                console.log("Phone number response:", phone);
+                console.log('Phone number response:', phone);
                 const phoneNumber = phone.purePhoneNumber;
 
                 this.setState({
@@ -240,15 +208,15 @@ class UserCreate extends Component<PageProps, PageState> {
 
                 Taro.hideLoading();
                 Taro.showToast({
-                    title: "手机号获取成功",
-                    icon: "success",
+                    title: '手机号获取成功',
+                    icon: 'success',
                 });
             } catch (error) {
-                console.error("Failed to get phone number:", error);
+                console.error('Failed to get phone number:', error);
                 Taro.hideLoading();
                 Taro.showToast({
-                    title: "获取手机号失败",
-                    icon: "none",
+                    title: '获取手机号失败',
+                    icon: 'none',
                 });
             }
         }
@@ -256,30 +224,22 @@ class UserCreate extends Component<PageProps, PageState> {
 
     onUpsertUser = async (userStore: UserStore) => {
         try {
-            Taro.showLoading({ title: "保存中..." });
-            const {
-                avatarUrl,
-                nickName,
-                phoneNumber,
-                unionId,
-                openId,
-                id,
-                isCreate,
-            } = this.state;
+            Taro.showLoading({ title: '保存中...' });
+            const { avatarUrl, nickName, phoneNumber, unionId, openId, id, isCreate } = this.state;
 
             // Check if we have a temporary avatar URL that needs to be uploaded
             let finalAvatarUrl = avatarUrl;
             if (avatarUrl && avatarUrl.startsWith('/tmp')) {
                 try {
                     // Try to upload the avatar if it's still a temporary file
-                    finalAvatarUrl = await this.uploadAvatar(avatarUrl);
+                    finalAvatarUrl = await uploadAvatar(avatarUrl);
                 } catch (error) {
-                    console.error("Failed to upload avatar during save:", error);
+                    console.error('Failed to upload avatar during save:', error);
                     // Continue with the temporary URL if upload fails
                 }
             }
 
-            const userInfo: User = {
+            const userInfo: UserType = {
                 avatarUrl: finalAvatarUrl,
                 nickName,
                 phoneNumber,
@@ -287,13 +247,13 @@ class UserCreate extends Component<PageProps, PageState> {
                 unionId,
             };
 
-            let savedUser: User;
+            let savedUser: UserType;
 
             if (!isCreate && id) {
-                console.log("Updating user with id:", id);
+                console.log('Updating user with id:', id);
                 savedUser = await updateUser(userInfo, id);
             } else {
-                console.log("Creating new user with openId:", openId);
+                console.log('Creating new user with openId:', openId);
                 savedUser = await createUser(userInfo);
             }
 
@@ -302,21 +262,21 @@ class UserCreate extends Component<PageProps, PageState> {
 
             Taro.hideLoading();
             Taro.showToast({
-                title: isCreate ? "创建成功" : "更新成功",
-                icon: "success",
+                title: isCreate ? '创建成功' : '更新成功',
+                icon: 'success',
                 duration: 1500,
                 complete: () => {
                     setTimeout(() => {
                         Taro.redirectTo({
-                            url: "/pages/index/index",
+                            url: '/pages/index/index',
                         });
                     }, 500);
                 },
             });
         } catch (error) {
-            console.error("Failed to save user:", error);
+            console.error('Failed to save user:', error);
             Taro.hideLoading();
-            Taro.showToast({ title: "保存失败", icon: "none" });
+            Taro.showToast({ title: '保存失败', icon: 'none' });
         }
     };
 
@@ -328,6 +288,7 @@ class UserCreate extends Component<PageProps, PageState> {
             <View className="user-create-page">
                 <View className="user-profile-form">
                     {/* Avatar selection button */}
+                    {/* TODO: change avatar modify when user save */}
                     <Button
                         open-type="chooseAvatar"
                         onChooseAvatar={this.onChooseAvatar}
@@ -336,7 +297,7 @@ class UserCreate extends Component<PageProps, PageState> {
                         {avatarUrl ? (
                             <Image className="avatar" src={avatarUrl} mode="aspectFit" />
                         ) : (
-                            "选择头像"
+                            '选择头像'
                         )}
                     </Button>
 
@@ -359,7 +320,7 @@ class UserCreate extends Component<PageProps, PageState> {
                             type="number"
                             placeholder="请输入手机号"
                             value={phoneNumber}
-                            onInput={(e) => this.setState({ phoneNumber: e.detail.value })}
+                            onInput={e => this.setState({ phoneNumber: e.detail.value })}
                             className="phone-input"
                         />
                         <Button
@@ -373,9 +334,9 @@ class UserCreate extends Component<PageProps, PageState> {
                     </View>
                 </View>
 
-                <View style={{ marginTop: "50px" }}>
+                <View style={{ marginTop: '50px' }}>
                     <Button onClick={() => this.onUpsertUser(userStore)} type="primary">
-                        {isCreate ? "Create User" : "Update User"}
+                        {isCreate ? 'Create User' : 'Update User'}
                     </Button>
                 </View>
                 {/* <View style={{ marginTop: "50px" }}>
@@ -388,4 +349,4 @@ class UserCreate extends Component<PageProps, PageState> {
     }
 }
 
-export default UserCreate;
+export default User;

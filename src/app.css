@@ -2,24 +2,23 @@
 
 /* Define CSS variables for consistent font usage throughout the app */
 :root {
-  --font-primary: "Maple Mono", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, sans-serif;
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-bold: 700;
-  --color-primary: #4caf50;
-  --color-accent: #3a86ff;
+    --font-primary: 'Maple Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+    --color-primary: #4caf50;
+    --color-accent: #3a86ff;
 }
 
 /* Apply the font globally and prevent horizontal scrolling */
 page {
-  background-color: #f8f9fa;
-  font-family: var(--font-primary);
-  overflow-x: hidden;
-  width: 100%;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    background-color: #f8f9fa;
+    font-family: var(--font-primary);
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 /* Apply to common elements */
@@ -27,77 +26,77 @@ text,
 view,
 button,
 input {
-  font-family: var(--font-primary);
-  max-width: 100%;
-  box-sizing: border-box;
+    font-family: var(--font-primary);
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* You can define specific styles for headings */
 .heading {
-  font-family: var(--font-primary);
-  font-weight: var(--font-weight-bold);
+    font-family: var(--font-primary);
+    font-weight: var(--font-weight-bold);
 }
 
 .global-logo {
-  text-align: center;
-  font-size: 36px;
-  font-weight: bold;
-  color: #4caf50;
-  padding: 20px;
-  /* box-sizing: border-box; */
-  /* background-color: white; */
-  /* margin-bottom: 20px; */
-  width: 200px;
-  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
-  /* border-radius: 0 0 8px 8px; */
+    text-align: center;
+    font-size: 36px;
+    font-weight: bold;
+    color: #4caf50;
+    padding: 20px;
+    /* box-sizing: border-box; */
+    /* background-color: white; */
+    /* margin-bottom: 20px; */
+    width: 200px;
+    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
+    /* border-radius: 0 0 8px 8px; */
 }
 
 /* Button reset styles */
 button {
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: none;
-  font: inherit;
-  color: inherit;
-  line-height: normal;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    line-height: normal;
 }
 
 button::after {
-  border: none !important;
+    border: none !important;
 }
 
 /* Custom button styles */
 .btn {
-  border-radius: 8px;
-  font-weight: bold;
-  text-align: center;
-  transition: all 0.3s ease;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
 }
 
 .btn-primary {
-  background-color: #3a86ff;
-  color: white;
+    background-color: #3a86ff;
+    color: white;
 }
 
 .btn-lg {
-  font-size: 18px;
-  padding: 12px 24px;
+    font-size: 18px;
+    padding: 12px 24px;
 }
 
 /* Animation for buttons */
 @keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 .pulse {
-  animation: pulse 2s infinite;
+    animation: pulse 2s infinite;
 }

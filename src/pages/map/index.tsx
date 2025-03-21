@@ -1,5 +1,5 @@
 import { Component, PropsWithChildren } from "react";
-import { View, Text, Map, Button } from "@tarojs/components";
+import { View, Text, Map } from "@tarojs/components";
 import { observer } from "mobx-react";
 import Taro from "@tarojs/taro";
 import PopUpWindow from "@/components/popUpWindow";
