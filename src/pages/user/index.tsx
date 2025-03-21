@@ -286,16 +286,20 @@ class User extends Component<PageProps, PageState> {
 
         return (
             <View className="user-create-page">
+                <View className="header">
+                    <Text className="title">{isCreate ? '创建用户资料' : '更新资料'}</Text>
+                    <Text className="subtitle">请设置您的个人信息</Text>
+                </View>
+
                 <View className="user-profile-form">
-                    {/* Avatar selection button */}
-                    {/* TODO: change avatar modify when user save */}
+                    {/* Avatar selection button with common class */}
                     <Button
                         open-type="chooseAvatar"
                         onChooseAvatar={this.onChooseAvatar}
                         className="avatar-button"
                     >
                         {avatarUrl ? (
-                            <Image className="avatar" src={avatarUrl} mode="aspectFit" />
+                            <Image className="app-avatar" src={avatarUrl} mode="aspectFill" />
                         ) : (
                             '选择头像'
                         )}

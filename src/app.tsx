@@ -4,6 +4,7 @@ import userStore from './store/user';
 import petStore from './store/pet'; // Import the pet store
 import { loadFont } from './utils/fontLoader';
 import './app.css';
+import './styles/common.css';
 
 const store = {
     userStore,

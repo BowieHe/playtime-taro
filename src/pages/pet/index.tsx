@@ -1,12 +1,12 @@
-import { Component, PropsWithChildren } from "react";
-import { View, Button, Text, Input, Picker, Image } from "@tarojs/components";
-import { observer, inject } from "mobx-react";
-import Taro from "@tarojs/taro";
-import { PetStore } from "@/store/pet";
-import "./index.css";
-import { Pet as PetInfo, PetSize, PetGender } from "@/types/pet";
-import { createPet, updatePet } from "@/service/petService";
-import { uploadImage } from "@/service/wechatService";
+import { Component, PropsWithChildren } from 'react';
+import { View, Button, Text, Input, Picker, Image } from '@tarojs/components';
+import { observer, inject } from 'mobx-react';
+import Taro from '@tarojs/taro';
+import { PetStore } from '@/store/pet';
+import './index.css';
+import { Pet as PetInfo, PetSize, PetGender } from '@/types/pet';
+import { createPet, updatePet } from '@/service/petService';
+import { uploadImage } from '@/service/wechatService';
 
 interface PageProps extends PropsWithChildren {
     store: {
@@ -35,18 +35,18 @@ interface OptionType {
     display: string;
 }
 
-@inject("store")
+@inject('store')
 @observer
-class Pet extends Component<PageProps, PageState> {
+class PetPage extends Component<PageProps, PageState> {
     genderOptions: OptionType[] = [
         { value: 'male', display: 'Male' },
-        { value: 'female', display: 'Female' }
+        { value: 'female', display: 'Female' },
     ];
 
     sizeOptions: OptionType[] = [
         { value: 'small', display: 'Small' },
         { value: 'medium', display: 'Medium' },
-        { value: 'large', display: 'Large' }
+        { value: 'large', display: 'Large' },
     ];
 
     constructor(props) {
@@ -59,43 +59,45 @@ class Pet extends Component<PageProps, PageState> {
                 breed: '',
                 desc: '',
                 gender: 'male',
-                size: 'medium'
+                size: 'medium',
             },
             genderIndex: 0,
             sizeIndex: 1,
-            isEditing: false
+            isEditing: false,
         };
     }
 
     componentDidMount(): void {
         const params = Taro.getCurrentInstance().router?.params;
-        console.log("Params received in pet:", params);
+        console.log('Params received in pet:', params);
 
         const { petStore } = this.props.store;
 
         if (params) {
             if (params.id) {
-                console.log("Editing pet with ID:", params.id);
+                console.log('Editing pet with ID:', params.id);
                 const existingPet = petStore.getPetById(params.id);
 
                 if (existingPet) {
                     // Find the index of gender and size in our options
-                    const genderIndex = this.genderOptions.findIndex(o => o.value === existingPet.gender);
+                    const genderIndex = this.genderOptions.findIndex(
+                        o => o.value === existingPet.gender
+                    );
                     const sizeIndex = this.sizeOptions.findIndex(o => o.value === existingPet.size);
 
                     this.setState({
                         pet: { ...existingPet },
                         genderIndex: genderIndex >= 0 ? genderIndex : 0,
                         sizeIndex: sizeIndex >= 0 ? sizeIndex : 1,
-                        isEditing: true
+                        isEditing: true,
                     });
                 }
             } else if (params.ownerId) {
                 this.setState({
                     pet: {
                         ...this.state.pet,
-                        ownerId: params.ownerId
-                    }
+                        ownerId: params.ownerId,
+                    },
                 });
             }
         }
@@ -104,14 +106,14 @@ class Pet extends Component<PageProps, PageState> {
     handleAvatarUpload = () => {
         Taro.chooseImage({
             count: 1,
-            sizeType: ["compressed"],
-            sourceType: ["album", "camera"],
-            success: (res) => {
+            sizeType: ['compressed'],
+            sourceType: ['album', 'camera'],
+            success: res => {
                 this.setState({
                     pet: {
                         ...this.state.pet,
-                        avatar: res.tempFilePaths[0]
-                    }
+                        avatar: res.tempFilePaths[0],
+                    },
                 });
             },
         });
@@ -121,30 +123,30 @@ class Pet extends Component<PageProps, PageState> {
         this.setState({
             pet: {
                 ...this.state.pet,
-                [key]: e.detail.value
-            }
+                [key]: e.detail.value,
+            },
         });
     };
 
-    handleGenderChange = (e) => {
+    handleGenderChange = e => {
         const index = e.detail.value;
         this.setState({
             genderIndex: index,
             pet: {
                 ...this.state.pet,
-                gender: this.genderOptions[index].value as PetGender
-            }
+                gender: this.genderOptions[index].value as PetGender,
+            },
         });
     };
 
-    handleSizeChange = (e) => {
+    handleSizeChange = e => {
         const index = e.detail.value;
         this.setState({
             sizeIndex: index,
             pet: {
                 ...this.state.pet,
-                size: this.sizeOptions[index].value as PetSize
-            }
+                size: this.sizeOptions[index].value as PetSize,
+            },
         });
     };
 
@@ -153,67 +155,56 @@ class Pet extends Component<PageProps, PageState> {
         const { pet, isEditing } = this.state;
 
         try {
-            console.log("upload avatar first");
+            console.log('upload avatar first');
             const avatar = await uploadImage(pet.avatar);
             this.setState({
                 pet: {
                     ...pet,
-                    avatar: avatar.url
-                }
+                    avatar: avatar.url,
+                },
             });
             if (isEditing) {
-                const uploadResponse = await updatePet(pet?.id || "", pet as PetInfo);
+                const uploadResponse = await updatePet(pet?.id || '', pet as PetInfo);
 
-                console.log("Updating existing pet");
+                console.log('Updating existing pet');
                 petStore.updatePet(uploadResponse);
             } else {
-
                 const createResponse = await createPet(pet as PetInfo);
-                console.log("Creating new pet");
+                console.log('Creating new pet');
                 petStore.addPet(createResponse);
             }
 
             Taro.showToast({
-                title: "Information saved!",
-                icon: "success",
+                title: 'Information saved!',
+                icon: 'success',
             });
 
             Taro.navigateTo({
-                url: "/pages/index/index",
+                url: '/pages/index/index',
             });
         } catch (error) {
-            console.error("Error saving pet information:", error);
+            console.error('Error saving pet information:', error);
             Taro.showToast({
-                title: "Failed to save information",
-                icon: "none",
+                title: 'Failed to save information',
+                icon: 'none',
             });
         }
     };
 
     render() {
         const { pet, genderIndex, sizeIndex } = this.state;
-        const genderDisplayValues = this.genderOptions.map((option) => option.display);
-        const sizeDisplayValues = this.sizeOptions.map((option) => option.display);
+        const genderDisplayValues = this.genderOptions.map(option => option.display);
+        const sizeDisplayValues = this.sizeOptions.map(option => option.display);
 
         return (
             <View className="pet">
-                <View className="form-item">
-                    <Text className="label">Avatar:</Text>
-                    <View className="avatar-container">
-                        {pet.avatar ? (
-                            <Image src={pet.avatar} className="avatar" />
-                        ) : (
-                            <View
-                                className="avatar-placeholder"
-                                onClick={this.handleAvatarUpload}
-                            >
-                                Tap to upload
-                            </View>
-                        )}
-                        <Button size="mini" onClick={this.handleAvatarUpload}>
-                            Choose Image
-                        </Button>
-                    </View>
+                <View className="avatar-container">
+                    {pet.avatar ? (
+                        <Image className="app-avatar" src={pet.avatar} mode="aspectFill" />
+                    ) : (
+                        <View className="avatar-placeholder">选择头像</View>
+                    )}
+                    <Button onClick={this.handleAvatarUpload}>选择头像</Button>
                 </View>
 
                 <View className="form-item">
@@ -221,7 +212,7 @@ class Pet extends Component<PageProps, PageState> {
                     <Input
                         className="input"
                         value={pet.name}
-                        onInput={(e) => this.handleInputChange("name", e)}
+                        onInput={e => this.handleInputChange('name', e)}
                         placeholder="Enter pet name"
                     />
                 </View>
@@ -235,7 +226,7 @@ class Pet extends Component<PageProps, PageState> {
                         onChange={this.handleGenderChange}
                     >
                         <View className="picker">
-                            {genderDisplayValues[genderIndex] || "Select Gender"}
+                            {genderDisplayValues[genderIndex] || 'Select Gender'}
                         </View>
                     </Picker>
                 </View>
@@ -249,7 +240,7 @@ class Pet extends Component<PageProps, PageState> {
                         onChange={this.handleSizeChange}
                     >
                         <View className="picker">
-                            {sizeDisplayValues[sizeIndex] || "Select Size"}
+                            {sizeDisplayValues[sizeIndex] || 'Select Size'}
                         </View>
                     </Picker>
                 </View>
@@ -259,7 +250,7 @@ class Pet extends Component<PageProps, PageState> {
                     <Input
                         className="input"
                         value={pet.breed}
-                        onInput={(e) => this.handleInputChange("breed", e)}
+                        onInput={e => this.handleInputChange('breed', e)}
                         placeholder="Enter breed"
                     />
                 </View>
@@ -268,7 +259,7 @@ class Pet extends Component<PageProps, PageState> {
                     <Input
                         className="input"
                         value={pet.desc}
-                        onInput={(e) => this.handleInputChange("desc", e)}
+                        onInput={e => this.handleInputChange('desc', e)}
                         placeholder="Enter description"
                     />
                 </View>
@@ -281,4 +272,4 @@ class Pet extends Component<PageProps, PageState> {
     }
 }
 
-export default Pet;
+export default PetPage;

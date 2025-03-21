@@ -1,0 +1,57 @@
+/* Common shared styles across components */
+
+/* Avatar styles */
+.app-avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 3px solid #e8f4e9;
+    box-sizing: border-box;
+    object-fit: cover; /* Ensures images fill the circle properly */
+    object-position: center; /* Centers the image within the container */
+}
+
+/* Avatar container for consistent positioning */
+.avatar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+/* Avatar placeholder styling */
+.avatar-placeholder {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    border: 3px solid #e8f4e9;
+    box-sizing: border-box;
+    font-size: 16px;
+    color: #999;
+}
+
+/* Avatar button styling */
+.avatar-button {
+    width: 160px !important;
+    height: 160px;
+    border-radius: 80px;
+    margin-bottom: 25px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border: none;
+    padding: 0;
+}
+
+/* Smaller avatar variation */
+.app-avatar.app-avatar--small {
+    width: 80px;
+    height: 80px;
+    border-width: 2px;
+}

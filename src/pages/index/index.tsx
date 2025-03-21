@@ -149,7 +149,13 @@ class Index extends Component<PageProps, PageState> {
 
         return (
             <View className="user-info-display">
-                <Image className="avatar" src={user.avatarUrl || ''} mode="aspectFit" />
+                {user && user.avatarUrl ? (
+                    <Image className="app-avatar" src={user.avatarUrl} mode="aspectFill" />
+                ) : (
+                    <View className="avatar-placeholder">
+                        <Text>No Avatar</Text>
+                    </View>
+                )}
 
                 <View className="button-group">
                     <Button

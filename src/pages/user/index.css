@@ -31,25 +31,29 @@
     align-items: center;
 }
 
-.avatar-button {
-    width: 120px !important;
-    height: 120px;
-    border-radius: 60px;
+/* Remove these and use the common styles instead */
+/* .avatar-button {
+    width: 160px !important;
+    height: 160px;
+    border-radius: 80px;
     margin-bottom: 25px;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #f0f0f0;
+    border: none;
+    padding: 0;
 }
 
 .avatar {
-    width: 100px;
-    height: 100px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
-    margin-bottom: 15px;
+    margin-bottom: 0;
     border: 3px solid #e8f4e9;
-}
+    box-sizing: border-box;
+} */
 
 .form-item {
     width: 100%;

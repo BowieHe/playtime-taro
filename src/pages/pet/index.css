@@ -1,42 +1,43 @@
 .pet {
-  padding: 20px;
+    padding: 20px;
 }
 
 .form-item {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .label {
-  margin-bottom: 10px;
-  font-size: 16px;
-  font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .input {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
 }
 
-.avatar-container {
+/* Remove these and use the common styles */
+/* .avatar-container {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .avatar {
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
   margin-bottom: 10px;
   border-radius: 50%;
 }
 
 .avatar-placeholder {
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -45,37 +46,37 @@
   margin-bottom: 10px;
   font-size: 14px;
   color: #999;
-}
+} */
 
 .picker {
-  padding: 10px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 .submit-button {
-  margin-top: 20px;
-  background-color: #07c160;
-  color: white;
+    margin-top: 20px;
+    background-color: #07c160;
+    color: white;
 }
 
 .nav-button {
-  margin-top: 15px;
-  background-color: #3a86ff;
-  color: white;
+    margin-top: 15px;
+    background-color: #3a86ff;
+    color: white;
 }
 
-input[type="number"].input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+input[type='number'].input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
 }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  opacity: 1;
-  height: 24px;
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    opacity: 1;
+    height: 24px;
 }
