@@ -1,11 +1,6 @@
-import {
-    getRequest,
-    postRequest,
-    putRequest,
-    deleteRequest,
-} from "@/utils/httpRequest";
+import { getRequest, postRequest, putRequest, deleteRequest } from '@/utils/httpRequest';
 // import Taro from "@tarojs/taro";
-import { Pet } from "@/types/pet";
+import { Pet } from '@/types/pet';
 
 /**
  * Create a new pet
@@ -14,9 +9,9 @@ import { Pet } from "@/types/pet";
  */
 export const createPet = async (pet: Pet): Promise<Pet> => {
     try {
-        return await postRequest<Pet>("pet", pet);
+        return await postRequest<Pet>('pet', pet);
     } catch (error) {
-        console.error("Error creating pet:", error);
+        console.error('Error creating pet:', error);
         throw error;
     }
 };
@@ -29,13 +24,13 @@ export const createPet = async (pet: Pet): Promise<Pet> => {
 export const getPetsByOwner = async (ownerId: string): Promise<Pet[]> => {
     try {
         const petList = await getRequest<Pet[]>(`pet?ownerId=${ownerId}`);
-        console.log("Get pets by owner:", petList);
+        console.log('Get pets by owner:', petList);
         if (!petList) {
             return [];
         }
         return petList;
     } catch (error) {
-        console.error("Error getting pets by owner:", error);
+        console.error('Error getting pets by owner:', error);
         return [];
     }
 };
@@ -60,10 +55,7 @@ export const getPetById = async (id: string): Promise<Pet> => {
  * @param petData Updated pet data
  * @returns Updated pet information
  */
-export const updatePet = async (
-    id: string,
-    petData: Partial<Pet>
-): Promise<Pet> => {
+export const updatePet = async (id: string, petData: Partial<Pet>): Promise<Pet> => {
     try {
         return await putRequest<Pet>(`pet/${id}`, petData);
     } catch (error) {
@@ -93,9 +85,9 @@ export const deletePet = async (id: string): Promise<boolean> => {
  */
 export const getAllPets = async (): Promise<Pet[]> => {
     try {
-        return await getRequest<Pet[]>("pet");
+        return await getRequest<Pet[]>('pet');
     } catch (error) {
-        console.error("Error getting all pets:", error);
+        console.error('Error getting all pets:', error);
         throw error;
     }
 };

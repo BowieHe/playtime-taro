@@ -1,65 +1,65 @@
 .play-button-container {
-  position: fixed;
-  bottom: 40px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  z-index: 100;
+    position: fixed;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 100;
 }
 
 .play-button {
-  width: 200px !important;
-  height: 200px !important;
-  border-radius: 50% !important;
-  background-color: #4caf50 !important;
-  box-shadow: 0 8px 16px rgba(76, 175, 80, 0.4);
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  border: none !important;
-  transition: all 0.3s ease;
-  padding: 0 !important;
+    width: 200px !important;
+    height: 200px !important;
+    border-radius: 50% !important;
+    background-color: #4caf50 !important;
+    box-shadow: 0 8px 16px rgba(76, 175, 80, 0.4);
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    border: none !important;
+    transition: all 0.3s ease;
+    padding: 0 !important;
 }
 
 /* Remove the square border */
 .play-button::after {
-  display: none !important;
+    display: none !important;
 }
 
 .play-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+    transform: scale(0.95);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
 }
 
 .play-button-text {
-  font-size: 96px;
-  font-weight: bold;
-  color: #fff;
-  font-family: var(--font-primary, "Capriola", sans-serif);
-  line-height: 1;
+    font-size: 96px;
+    font-weight: bold;
+    color: #fff;
+    font-family: var(--font-primary, 'Capriola', sans-serif);
+    line-height: 1;
 }
 
 .create-button {
-  background-color: #3a86ff !important;
-  box-shadow: 0 8px 16px rgba(58, 134, 255, 0.4);
+    background-color: #3a86ff !important;
+    box-shadow: 0 8px 16px rgba(58, 134, 255, 0.4);
 }
 
 .create-button .play-button-text {
-  font-size: 36px;
+    font-size: 36px;
 }
 
 /* Media queries for different screen sizes */
 @media screen and (min-width: 768px) {
-  .play-button {
-    width: 160px !important;
-    height: 160px !important;
-    border-radius: 80px !important;
-  }
+    .play-button {
+        width: 160px !important;
+        height: 160px !important;
+        border-radius: 80px !important;
+    }
 
-  .play-button-large {
-    width: 240px !important;
-    height: 240px !important;
-    border-radius: 120px !important;
-  }
+    .play-button-large {
+        width: 240px !important;
+        height: 240px !important;
+        border-radius: 120px !important;
+    }
 }
