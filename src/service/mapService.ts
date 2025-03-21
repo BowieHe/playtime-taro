@@ -55,7 +55,9 @@ export const reverseGeocode = async (
 
 export const addPetFriendlyPlace = async (place: AddLocationRequest) => {
     try {
-        // This should be replaced with your actual backend API endpoint
+        console.log('Sending place data to backend:', place);
+
+        // Ensure the full object with adInfo and addressComponent is being sent
         return postRequest('map', place);
     } catch (error) {
         console.error('Failed to add pet-friendly place:', error);
