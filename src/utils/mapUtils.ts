@@ -170,6 +170,10 @@ export const createMarkersFromPlaces = (
             };
         }
 
+        // Use your CDN URL for the marker icon
+        const markerIconUrl =
+            'https://blog-1321748307.cos.ap-shanghai.myqcloud.com/icons/default_marker.png';
+
         // Create markers from the pet-friendly places with valid coordinates
         const markers = validPlaces
             .map((place, index) => {
@@ -201,10 +205,10 @@ export const createMarkersFromPlaces = (
                         id: markerId, // Now using a numeric ID
                         latitude,
                         longitude,
-                        // Remove iconPath to use default WeChat marker
-                        // iconPath: iconPath,
-                        width: 20, // Make markers a bit smaller
-                        height: 20,
+                        // Use the CDN URL for the marker icon
+                        iconPath: markerIconUrl,
+                        width: 25,
+                        height: 25,
                         callout: {
                             content: place.name || 'Unnamed place',
                             color: '#000000',

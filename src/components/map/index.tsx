@@ -48,8 +48,8 @@ class MapComponent extends Component<PropsWithChildren<MapComponentProps>> {
             ? markers.map(marker => ({
                   ...marker,
                   id: typeof marker.id === 'number' ? marker.id : Number(marker.id) || 1,
-                  // Remove iconPath to use default markers
-                  iconPath: undefined,
+                  // Keep the iconPath if it's a URL (especially our CDN URL)
+                  iconPath: marker.iconPath,
               }))
             : [];
 
