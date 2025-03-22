@@ -1,35 +1,10 @@
 import {
     AddLocationRequest,
-    PetFriendlyPlace,
     PetFriendlyPlaceWithDistance,
     PlaceSearchParams,
 } from '@/types/location';
 import { GeocodingResult } from '@/types/map';
 import { getRequest, postRequest } from '@/utils/httpRequest';
-import Taro from '@tarojs/taro';
-
-// For security reasons, complex map operations that require an API key
-// should be processed through your backend server
-export const searchNearbyPOI = async (latitude: number, longitude: number, keyword: string) => {
-    try {
-        // TODO - Replace with your actual backend API URL
-        // Instead of exposing API keys in frontend code, make a request to your backend
-        const response = await Taro.request({
-            url: 'https://your-backend-api.com/map/search',
-            method: 'GET',
-            data: {
-                latitude,
-                longitude,
-                keyword,
-            },
-        });
-
-        return response.data;
-    } catch (error) {
-        console.error('Failed to search for POIs:', error);
-        throw error;
-    }
-};
 
 // Function to handle reverse geocoding through your backend
 export const reverseGeocode = async (

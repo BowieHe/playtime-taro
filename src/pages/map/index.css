@@ -40,6 +40,11 @@
     color: white;
 }
 
+.map-wrapper {
+    height: 50vh;
+    width: 100%;
+}
+
 .map-container {
     height: 50vh; /* Increased from 300px fixed height to 50% of viewport height */
     width: 100%;
@@ -126,9 +131,9 @@
 }
 
 .location-name {
-    font-size: 16px;
     font-weight: bold;
-    margin-bottom: 4px;
+    font-size: 16px;
+    margin-bottom: 8px;
 }
 
 .location-category {
@@ -139,8 +144,8 @@
 
 .location-address {
     font-size: 14px;
-    color: #333;
-    margin-bottom: 4px;
+    color: #666;
+    margin-bottom: 12px;
 }
 
 .location-distance {
@@ -161,6 +166,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
+    padding: 10px;
+    line-height: 1.5;
 }
 
 .permission-text {
@@ -208,4 +216,14 @@
     color: white;
     font-size: 14px;
     font-weight: bold;
+}
+
+.add-location-popup {
+    padding: 10px;
+}
+
+.add-location-hint {
+    font-size: 14px;
+    color: #333;
+    margin-top: 10px;
 }

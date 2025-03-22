@@ -1,0 +1,40 @@
+.search-container {
+    padding: 10px;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.filter-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.picker {
+    flex: 1;
+    padding: 8px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    margin: 0 5px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.search-button {
+    margin-top: 5px;
+    background-color: #007aff;
+    color: white;
+}
+
+/* Add transition class if needed */
+.search-transition {
+    transition: all 0.3s ease-in-out;
+}
