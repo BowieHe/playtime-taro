@@ -1,7 +1,7 @@
 {
   "projectname": "playtime-taro",
   "setting": {
-    "compileHotReLoad": true,
+    "compileHotReLoad": false,
     "urlCheck": false
   },
   "libVersion": "3.7.9",

@@ -5,6 +5,8 @@ import petStore from './store/pet'; // Import the pet store
 import { loadFont } from './utils/fontLoader';
 import './app.css';
 import './styles/common.css';
+// Import tailwind styles - uncomment this line
+import './styles/tailwind.css';
 
 const store = {
     userStore,

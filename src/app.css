@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Import the font definitions */
 
 /* Define CSS variables for consistent font usage throughout the app */
