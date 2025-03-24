@@ -46,11 +46,16 @@ const PetCard: React.FC<PetCardProps> = ({ pet, onClick, className = '' }) => {
             hoverClass="transform scale-[0.98] shadow-sm"
         >
             {/* Image that fills the entire card */}
-            <Image
-                className="w-full h-full object-cover absolute inset-0"
-                src={pet.avatar || 'https://via.placeholder.com/150'}
-                mode="aspectFill"
-            />
+            <View className="w-full h-full ounded-24rpx overflow-hidden">
+                <Image
+                    className="w-full h-full object-cover"
+                    src={
+                        pet.avatar ||
+                        'https://img0.baidu.com/it/u=3573977864,2649121334&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500'
+                    }
+                    mode="aspectFill"
+                />
+            </View>
 
             {/* Dark overlay gradient */}
             <View className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-70"></View>

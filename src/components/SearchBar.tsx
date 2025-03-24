@@ -1,6 +1,6 @@
 import { View, Input, Picker, Button } from '@tarojs/components';
 import { LocationCategory, CategoryDisplayNames } from '@/types/location';
-import './index.css';
+// Remove CSS import since we're using Tailwind
 
 interface SearchBarProps {
     keyword: string;
@@ -40,21 +40,26 @@ const SearchBar: React.FC<SearchBarProps> = ({
     const radiusIndex = radiusValues.indexOf(searchRadius);
 
     return (
-        <View className={`search-container ${transition ? 'search-transition' : ''}`}>
+        <View
+            className={`bg-white p-10rpx border-b border-gray-200 ${
+                transition ? 'transition-all duration-300 ease-in-out' : ''
+            }`}
+        >
             <Input
-                className="search-input"
+                className="w-full border border-gray-300 rounded-rpx p-8rpx mb-10rpx"
                 placeholder="Search for pet-friendly places"
                 value={keyword}
                 onInput={e => onKeywordChange(e.detail.value)}
             />
-            <View className="filter-row">
+
+            <View className="flex justify-between gap-10rpx mb-10rpx">
                 <Picker
                     mode="selector"
                     range={categoryOptions}
                     value={categoryIndex}
                     onChange={e => onCategoryChange(Number(e.detail.value))}
                 >
-                    <View className="picker">
+                    <View className="flex-1 bg-gray-100 rounded-rpx p-8rpx text-center text-14rpx">
                         Category:{' '}
                         {selectedCategory ? CategoryDisplayNames[selectedCategory] : 'All'}
                     </View>
@@ -66,10 +71,17 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     value={radiusIndex}
                     onChange={e => onRadiusChange(Number(e.detail.value))}
                 >
-                    <View className="picker">Search within: {radiusOptions[radiusIndex]}</View>
+                    <View className="flex-1 bg-gray-100 rounded-rpx p-8rpx text-center text-14rpx">
+                        Search within: {radiusOptions[radiusIndex]}
+                    </View>
                 </Picker>
             </View>
-            <Button className="search-button" onClick={onSearch} loading={isLoading}>
+
+            <Button
+                className="w-full mt-5rpx py-8rpx bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-rpx"
+                onClick={onSearch}
+                loading={isLoading}
+            >
                 Search
             </Button>
         </View>

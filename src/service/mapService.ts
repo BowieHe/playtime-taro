@@ -65,6 +65,9 @@ export const getNearbyPetFriendlyPlaces = async (
         const response = await getRequest<PetFriendlyPlaceWithDistance[]>(
             `/map/search?${queryParams.toString()}`
         );
+        if (!response) {
+            return [];
+        }
         return response;
     } catch (error) {
         console.error('Failed to get nearby pet-friendly places:', error);

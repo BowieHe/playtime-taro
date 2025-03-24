@@ -1,6 +1,6 @@
 import { View, Text } from '@tarojs/components';
 import { PetFriendlyPlace, CategoryDisplayNames } from '@/types/location';
-import './index.css';
+// Remove CSS import since we're using Tailwind
 
 interface LocationListProps {
     places: PetFriendlyPlace[];
@@ -9,10 +9,13 @@ interface LocationListProps {
 
 const LocationList: React.FC<LocationListProps> = ({ places, onLocationSelect }) => {
     return (
-        <View className="location-list">
-            <Text className="list-title">Nearby Pet-Friendly Places ({places.length})</Text>
+        <View className="flex-1 overflow-y-auto p-10rpx bg-white border-t border-gray-200">
+            <Text className="font-bold text-16rpx mb-10rpx text-gray-800">
+                Nearby Pet-Friendly Places ({places.length})
+            </Text>
+
             {places.length === 0 ? (
-                <View className="empty-list">
+                <View className="flex justify-center items-center h-100rpx text-gray-500">
                     <Text>No pet-friendly places found nearby.</Text>
                 </View>
             ) : (
@@ -46,8 +49,9 @@ const LocationList: React.FC<LocationListProps> = ({ places, onLocationSelect })
 
                     return (
                         <View
-                            className="location-item"
+                            className="p-10rpx border-b border-gray-200 flex flex-col active:bg-gray-50"
                             key={place.id || `place-${index}`}
+                            hoverClass="bg-gray-50"
                             onClick={() => {
                                 // Center map on this location when clicked
                                 if (!isNaN(latitude) && !isNaN(longitude)) {
@@ -55,17 +59,19 @@ const LocationList: React.FC<LocationListProps> = ({ places, onLocationSelect })
                                 }
                             }}
                         >
-                            <Text className="location-name">{place.name || 'Unnamed place'}</Text>
-                            <Text className="location-category">
+                            <Text className="text-16rpx font-bold mb-4rpx text-gray-800">
+                                {place.name || 'Unnamed place'}
+                            </Text>
+                            <Text className="text-14rpx text-gray-600 mb-4rpx">
                                 {place.category
                                     ? CategoryDisplayNames[place.category] || 'Other'
                                     : 'Unknown category'}
                             </Text>
-                            <Text className="location-address">
+                            <Text className="text-14rpx text-gray-700 mb-4rpx">
                                 {place.address || 'No address'}
                             </Text>
                             {place.distance !== undefined && !isNaN(place.distance) && (
-                                <Text className="location-distance">
+                                <Text className="text-12rpx text-blue-600">
                                     {(place.distance / 1000).toFixed(1)}km away
                                 </Text>
                             )}

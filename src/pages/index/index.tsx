@@ -7,11 +7,11 @@ import { PetStore } from '@/store/pet';
 import { validLogin } from '@/service/userService';
 import { getPetsByOwner } from '@/service/petService';
 import './index.css';
-import Header from '@/components/header';
-import PlayButton from '@/components/playButton';
-import PetCard from '@/components/petCard';
+import PlayButton from '@/components/PlayButton';
+import PetCard from '@/components/PetCard';
 import { reaction } from 'mobx';
 import { User } from '@/types/user';
+import Header from '@/components/Header';
 
 interface PageProps extends PropsWithChildren {
     store: {

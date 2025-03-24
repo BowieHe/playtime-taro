@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { User } from '@/types/user';
-import './index.css';
 
 interface PlayButtonProps {
     user: User;
@@ -54,9 +53,24 @@ const PlayButton: React.FC<PlayButtonProps> = ({ user, className = '' }) => {
     };
 
     return (
-        <View className="play-button-container">
-            <Button className={`play-button ${className}`} onClick={() => handleClick(user)}>
-                <Text className="play-button-text">FUN!</Text>
+        <View className="fixed bottom-24 left-0 right-0 flex justify-center z-25">
+            <Button
+                className={`rounded-full bg-green-500 shadow-xl 
+                flex items-center justify-center border-0
+                active:scale-95 active:shadow-md ${className}`}
+                style={{
+                    width: '220rpx',
+                    height: '220rpx',
+                    boxShadow: '0 10px 25px rgba(34, 197, 94, 0.4)',
+                }}
+                onClick={() => handleClick(user)}
+            >
+                <Text
+                    className="text-96rpx font-bold text-white"
+                    style={{ fontFamily: 'var(--font-primary)' }}
+                >
+                    FUN!
+                </Text>
             </Button>
         </View>
     );

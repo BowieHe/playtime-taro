@@ -2,10 +2,6 @@ import { Component, PropsWithChildren } from 'react';
 import { View } from '@tarojs/components';
 import { observer } from 'mobx-react';
 import Taro from '@tarojs/taro';
-import PopUpWindow from '@/components/popUpWindow';
-import MapComponent from '@/components/map';
-import SearchBar from '@/components/searchBar';
-import LocationList from '@/components/locationList';
 import {
     createMarkersFromPlaces,
     checkLocationPermission,
@@ -17,6 +13,10 @@ import './index.css';
 import { AddressComponent, AdInfo } from '@/types/map';
 import { getNearbyPetFriendlyPlaces, reverseGeocode } from '@/service/mapService';
 import { PetFriendlyPlace, LocationCategory, PlaceSearchParams } from '@/types/location';
+import MapComponent from '@/components/Map';
+import SearchBar from '@/components/SearchBar';
+import PopUpWindow from '@/components/PopUpWindow';
+import LocationList from '@/components/LocationList';
 
 interface MapState {
     latitude: number;
