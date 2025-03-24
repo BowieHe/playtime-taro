@@ -1,7 +1,7 @@
 import { View, Text, Map } from '@tarojs/components';
 import { Component, PropsWithChildren } from 'react';
 import { observer } from 'mobx-react';
-import './index.css';
+// No need to import CSS file anymore as we're using Tailwind classes
 
 interface MapComponentProps {
     latitude: number;
@@ -62,15 +62,19 @@ class MapComponent extends Component<PropsWithChildren<MapComponentProps>> {
                 : [{ latitude, longitude }];
 
         return (
-            <View className="map-container">
+            <View className="h-full w-full relative">
                 {permissionDenied && (
-                    <View className="permission-denied-banner">
-                        <Text>位置权限被拒绝，展示的是默认位置信息</Text>
+                    <View className="absolute top-0 left-0 right-0 bg-red-500 bg-opacity-80 p-8rpx p-16rpx text-center z-100">
+                        <Text className="text-white text-sm-rpx font-bold">
+                            位置权限被拒绝，展示的是默认位置信息
+                        </Text>
                     </View>
                 )}
 
                 <Map
-                    className={`map ${transition ? 'map-transition' : ''}`}
+                    className={`w-full h-full ${
+                        transition ? 'transition-all duration-300 ease-in-out' : ''
+                    }`}
                     longitude={longitude}
                     latitude={latitude}
                     scale={scale}
@@ -85,15 +89,15 @@ class MapComponent extends Component<PropsWithChildren<MapComponentProps>> {
                 />
 
                 {isLoading && (
-                    <View className="map-overlay">
-                        <View className="loading-indicator">
+                    <View className="absolute inset-0 bg-white bg-opacity-70 flex justify-center items-center z-100">
+                        <View className="bg-white p-16rpx rounded-lg-rpx shadow">
                             <Text>Loading places...</Text>
                         </View>
                     </View>
                 )}
 
-                <View className="radius-indicator">
-                    <Text className="radius-text">
+                <View className="absolute bottom-10rpx left-10rpx bg-black bg-opacity-60 text-white p-5rpx p-10rpx rounded-rpx z-50">
+                    <Text className="text-white text-xs-rpx">
                         {scale <= 12 ? 'Wide Area' : scale <= 14 ? 'Medium Area' : 'Small Area'}
                     </Text>
                 </View>

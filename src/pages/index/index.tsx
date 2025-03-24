@@ -223,9 +223,9 @@ class Index extends Component<PageProps, PageState> {
 
         return (
             <View className="index">
-                <View className="bg-red-500 text-white p-4 m-4 rounded-lg text-center text-lg font-bold">
+                {/* <View className="bg-red-500 text-white p-4 m-4 rounded-lg text-center text-lg font-bold">
                     Hello Tailwind CSS!
-                </View>
+                </View> */}
                 <Header className="index-header" />
                 <View className="index-content">
                     {this.renderUserInfo()}
