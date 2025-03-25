@@ -2118,7 +2118,7 @@
     swiper "11.1.15"
     tslib "^2.6.2"
 
-"@tarojs/components@4.0.9":
+"@tarojs/components@4.0.9", "@tarojs/components@^4.0.9":
   version "4.0.9"
   resolved "https://registry.npmmirror.com/@tarojs/components/-/components-4.0.9.tgz#ea16576412e398c0af50af1bb05693d74b458dcf"
   integrity sha512-3ImsP0EpVIRG0LgaaE40Bvt5SU4WWx1vr7UJlYt9YsdIQ5aaq80wgo3P1K4LU4LtQ1N6PcP/QZCj3ixPbEmAlw==

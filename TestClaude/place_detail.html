@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宠物出行 - 场所详情</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .place-header {
+            height: 250px;
+            position: relative;
+        }
+        
+        .place-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .share-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .image-indicator {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .pet-policy-card {
+            background-color: #f8f8f8;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .policy-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .policy-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #e6f7ff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+            color: #1890ff;
+        }
+        
+        .section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        
+        .review-item {
+            margin-bottom: 16px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f0f0f0;
+            padding-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 场所头部图片 -->
+    <div class="place-header">
+        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5" alt="场所图片" class="place-image">
+        <a href="map.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="share-btn">
+            <i class="fas fa-share-alt"></i>
+        </div>
+        <div class="image-indicator">
+            1/5
+        </div>
+    </div>
+    
+    <!-- 主内容区域 -->
+    <div class="p-4 pb-24">
+        <div class="mb-4">
+            <h1 class="text-xl font-bold mb-2">宠物友好咖啡馆</h1>
+            <div class="flex items-center mb-2">
+                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                <span class="mr-2">4.8</span>
+                <span class="text-gray-500">200+ 条评价</span>
+            </div>
+            <p class="text-gray-500">营业时间: 09:00-22:00 · 距离您500米</p>
+        </div>
+        
+        <!-- 宠物政策 -->
+        <div class="pet-policy-card">
+            <h2 class="font-bold mb-3">宠物友好政策</h2>
+            
+            <div class="policy-item">
+                <div class="policy-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div>
+                    <div class="font-medium">宠物友好场所</div>
+                    <div class="text-sm text-gray-500">欢迎携带宠物入内</div>
+                </div>
+            </div>
+            
+            <div class="policy-item">
+                <div class="policy-icon">
+                    <i class="fas fa-dog"></i>
+                </div>
+                <div>
+                    <div class="font-medium">宠物体型限制</div>
+                    <div class="text-sm text-gray-500">允许小型犬和中型犬，大型犬需提前预约</div>
+                </div>
+            </div>
+            
+            <div class="policy-item">
+                <div class="policy-icon">
+                    <i class="fas fa-paw"></i>
+                </div>
+                <div>
+                    <div class="font-medium">宠物品种限制</div>
+                    <div class="text-sm text-gray-500">无品种限制，需保持宠物清洁</div>
+                </div>
+            </div>
+            
+            <div class="policy-item">
+                <div class="policy-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                    <div class="font-medium">宠物友好区域</div>
+                    <div class="text-sm text-gray-500">室外露台和指定室内区域</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 场所介绍 -->
+        <div class="section">
+            <h2 class="section-title">场所介绍</h2>
+            <p class="text-gray-700">
+                这是一家专为宠物主人设计的咖啡馆，提供宠物专属区域和菜单。店内有专门的宠物休息区，配备宠物饮水器和零食。我们的露台区域全年开放，是宠物和主人放松的理想场所。
+            </p>
+        </div>
+        
+        <!-- 设施服务 -->
+        <div class="section">
+            <h2 class="section-title">设施服务</h2>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="flex items-center">
+                    <i class="fas fa-wifi text-gray-500 mr-2"></i>
+                    <span>免费WiFi</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-parking text-gray-500 mr-2"></i>
+                    <span>停车场</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-bone text-gray-500 mr-2"></i>
+                    <span>宠物零食</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-tint text-gray-500 mr-2"></i>
+                    <span>宠物饮水区</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-toilet text-gray-500 mr-2"></i>
+                    <span>宠物厕所</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-camera text-gray-500 mr-2"></i>
+                    <span>宠物拍照区</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 用户评价 -->
+        <div class="section">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="section-title mb-0">用户评价</h2>
+                <a href="#" class="text-blue-500 text-sm">查看全部</a>
+            </div>
+            
+            <div class="review-item">
+                <div class="flex mb-2">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330" alt="用户头像" class="user-avatar mr-3">
+                    <div>
+                        <div class="font-medium">李小花</div>
+                        <div class="text-xs text-gray-500">2023-05-15</div>
+                    </div>
+                </div>
+                <div class="flex mb-1">
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                </div>
+                <p class="text-sm">带我家金毛来这里，服务很好，有专门的宠物区域，还提供宠物零食。店员很友好，会主动和狗狗互动。</p>
+            </div>
+            
+            <div class="review-item">
+                <div class="flex mb-2">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d" alt="用户头像" class="user-avatar mr-3">
+                    <div>
+                        <div class="font-medium">王大壮</div>
+                        <div class="text-xs text-gray-500">2023-05-10</div>
+                    </div>
+                </div>
+                <div class="flex mb-1">
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-gray-300"></i>
+                </div>
+                <p class="text-sm">环境不错，我家猫咪很喜欢这里。就是周末人有点多，建议提前预约。</p>
+            </div>
+        </div>
+        
+        <!-- 位置信息 -->
+        <div class="section">
+            <h2 class="section-title">位置信息</h2>
+            <div class="bg-gray-100 h-40 rounded-lg mb-2 relative">
+                <img src="https://mdn.alipayobjects.com/huamei_p0cigc/afts/img/A*_qQ9QJTyQrUAAAAAAAAAAAAADuJ6AQ/original" alt="地图" class="w-full h-full object-cover rounded-lg">
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div class="marker-icon">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                </div>
+            </div>
+            <p class="text-gray-700">上海市静安区南京西路123号</p>
+        </div>
+        </div>
+        
+        <!-- 底部操作栏 -->
+        <div class="bottom-bar">
+            <div class="flex items-center">
+                <button class="mr-3 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                    <i class="far fa-heart text-gray-500"></i>
+                </button>
+                <button class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-share-alt text-gray-500"></i>
+                </button>
+            </div>
+            <div class="flex">
+                <button class="primary-btn mr-2">
+                    <i class="fas fa-phone-alt mr-1"></i> 电话
+                </button>
+                <button class="primary-btn">
+                    <i class="fas fa-map-marker-alt mr-1"></i> 导航
+                </button>
+            </div>
+        </div>
+        </body>
+        </html>

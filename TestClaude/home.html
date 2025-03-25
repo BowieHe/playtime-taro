@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宠物出行 - 首页</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .search-bar {
+            background-color: #f0f0f0;
+            border-radius: 24px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .category-scroll {
+            display: flex;
+            overflow-x: auto;
+            padding: 8px 0;
+            margin-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .category-item {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 20px;
+        }
+        
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #ff385c;
+        }
+        
+        .pet-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .place-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS状态栏 -->
+    <div class="ios-status-bar">
+        <div class="text-lg font-bold">宠物出行</div>
+        <div>
+            <i class="fas fa-bell text-gray-500"></i>
+        </div>
+    </div>
+    
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 搜索栏 -->
+        <div class="search-bar">
+            <i class="fas fa-search text-gray-400 mr-2"></i>
+            <span class="text-gray-400">搜索宠物友好的场所</span>
+        </div>
+        
+        <!-- 分类导航 -->
+        <div class="category-scroll">
+            <div class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <span class="text-xs">餐厅</span>
+            </div>
+            <div class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-hotel"></i>
+                </div>
+                <span class="text-xs">酒店</span>
+            </div>
+            <div class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <span class="text-xs">商场</span>
+            </div>
+            <div class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-tree"></i>
+                </div>
+                <span class="text-xs">公园</span>
+            </div>
+            <div class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-coffee"></i>
+                </div>
+                <span class="text-xs">咖啡厅</span>
+            </div>
+            <div class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-paw"></i>
+                </div>
+                <span class="text-xs">宠物店</span>
+            </div>
+        </div>
+        
+        <!-- 我的宠物 -->
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-bold">我的宠物</h2>
+                <a href="pet_profile.html" class="text-sm text-blue-500">管理</a>
+            </div>
+            
+            <div class="flex overflow-x-auto pb-2">
+                <div class="flex-shrink-0 mr-4 flex flex-col items-center">
+                    <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1" alt="宠物头像" class="pet-avatar mb-2">
+                    <span class="text-xs font-medium">奶糖</span>
+                    <span class="text-xs text-gray-500">柯基 · 2岁</span>
+                </div>
+                <div class="flex-shrink-0 mr-4 flex flex-col items-center">
+                    <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba" alt="宠物头像" class="pet-avatar mb-2">
+                    <span class="text-xs font-medium">咪咪</span>
+                    <span class="text-xs text-gray-500">英短 · 3岁</span>
+                </div>
+                <div class="flex-shrink-0 flex flex-col items-center justify-center">
+                    <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+                        <i class="fas fa-plus text-gray-400"></i>
+                    </div>
+                    <span class="text-xs text-gray-500">添加</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 推荐场所 -->
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-bold">附近宠物友好场所</h2>
+                <a href="map.html" class="text-sm text-blue-500">查看全部</a>
+            </div>
+            
+            <div class="place-card">
+                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5" alt="场所图片" class="place-image">
+                <div class="p-3">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-bold">宠物友好咖啡馆</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400 mr-1 text-sm"></i>
+                            <span class="text-sm">4.8</span>
+                        </div>
+                    </div>
+                    <div class="flex mb-2">
+                        <span class="tag pet-friendly">宠物友好</span>
+                        <span class="tag">小型犬</span>
+                        <span class="tag">中型犬</span>
+                    </div>
+                    <p class="text-gray-500 text-sm mb-2">距离您500米 · 营业中</p>
+                    <p class="text-sm">提供宠物专区，有宠物零食和饮水区</p>
+                </div>
+            </div>
+            
+            <div class="place-card">
+                <img src="https://images.unsplash.com/photo-1534620808146-d33bb39128b2" alt="场所图片" class="place-image">
+                <div class="p-3">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-bold">城市公园</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400 mr-1 text-sm"></i>
+                            <span class="text-sm">4.6</span>
+                        </div>
+                    </div>
+                    <div class="flex mb-2">
+                        <span class="tag pet-friendly">宠物友好</span>
+                        <span class="tag">所有犬种</span>
+                    </div>
+                    <p class="text-gray-500 text-sm mb-2">距离您800米 · 全天开放</p>
+                    <p class="text-sm">有专门的宠物活动区，需要牵绳</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <a href="home.html" class="tab-item active">
+            <i class="fas fa-home tab-icon"></i>
+            <span class="tab-label">首页</span>
+        </a>
+        <a href="map.html" class="tab-item">
+            <i class="fas fa-map-marker-alt tab-icon"></i>
+            <span class="tab-label">地图</span>
+        </a>
+        <a href="pet_profile.html" class="tab-item">
+            <i class="fas fa-paw tab-icon"></i>
+            <span class="tab-label">宠物</span>
+        </a>
+        <a href="user_center.html" class="tab-item">
+            <i class="fas fa-user tab-icon"></i>
+            <span class="tab-label">我的</span>
+        </a>
+    </div>
+</body>
+</html>

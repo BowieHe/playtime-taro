@@ -1,392 +1,205 @@
-import { Component, PropsWithChildren } from 'react';
-import { View } from '@tarojs/components';
-import { observer } from 'mobx-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Input, Map, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
-import {
-    createMarkersFromPlaces,
-    checkLocationPermission,
-    requestLocationPermission,
-    getUserLocation,
-    getScaleFromRadius, // Import this directly
-} from '@/utils/mapUtils';
-import './index.css';
-import { AddressComponent, AdInfo } from '@/types/map';
-import { getNearbyPetFriendlyPlaces, reverseGeocode } from '@/service/mapService';
-import { PetFriendlyPlace, LocationCategory, PlaceSearchParams } from '@/types/location';
-import MapComponent from '@/components/Map';
-import SearchBar from '@/components/SearchBar';
-import PopUpWindow from '@/components/PopUpWindow';
-import LocationList from '@/components/LocationList';
+import { MapProps } from '@tarojs/components/types/Map';
+import SettingIcon from '@/assets/settings.png';
+import SearchIcon from '@/assets/search.png';
+import LocationIcon from '@/assets/location.png';
+import ChevronUp from '@/assets/chevron-up.png';
 
-interface MapState {
-    latitude: number;
-    longitude: number;
-    markers: any[];
-    includePoints: any[];
-    scale: number;
-    isMapLoaded: boolean;
-    showPermissionPopup: boolean;
-    permissionDenied: boolean;
-    showAddLocationPopup: boolean;
-    selectedLocation: {
-        latitude: number;
-        longitude: number;
-        address: string;
-        name: string;
-        adInfo: AdInfo | null;
-        addressComponent: AddressComponent | null;
-    } | null;
-    keyword: string;
-    selectedCategory: LocationCategory | '';
-    petFriendlyPlaces: PetFriendlyPlace[];
-    isLoading: boolean;
-    searchRadius: number;
-}
+const MapPage: React.FC = () => {
+    const [location, setLocation] = useState({ latitude: 39.908, longitude: 116.397 });
+    const [markers, setMarkers] = useState<MapProps.marker[]>([]);
+    const [activeFilter, setActiveFilter] = useState('全部');
+    const [placesFound, setPlacesFound] = useState(3);
+    const [mapLoaded, setMapLoaded] = useState(false);
 
-@observer
-class MapPage extends Component<PropsWithChildren, MapState> {
-    state: MapState = {
-        latitude: 31.2304, // Default to Shanghai coordinates
-        longitude: 121.4737,
-        markers: [],
-        includePoints: [],
-        scale: 14, // Changed from 12 to 14 for better initial view
-        isMapLoaded: false,
-        showPermissionPopup: true,
-        permissionDenied: false,
-        showAddLocationPopup: false,
-        selectedLocation: null,
-        keyword: '',
-        selectedCategory: '',
-        petFriendlyPlaces: [],
-        isLoading: false,
-        searchRadius: 3000,
-    };
+    // Create ref for map context
+    const mapContext = useRef<any>(null);
 
-    componentDidMount() {
-        this.initializeLocation();
-        this.setState({ isMapLoaded: true });
-    }
+    const filters = ['全部', '餐厅', '咖啡厅', '公园', '酒店', '商场', '宠物店'];
 
-    initializeLocation = async () => {
-        // Check if location permission is granted
-        const isPermissionGranted = await checkLocationPermission();
+    useEffect(() => {
+        // Initialize map data
+        initializeMap();
+    }, []);
 
-        if (isPermissionGranted) {
-            this.setState({ showPermissionPopup: false });
-            this.handleGetUserLocation();
-        } else {
-            this.setState({ showPermissionPopup: true });
-        }
-    };
+    const initializeMap = () => {
+        console.log('Initializing map...');
+        Taro.showLoading({ title: '加载地图中...' });
 
-    handleAcceptPermission = async () => {
-        this.setState({ showPermissionPopup: false });
-        const isPermissionGranted = await requestLocationPermission();
+        Taro.getLocation({
+            type: 'gcj02',
+            success: function (res) {
+                console.log('Got location:', res);
+                // Set initial location
+                setLocation({
+                    latitude: res.latitude,
+                    longitude: res.longitude,
+                });
 
-        if (isPermissionGranted) {
-            this.handleGetUserLocation();
-        } else {
-            this.setState({ permissionDenied: true });
-        }
-    };
+                // Create demo markers with valid coordinates
+                const demoMarkers: MapProps.marker[] = [];
+                setMarkers(demoMarkers);
 
-    handleRejectPermission = () => {
-        this.setState({
-            showPermissionPopup: false,
-            permissionDenied: true,
+                setMapLoaded(true);
+                Taro.hideLoading();
+
+                // Initialize map context after a delay
+                setTimeout(() => {
+                    try {
+                        const mapCtx = Taro.createMapContext('petFriendlyMap');
+                        mapContext.current = mapCtx;
+                    } catch (err) {
+                        console.error('Failed to get map context:', err);
+                    }
+                }, 500);
+            },
+            fail: function (err) {
+                console.error('Failed to get location:', err);
+                // Set default location if can't get user location
+                setMapLoaded(true);
+                Taro.hideLoading();
+                Taro.showToast({
+                    title: '无法获取位置，使用默认位置',
+                    icon: 'none',
+                });
+            },
         });
     };
 
-    handleGetUserLocation = async () => {
-        const locationData = await getUserLocation();
+    const onFilterSelect = filter => {
+        setActiveFilter(filter);
+        // In a real app, you would filter markers based on the selected category
+    };
 
-        if (locationData) {
-            const { latitude, longitude } = locationData;
-            this.setState({ latitude, longitude });
-            this.fetchNearbyPetFriendlyPlaces(latitude, longitude);
+    const moveToCurrentLocation = () => {
+        if (!mapContext.current) {
+            console.log('Map context not available');
+            return;
         }
-    };
 
-    fetchNearbyPetFriendlyPlaces = async (latitude: number, longitude: number) => {
-        try {
-            this.setState({ isLoading: true });
-            const { keyword, selectedCategory, searchRadius } = this.state;
-
-            const searchParams: PlaceSearchParams = {
-                latitude,
-                longitude,
-                radius: searchRadius,
-            };
-
-            if (keyword) searchParams.keyword = keyword;
-            if (selectedCategory) searchParams.category = selectedCategory as LocationCategory;
-
-            const placesWithDistance = await getNearbyPetFriendlyPlaces(searchParams);
-            const places = placesWithDistance.map(pwd => pwd.location);
-
-            this.setState({ petFriendlyPlaces: places }, () => {
-                this.updateMapMarkers(places);
-            });
-        } catch (error) {
-            console.error('Error fetching nearby places:', error);
-            Taro.showToast({
-                title: 'Failed to load nearby places',
-                icon: 'none',
-            });
-        } finally {
-            this.setState({ isLoading: false });
-        }
-    };
-
-    updateMapMarkers = (places: PetFriendlyPlace[]) => {
-        const { latitude, longitude, searchRadius } = this.state;
-        const { markers, includePoints, scale } = createMarkersFromPlaces(
-            places,
-            latitude,
-            longitude,
-            searchRadius // Pass search radius to set appropriate scale
-        );
-
-        this.setState({ markers, includePoints, scale });
-    };
-
-    handleKeywordChange = (value: string) => {
-        this.setState({ keyword: value });
-    };
-
-    handleCategoryChange = (value: number) => {
-        const categories = Object.values(LocationCategory);
-        const selectedCategory = value < 0 ? '' : categories[value];
-        this.setState({ selectedCategory: selectedCategory });
-    };
-
-    handleRadiusChange = (value: number) => {
-        const radiusOptions = [1000, 3000, 5000, 10000];
-        const selectedRadius = radiusOptions[value];
-        const currentRadius = this.state.searchRadius;
-
-        // Use the imported function directly instead of requiring it
-        const newScale = getScaleFromRadius(selectedRadius);
-
-        // Determine if we're zooming in or out
-        const isZoomingOut = selectedRadius > currentRadius;
-
-        // Set the scale immediately for visual feedback
-        this.setState({ scale: newScale }, () => {
-            // Show loading indicator
-            this.setState({ isLoading: true });
-
-            // Small delay to allow animation to be visible
-            setTimeout(
-                () => {
-                    // Then update the radius and fetch new places
-                    this.setState({ searchRadius: selectedRadius }, () => {
-                        const { latitude, longitude } = this.state;
-                        this.fetchNearbyPetFriendlyPlaces(latitude, longitude);
-                    });
-                },
-                isZoomingOut ? 300 : 100
-            ); // Longer delay when zooming out for better UX
+        Taro.getLocation({
+            type: 'gcj02',
+            success: function (res) {
+                // Move map to current location using map context
+                mapContext.current.moveToLocation({
+                    latitude: res.latitude,
+                    longitude: res.longitude,
+                });
+            },
+            fail: function (err) {
+                console.error('Failed to get location:', err);
+                Taro.showToast({
+                    title: '无法获取位置',
+                    icon: 'none',
+                });
+            },
         });
     };
 
-    handleSearch = () => {
-        const { latitude, longitude } = this.state;
-        this.fetchNearbyPetFriendlyPlaces(latitude, longitude);
-    };
-
-    handleMapError = () => {
+    const showPlacesList = () => {
         Taro.showToast({
-            title: 'Failed to load map',
+            title: '这里将显示场所列表',
             icon: 'none',
         });
-        this.setState({ isMapLoaded: false });
     };
 
-    onMarkerTap = e => {
-        try {
-            const markerId = e.detail.markerId;
-            const place = this.state.petFriendlyPlaces.find(p => String(p.id) === String(markerId));
+    return (
+        <View className="flex flex-col h-screen w-screen bg-white overflow-hidden fixed inset-0">
+            {/* Header */}
+            {/* <View className="flex justify-between items-center px-4 py-2 bg-white h-11 z-10 flex-shrink-0 shadow">
+                <Text className="text-lg font-bold">宠物友好地图</Text>
+            </View> */}
 
-            if (place) {
-                Taro.showModal({
-                    title: place.name || 'Unnamed place',
-                    content: `${place.address || 'No address'}\n\n${place.description || ''}`,
-                    showCancel: false,
-                    confirmText: 'OK',
-                });
-            }
-        } catch (error) {
-            console.error('Error handling marker tap:', error);
-        }
-    };
-
-    onPoiTap = async e => {
-        const { name, latitude, longitude } = e.detail;
-
-        try {
-            const locationInfo = await reverseGeocode(latitude, longitude);
-            const adInfo = locationInfo.ad_info || null;
-            const addressComponent = locationInfo.address_component || null;
-
-            this.setState({
-                selectedLocation: {
-                    latitude,
-                    longitude,
-                    name,
-                    address: locationInfo.address,
-                    adInfo,
-                    addressComponent,
-                },
-                showAddLocationPopup: true,
-            });
-        } catch (error) {
-            console.error('Failed to get location info:', error);
-            this.setState({
-                selectedLocation: {
-                    latitude,
-                    longitude,
-                    name: name || 'New Location',
-                    address: '',
-                    adInfo: null,
-                    addressComponent: null,
-                },
-                showAddLocationPopup: true,
-            });
-        }
-    };
-
-    handleAddLocation = () => {
-        const { selectedLocation } = this.state;
-
-        if (selectedLocation) {
-            const url = `/pages/location/index?latitude=${selectedLocation.latitude}&longitude=${
-                selectedLocation.longitude
-            }&name=${encodeURIComponent(selectedLocation.name)}&address=${encodeURIComponent(
-                selectedLocation.address || ''
-            )}&adInfo=${encodeURIComponent(
-                JSON.stringify(selectedLocation.adInfo || null)
-            )}&addressComponent=${encodeURIComponent(
-                JSON.stringify(selectedLocation.addressComponent || null)
-            )}`;
-
-            Taro.navigateTo({ url });
-            this.setState({ showAddLocationPopup: false });
-        }
-    };
-
-    handleCancelAddLocation = () => {
-        this.setState({
-            showAddLocationPopup: false,
-            selectedLocation: null,
-        });
-    };
-
-    handleLocationSelect = (latitude: number, longitude: number) => {
-        this.setState({
-            latitude,
-            longitude,
-            scale: 15, // Adjusted from 16 to 15 for better viewing
-        });
-    };
-
-    render() {
-        const {
-            latitude,
-            longitude,
-            markers,
-            scale,
-            includePoints,
-            showPermissionPopup,
-            permissionDenied,
-            showAddLocationPopup,
-            selectedLocation,
-            keyword,
-            selectedCategory,
-            petFriendlyPlaces,
-            isLoading,
-            searchRadius,
-        } = this.state;
-
-        return (
-            <View className="map-page">
-                {/* Permission Popup */}
-                <PopUpWindow
-                    visible={showPermissionPopup}
-                    title="位置权限请求"
-                    content={
-                        <View className="permission-content">
-                            <View className="permission-text">
-                                PlayTime需要获取您的位置信息，以便查找附近的宠物服务和活动场所。
-                            </View>
-                        </View>
-                    }
-                    acceptText="允许"
-                    rejectText="拒绝"
-                    onAccept={this.handleAcceptPermission}
-                    onReject={this.handleRejectPermission}
-                />
-
-                {/* Add Location Popup */}
-                <PopUpWindow
-                    visible={showAddLocationPopup}
-                    title="添加新地点"
-                    content={
-                        <View className="add-location-popup">
-                            <View className="location-name">
-                                {selectedLocation?.name || 'Unnamed location'}
-                            </View>
-                            <View className="location-address">
-                                {selectedLocation?.address || ''}
-                            </View>
-                            <View className="add-location-hint">将此地点添加到宠物友好场所?</View>
-                        </View>
-                    }
-                    acceptText="添加地点"
-                    rejectText="取消"
-                    onAccept={this.handleAddLocation}
-                    onReject={this.handleCancelAddLocation}
-                />
-
-                {/* Search Bar */}
-                <SearchBar
-                    keyword={keyword}
-                    selectedCategory={selectedCategory}
-                    searchRadius={searchRadius}
-                    isLoading={isLoading}
-                    onKeywordChange={this.handleKeywordChange}
-                    onCategoryChange={this.handleCategoryChange}
-                    onRadiusChange={this.handleRadiusChange}
-                    onSearch={this.handleSearch}
-                />
-
-                {/* Map Component */}
-                <View className="map-wrapper">
-                    <MapComponent
-                        latitude={latitude}
-                        longitude={longitude}
-                        scale={scale}
-                        markers={markers}
-                        includePoints={includePoints}
-                        showLocation={!permissionDenied}
-                        isLoading={isLoading}
-                        permissionDenied={permissionDenied}
-                        onMarkerTap={this.onMarkerTap}
-                        onPoiTap={this.onPoiTap}
-                        onMapError={this.handleMapError}
-                        transition={true}
+            <View className="flex flex-row items-center justify-between px-4 mt-4">
+                {/* Search bar - will take most of the space but not all */}
+                <View className="flex-1 bg-white rounded-full px-4 py-2 flex items-center shadow">
+                    <Image src={SearchIcon} className="w-5 h-5 mr-2" mode="aspectFit" />
+                    <Input
+                        type="text"
+                        placeholder="搜索宠物友好的场所"
+                        className="flex-1 text-sm outline-none"
                     />
                 </View>
 
-                {/* Location List */}
-                <LocationList
-                    places={petFriendlyPlaces}
-                    onLocationSelect={this.handleLocationSelect}
-                />
+                {/* Setting icon - right aligned with proper spacing */}
+                <View className="ml-2 w-10 h-10 bg-white rounded-full flex justify-center items-center">
+                    <Image src={SettingIcon} className="w-5 h-5" mode="aspectFit" />
+                </View>
             </View>
-        );
-    }
-}
+
+            {/* Filter Bar */}
+            <View className="flex overflow-x-auto px-4 py-2 bg-white whitespace-nowrap z-20 flex-shrink-0">
+                {filters.map(filter => (
+                    <View
+                        key={filter}
+                        className={`inline-block px-3 py-1.5 rounded-full mr-2 text-xs ${
+                            activeFilter === filter
+                                ? 'bg-green-500 text-white'
+                                : 'bg-gray-200 text-gray-800'
+                        }`}
+                        onClick={() => onFilterSelect(filter)}
+                    >
+                        {filter}
+                    </View>
+                ))}
+            </View>
+
+            {/* Map Container */}
+            <View className="flex-1 relative z-5">
+                {mapLoaded && (
+                    <View className="absolute inset-0" style={{ height: 'calc(100% - 30px)' }}>
+                        <Map
+                            id="petFriendlyMap"
+                            style={{ width: '100%', height: '100%' }}
+                            longitude={location.longitude}
+                            latitude={location.latitude}
+                            markers={markers}
+                            scale={14}
+                            showLocation
+                            enableScroll={true}
+                            enableRotate={false}
+                            enableSatellite={false}
+                            enableTraffic={false}
+                            onError={e => console.error('Map error:', e)}
+                            includePoints={[]}
+                            setting={{
+                                gestureEnable: 1,
+                                showCompass: 0,
+                                showScale: 0,
+                                tiltGesturesEnabled: 0,
+                                rotateGesturesEnabled: 0,
+                            }}
+                        />
+                    </View>
+                )}
+
+                {/* Location Button */}
+                <View
+                    className="absolute bottom-10 right-5 w-10 h-10 bg-white rounded-full flex justify-center items-center 
+                               shadow z-30"
+                    onClick={moveToCurrentLocation}
+                >
+                    <Image src={LocationIcon} className="w-5 h-5" mode="aspectFit" />
+                </View>
+            </View>
+
+            {/* Places List Entrance */}
+            <View
+                className="h-15 bg-white flex items-center px-4 border-t border-gray-100 z-10 flex-shrink-0 absolute 
+                           bottom-0 left-0 right-0"
+                onClick={showPlacesList}
+            >
+                <View className="bg-gray-100 rounded-full px-4 py-2 flex items-center justify-between w-full">
+                    <Text className="text-gray-800 text-sm">
+                        附近发现{placesFound}个宠物友好场所
+                    </Text>
+                    <Image src={ChevronUp} className="w-4 h-4 text-gray-800" mode="aspectFit" />
+                </View>
+            </View>
+        </View>
+    );
+};
 
 export default MapPage;

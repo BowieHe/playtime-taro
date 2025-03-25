@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宠物出行 - 个人中心</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .user-header {
+            background-color: #ff385c;
+            padding: 24px 16px;
+            color: white;
+            border-radius: 0 0 24px 24px;
+        }
+        
+        .user-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+        }
+        
+        .menu-section {
+            background-color: white;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-icon {
+            width: 36px;
+            height: 36px;
+            background-color: #f8f8f8;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+        }
+        
+        .badge {
+            background-color: #ff385c;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+        
+        /* 宠物卡片样式 */
+        .pet-profile-card {
+            transition: transform 0.2s;
+        }
+        
+        .pet-profile-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS状态栏 -->
+    <div class="ios-status-bar">
+        <div class="text-lg font-bold">个人中心</div>
+        <div>
+            <i class="fas fa-cog text-gray-500"></i>
+        </div>
+    </div>
+    
+    <!-- 用户信息头部 -->
+    <div class="user-header">
+        <div class="flex items-center">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde" alt="用户头像" class="user-avatar mr-4">
+            <div>
+                <h2 class="text-xl font-bold mb-1">张小明</h2>
+                <p class="text-white opacity-80">宠物爱好者</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 我的服务 -->
+        <h3 class="font-bold text-lg mb-3 mt-2">我的服务</h3>
+        <div class="menu-section">
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon text-blue-500">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <span>我的收藏</span>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+            
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon text-green-500">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <span>浏览历史</span>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+            
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon text-purple-500">
+                        <i class="fas fa-comment-alt"></i>
+                    </div>
+                    <span>我的评价</span>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+            
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon text-yellow-500">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <span>我的足迹</span>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+        </div>
+        
+        <!-- 宠物服务 -->
+        <h3 class="font-bold text-lg mb-3">宠物服务</h3>
+        <div class="menu-section">
+            <!-- 宠物档案卡片 - 改版设计 -->
+            <div class="mb-4 px-4 pt-4">
+                <div class="flex space-x-3 overflow-x-auto pb-2">
+                    <!-- 宠物卡片1 -->
+                    <div class="pet-profile-card relative flex-shrink-0 w-40 h-56 rounded-xl overflow-hidden shadow-md">
+                        <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1" alt="奶糖" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-70"></div>
+                        <div class="absolute top-2 right-2">
+                            <i class="fas fa-mars text-white bg-blue-500 rounded-full p-1 text-xs"></i>
+                        </div>
+                        <div class="absolute bottom-0 left-0 p-3 text-white w-full">
+                            <h4 class="text-lg font-bold">奶糖</h4>
+                            <div class="text-xs opacity-90 mb-1">威尔士柯基</div>
+                            <div class="flex space-x-2 text-xs opacity-80">
+                                <span>小型犬</span>
+                                <span>•</span>
+                                <span>2岁</span>
+                            </div>
+                            <p class="text-xs mt-1 opacity-80 line-clamp-2">活泼好动，喜欢交朋友</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 宠物卡片2 -->
+                    <div class="pet-profile-card relative flex-shrink-0 w-40 h-56 rounded-xl overflow-hidden shadow-md">
+                        <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba" alt="咪咪" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-70"></div>
+                        <div class="absolute top-2 right-2">
+                            <i class="fas fa-venus text-white bg-pink-500 rounded-full p-1 text-xs"></i>
+                        </div>
+                        <div class="absolute bottom-0 left-0 p-3 text-white w-full">
+                            <h4 class="text-lg font-bold">咪咪</h4>
+                            <div class="text-xs opacity-90 mb-1">英国短毛猫</div>
+                            <div class="flex space-x-2 text-xs opacity-80">
+                                <span>中型猫</span>
+                                <span>•</span>
+                                <span>3岁</span>
+                            </div>
+                            <p class="text-xs mt-1 opacity-80 line-clamp-2">安静独立，喜欢晒太阳</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 添加宠物卡片 -->
+                    <div class="flex-shrink-0 w-40 h-56 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center">
+                        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+                            <i class="fas fa-plus text-gray-400"></i>
+                        </div>
+                        <span class="text-sm text-gray-500">添加宠物</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon text-indigo-500">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <span>疫苗提醒</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="badge mr-2">2</span>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon text-blue-500">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <span>健康记录</span>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+        </div>
+        
+        <!-- 设置与帮助 -->
+        <h3 class="font-bold text-lg mb-3">设置与帮助</h3>
+        <div class="menu-section">
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon text-gray-500">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <span>设置</span>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+            
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon text-gray-500">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <span>帮助中心</span>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+            
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon text-gray-500">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <span>联系客服</span>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+            
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon text-gray-500">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <span>关于我们</span>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <a href="home.html" class="tab-item">
+            <i class="fas fa-home tab-icon"></i>
+            <span class="tab-label">首页</span>
+        </a>
+        <a href="map.html" class="tab-item">
+            <i class="fas fa-map-marker-alt tab-icon"></i>
+            <span class="tab-label">地图</span>
+        </a>
+        <a href="pet_profile.html" class="tab-item">
+            <i class="fas fa-paw tab-icon"></i>
+            <span class="tab-label">宠物</span>
+        </a>
+        <a href="user_center.html" class="tab-item active">
+            <i class="fas fa-user tab-icon"></i>
+            <span class="tab-label">我的</span>
+        </a>
+    </div>
+</body>
+</html>
