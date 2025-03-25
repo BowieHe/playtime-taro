@@ -7,6 +7,7 @@ import './app.css';
 import './styles/common.css';
 // Import tailwind styles - uncomment this line
 import './styles/tailwind.css';
+import 'taro-ui/dist/style/index.scss';
 
 const store = {
     userStore,

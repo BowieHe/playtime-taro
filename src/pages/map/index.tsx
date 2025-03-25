@@ -1,17 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Input, Map, Image } from '@tarojs/components';
+import { View, Text, Input, Map, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { MapProps } from '@tarojs/components/types/Map';
 import SettingIcon from '@/assets/settings.png';
 import SearchIcon from '@/assets/search.png';
 import LocationIcon from '@/assets/location.png';
-import ChevronUp from '@/assets/chevron-up.png';
+import { AtIcon } from 'taro-ui';
+
+// Define a type for our place data
+interface PlaceData {
+    id: string;
+    name: string;
+    type: string;
+    rating: number;
+    reviewCount: number;
+    distance: string;
+    latitude: number;
+    longitude: number;
+    image: string;
+    address: string;
+}
 
 const MapPage: React.FC = () => {
     const [location, setLocation] = useState({ latitude: 39.908, longitude: 116.397 });
     const [markers, setMarkers] = useState<MapProps.marker[]>([]);
     const [activeFilter, setActiveFilter] = useState('全部');
-    const [placesFound, setPlacesFound] = useState(3);
+    const [places, setPlaces] = useState<PlaceData[]>([]);
+    const [filteredPlaces, setFilteredPlaces] = useState<PlaceData[]>([]);
+    const [showPlacesList, setShowPlacesList] = useState(false);
     const [mapLoaded, setMapLoaded] = useState(false);
 
     // Create ref for map context
@@ -19,10 +35,79 @@ const MapPage: React.FC = () => {
 
     const filters = ['全部', '餐厅', '咖啡厅', '公园', '酒店', '商场', '宠物店'];
 
+    // Sample place data
+    const samplePlaces: PlaceData[] = [
+        {
+            id: '1',
+            name: '宠物友好咖啡馆',
+            type: '咖啡厅',
+            rating: 4.8,
+            reviewCount: 200,
+            distance: '500米',
+            latitude: 39.908,
+            longitude: 116.402,
+            image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5',
+            address: '北京市东城区东单大街123号',
+        },
+        {
+            id: '2',
+            name: '汪星人宠物餐厅',
+            type: '餐厅',
+            rating: 4.6,
+            reviewCount: 150,
+            distance: '800米',
+            latitude: 39.91,
+            longitude: 116.392,
+            image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4',
+            address: '北京市西城区西单大街456号',
+        },
+        {
+            id: '3',
+            name: '猫语花园咖啡',
+            type: '咖啡厅',
+            rating: 4.7,
+            reviewCount: 180,
+            distance: '1.2公里',
+            latitude: 39.905,
+            longitude: 116.4,
+            image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348',
+            address: '北京市朝阳区朝阳门外大街789号',
+        },
+        {
+            id: '4',
+            name: '宠爱公园',
+            type: '公园',
+            rating: 4.5,
+            reviewCount: 320,
+            distance: '1.5公里',
+            latitude: 39.912,
+            longitude: 116.395,
+            image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b',
+            address: '北京市海淀区中关村大街101号',
+        },
+        {
+            id: '5',
+            name: '宠物欢乐主题商场',
+            type: '商场',
+            rating: 4.3,
+            reviewCount: 280,
+            distance: '2公里',
+            latitude: 39.903,
+            longitude: 116.41,
+            image: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc',
+            address: '北京市朝阳区建国路202号',
+        },
+    ];
+
     useEffect(() => {
         // Initialize map data
         initializeMap();
     }, []);
+
+    // Update filtered places when filter changes
+    useEffect(() => {
+        filterPlaces(activeFilter);
+    }, [activeFilter, places]);
 
     const initializeMap = () => {
         console.log('Initializing map...');
@@ -38,9 +123,11 @@ const MapPage: React.FC = () => {
                     longitude: res.longitude,
                 });
 
-                // Create demo markers with valid coordinates
-                const demoMarkers: MapProps.marker[] = [];
-                setMarkers(demoMarkers);
+                // Set sample places
+                setPlaces(samplePlaces);
+
+                // Create markers from sample places
+                createMarkersFromPlaces(samplePlaces);
 
                 setMapLoaded(true);
                 Taro.hideLoading();
@@ -64,13 +151,99 @@ const MapPage: React.FC = () => {
                     title: '无法获取位置，使用默认位置',
                     icon: 'none',
                 });
+
+                // Still set the sample places and markers
+                setPlaces(samplePlaces);
+                createMarkersFromPlaces(samplePlaces);
             },
         });
     };
 
-    const onFilterSelect = filter => {
+    const createMarkersFromPlaces = (placesData: PlaceData[]) => {
+        if (!placesData.length) return;
+
+        // Create valid marker objects with required properties
+        const newMarkers = placesData.map(place => {
+            // Ensure the iconPath exists and is valid
+            const iconPath = getMarkerIcon(place.type);
+
+            return {
+                id: Number(place.id),
+                latitude: place.latitude,
+                longitude: place.longitude,
+                width: 35,
+                height: 35,
+                iconPath: iconPath,
+                alpha: 1,
+                callout: {
+                    content: place.name,
+                    color: '#000000',
+                    fontSize: 14,
+                    borderRadius: 4,
+                    bgColor: '#ffffff',
+                    padding: 8,
+                    display: 'BYCLICK', // This is already cast correctly
+                    // Change this:
+                    // textAlign: 'center',
+                    // To this:
+                    textAlign: 'center' as 'center', // Specify the exact literal type
+                    anchorY: 1,
+                    anchorX: 0.5,
+                    borderWidth: 1,
+                    borderColor: '#000000',
+                },
+            };
+        });
+
+        // Cast the entire array to satisfy TypeScript
+        setMarkers(newMarkers as MapProps.marker[]);
+        console.log('Created markers:', newMarkers);
+    };
+
+    const getMarkerIcon = (placeType: string): string => {
+        // For testing, you can use a default marker first to ensure it works
+        const defaultMarker = 'https://cdn-icons-png.flaticon.com/128/684/684908.png';
+
+        // Make sure these icon URLs are accessible and valid
+        try {
+            switch (placeType) {
+                case '餐厅':
+                    return 'https://cdn-icons-png.flaticon.com/64/562/562678.png';
+                case '咖啡厅':
+                    return 'https://cdn-icons-png.flaticon.com/64/1047/1047503.png';
+                case '公园':
+                    return 'https://cdn-icons-png.flaticon.com/64/616/616494.png';
+                case '酒店':
+                    return 'https://cdn-icons-png.flaticon.com/64/2933/2933772.png';
+                case '商场':
+                    return 'https://cdn-icons-png.flaticon.com/64/3061/3061162.png';
+                case '宠物店':
+                    return 'https://cdn-icons-png.flaticon.com/64/3047/3047928.png';
+                default:
+                    return defaultMarker;
+            }
+        } catch (e) {
+            console.error('Error getting marker icon:', e);
+            return defaultMarker;
+        }
+    };
+
+    const filterPlaces = (filter: string) => {
+        if (filter === '全部') {
+            setFilteredPlaces(places);
+        } else {
+            const filtered = places.filter(place => place.type === filter);
+            setFilteredPlaces(filtered);
+        }
+
+        // Also update markers on the map based on the filter
+        const placesToShow =
+            filter === '全部' ? places : places.filter(place => place.type === filter);
+        createMarkersFromPlaces(placesToShow);
+    };
+
+    const onFilterSelect = (filter: string) => {
         setActiveFilter(filter);
-        // In a real app, you would filter markers based on the selected category
     };
 
     const moveToCurrentLocation = () => {
@@ -98,20 +271,37 @@ const MapPage: React.FC = () => {
         });
     };
 
-    const showPlacesList = () => {
-        Taro.showToast({
-            title: '这里将显示场所列表',
-            icon: 'none',
+    const togglePlacesList = () => {
+        setShowPlacesList(!showPlacesList);
+    };
+
+    const navigateToPlaceDetail = (placeId: string) => {
+        // Navigate to the place detail page with the place ID
+        Taro.navigateTo({
+            url: `/pages/place/index?id=${placeId}`,
         });
+    };
+
+    const handleMarkerTap = e => {
+        console.log('Marker tapped:', e);
+        // The marker ID should be available in e.markerId
+        if (e && e.markerId !== undefined) {
+            const markerId = e.markerId;
+            // Find the corresponding place
+            const place = places.find(p => Number(p.id) === markerId);
+            if (place) {
+                navigateToPlaceDetail(place.id);
+            } else {
+                console.error('Place not found for marker ID:', markerId);
+            }
+        } else {
+            console.error('Invalid marker tap event:', e);
+        }
     };
 
     return (
         <View className="flex flex-col h-screen w-screen bg-white overflow-hidden fixed inset-0">
             {/* Header */}
-            {/* <View className="flex justify-between items-center px-4 py-2 bg-white h-11 z-10 flex-shrink-0 shadow">
-                <Text className="text-lg font-bold">宠物友好地图</Text>
-            </View> */}
-
             <View className="flex flex-row items-center justify-between px-4 mt-4">
                 {/* Search bar - will take most of the space but not all */}
                 <View className="flex-1 bg-white rounded-full px-4 py-2 flex items-center shadow">
@@ -162,15 +352,17 @@ const MapPage: React.FC = () => {
                             enableRotate={false}
                             enableSatellite={false}
                             enableTraffic={false}
+                            onMarkerTap={handleMarkerTap}
+                            onCalloutTap={handleMarkerTap}
                             onError={e => console.error('Map error:', e)}
-                            includePoints={[]}
-                            setting={{
-                                gestureEnable: 1,
-                                showCompass: 0,
-                                showScale: 0,
-                                tiltGesturesEnabled: 0,
-                                rotateGesturesEnabled: 0,
-                            }}
+                            includePoints={
+                                markers.length > 0
+                                    ? markers.map(m => ({
+                                          latitude: m.latitude,
+                                          longitude: m.longitude,
+                                      }))
+                                    : []
+                            }
                         />
                     </View>
                 )}
@@ -185,18 +377,68 @@ const MapPage: React.FC = () => {
                 </View>
             </View>
 
-            {/* Places List Entrance */}
+            {/* Places List */}
             <View
-                className="h-15 bg-white flex items-center px-4 border-t border-gray-100 z-10 flex-shrink-0 absolute 
-                           bottom-0 left-0 right-0"
-                onClick={showPlacesList}
+                className={`bg-white border-t border-gray-100 z-10 absolute left-0 right-0 transition-all duration-300 ${
+                    showPlacesList ? 'bottom-0 max-h-[70%]' : 'bottom-0 max-h-[45px]'
+                }`}
             >
-                <View className="bg-gray-100 rounded-full px-4 py-2 flex items-center justify-between w-full">
-                    <Text className="text-gray-800 text-sm">
-                        附近发现{placesFound}个宠物友好场所
-                    </Text>
-                    <Image src={ChevronUp} className="w-4 h-4 text-gray-800" mode="aspectFit" />
+                {/* Places List Header - Always visible */}
+                <View
+                    className="h-[45px] px-4 flex items-center cursor-pointer"
+                    onClick={togglePlacesList}
+                >
+                    <View className="bg-gray-100 rounded-full px-4 py-2 flex items-center justify-between w-full">
+                        <Text className="text-gray-800 text-sm">
+                            附近发现{filteredPlaces.length}个宠物友好场所
+                        </Text>
+                        <AtIcon
+                            value={showPlacesList ? 'chevron-down' : 'chevron-up'}
+                            size="20"
+                            color="#555"
+                        />
+                        {/* <Image
+                            src={showPlacesList ? ChevronDown : ChevronUp}
+                            className="w-4 h-4 text-gray-800"
+                            mode="aspectFit"
+                        /> */}
+                    </View>
                 </View>
+
+                {/* Places List Content - Only visible when expanded */}
+                {showPlacesList && (
+                    <ScrollView scrollY className="max-h-[calc(70%-45px)] px-4 pb-4">
+                        {filteredPlaces.map(place => (
+                            <View
+                                key={place.id}
+                                className="flex flex-row items-center p-3 border-b border-gray-100"
+                                onClick={() => navigateToPlaceDetail(place.id)}
+                            >
+                                <Image
+                                    src={place.image}
+                                    className="w-16 h-16 rounded-lg mr-3 object-cover"
+                                    mode="aspectFill"
+                                />
+                                <View className="flex-1">
+                                    <Text className="font-medium text-base">{place.name}</Text>
+                                    <View className="flex flex-row items-center mt-1">
+                                        <Text className="text-yellow-500 mr-1">★</Text>
+                                        <Text className="text-sm mr-2">{place.rating}</Text>
+                                        <Text className="text-xs text-gray-500">
+                                            {place.reviewCount}条评价
+                                        </Text>
+                                        <Text className="text-xs text-gray-500 ml-2">
+                                            · {place.distance}
+                                        </Text>
+                                    </View>
+                                    <Text className="text-xs text-gray-500 mt-1">
+                                        {place.address}
+                                    </Text>
+                                </View>
+                            </View>
+                        ))}
+                    </ScrollView>
+                )}
             </View>
         </View>
     );

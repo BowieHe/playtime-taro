@@ -3556,7 +3556,7 @@ citty@^0.1.6:
   dependencies:
     consola "^3.2.3"
 
-classnames@^2.2.5:
+classnames@^2.2.5, classnames@^2.2.6:
   version "2.5.1"
   resolved "https://registry.npmmirror.com/classnames/-/classnames-2.5.1.tgz#ba774c614be0f016da105c858e7159eae8e7687b"
   integrity sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==
@@ -3849,6 +3849,11 @@ data-view-byte-offset@^1.0.1:
     call-bound "^1.0.2"
     es-errors "^1.3.0"
     is-data-view "^1.0.1"
+
+dayjs@^1.7.7:
+  version "1.11.13"
+  resolved "https://registry.npmmirror.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
+  integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
 debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4, debug@^4.3.7, debug@~4.4.0:
   version "4.4.0"
@@ -6156,7 +6161,7 @@ lodash.truncate@^4.4.2:
   resolved "https://registry.npmmirror.com/lodash.truncate/-/lodash.truncate-4.4.2.tgz#5a350da0b1113b837ecfffd5812cbe58d6eae193"
   integrity sha512-jttmRe7bRse52OsWIMDLaXxWqRAmtIUccAQ3garviCqJjafXOfNMO0yMfNpdD6zbGaTU0P5Nz7e7gAT6cKmJRw==
 
-lodash@^4.17.21:
+lodash@^4.17.10, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.npmmirror.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -7574,7 +7579,7 @@ promise-retry@^2.0.1:
     err-code "^2.0.2"
     retry "^0.12.0"
 
-prop-types@^15.8.1:
+prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npmmirror.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -7681,6 +7686,20 @@ react-is@^16.13.1:
   version "16.13.1"
   resolved "https://registry.npmmirror.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
+
+react-native-animatable@1.4.0:
+  version "1.4.0"
+  resolved "https://registry.npmmirror.com/react-native-animatable/-/react-native-animatable-1.4.0.tgz#05a259e1566081ce7d3f6fba1e92edc65f5c6160"
+  integrity sha512-DZwaDVWm2NBvBxf7I0wXKXLKb/TxDnkV53sWhCvei1pRyTX3MVFpkvdYBknNBqPrxYuAIlPxEp7gJOidIauUkw==
+  dependencies:
+    prop-types "^15.8.1"
+
+react-native-modal@^13.0.0:
+  version "13.0.2"
+  resolved "https://registry.npmmirror.com/react-native-modal/-/react-native-modal-13.0.2.tgz#4e4d777fdb0f5af5a50003a53eebc4de9ead5695"
+  integrity sha512-jCUR2DAskuZtVIbnt2ZssX70DCbTLydkL1Glv1Fc/fqVIhq1LpwBK2hKgSf9VIINXFnDjjGIMIC9HhDXnW7Enw==
+  dependencies:
+    react-native-animatable "1.4.0"
 
 react-reconciler@0.29.0:
   version "0.29.0"
@@ -8778,6 +8797,17 @@ tar@^7.4.3:
     minizlib "^3.0.1"
     mkdirp "^3.0.1"
     yallist "^5.0.0"
+
+taro-ui@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.npmmirror.com/taro-ui/-/taro-ui-3.3.0.tgz#2d10e6f53baeacacf1990a07107fab3d65da13f8"
+  integrity sha512-M4tf2OEy1BzmeFyvF0kFOgzzW1Lc86TlQ5UwZh4cNMkuViqGId/DLqY0iMlqAjfXstRn0x4HaFFw91xfLqkPzg==
+  dependencies:
+    classnames "^2.2.6"
+    dayjs "^1.7.7"
+    lodash "^4.17.10"
+    prop-types "^15.7.2"
+    react-native-modal "^13.0.0"
 
 terser@^5.16.8, terser@^5.17.4:
   version "5.39.0"

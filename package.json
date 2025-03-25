@@ -56,7 +56,8 @@
         "mobx": "^4.8.0",
         "mobx-react": "^6.1.4",
         "react": "^18.0.0",
-        "react-dom": "^18.0.0"
+        "react-dom": "^18.0.0",
+        "taro-ui": "^3.3.0"
     },
     "devDependencies": {
         "@babel/core": "^7.8.0",

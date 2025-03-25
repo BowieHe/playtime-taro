@@ -5,6 +5,7 @@ export default defineAppConfig({
         'pages/user/index',
         'pages/pet/index',
         'pages/location/index',
+        'pages/place/index',
         // Add any other pages your app uses
     ],
     window: {
