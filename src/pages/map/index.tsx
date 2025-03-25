@@ -304,6 +304,14 @@ const MapPage: React.FC = () => {
         }
     };
 
+    const handlePOITap = e => {
+        console.log('POI tapped:', e);
+
+        Taro.navigateTo({
+            url: `/pages/location/index?latitude=${e.latitude}&longitude=${e.longitude}`,
+        });
+    };
+
     return (
         <View className="flex flex-col h-screen w-screen bg-white overflow-hidden fixed inset-0">
             {/* Header */}
@@ -358,6 +366,7 @@ const MapPage: React.FC = () => {
                             enableSatellite={false}
                             enableTraffic={false}
                             onMarkerTap={handleMarkerTap}
+                            onPoiTap={handlePOITap}
                             onCalloutTap={handleMarkerTap}
                             onError={e => console.error('Map error:', e)}
                             includePoints={

@@ -1,408 +1,417 @@
-import { Component } from 'react';
-import { View, Text, Input, Button, Radio, RadioGroup, Label, Textarea } from '@tarojs/components';
-import Taro, { Current } from '@tarojs/taro';
-import { addPetFriendlyPlace } from '@/service/mapService';
-import { AddLocationRequest, LocationCategory, CategoryDisplayNames } from '@/types/location';
-import { AdInfo, AddressComponent } from '@/types/map'; // Add the missing imports
-import './index.css';
+import React, { useState } from 'react';
+import { View, Text, Input, Button, Image, Map, ScrollView, Textarea } from '@tarojs/components';
+import Taro, { useRouter } from '@tarojs/taro';
+import { AtIcon } from 'taro-ui';
 
-interface LocationState {
+// Types
+interface LocationFormData {
     name: string;
     address: string;
+    phone: string;
+    description: string;
+    isPetFriendly: boolean;
+    petAreas: string[];
+    petTypeRestrictions: string[];
+    petSizeRestrictions: string[];
+    requiresLeash: boolean;
+    providesPetFood: boolean;
+    providesWater: boolean;
+    category: string;
     latitude: number;
     longitude: number;
-    isPetFriendly: boolean;
-    petSize: 'small' | 'medium' | 'large' | '';
-    petType: 'cat' | 'dog' | 'dragon' | '';
-    zone: 'indoor' | 'garden' | 'outdoor' | '';
-    description: string;
-    category: LocationCategory;
-    adInfo: AdInfo | null;
-    addressComponent: AddressComponent | null;
-    isSubmitting: boolean;
+    photos: string[];
+    rating: number;
+    review: string;
 }
 
-class LocationPage extends Component<{}, LocationState> {
-    state: LocationState = {
-        name: '',
-        address: '',
-        latitude: 0,
-        longitude: 0,
-        isPetFriendly: false,
-        petSize: '',
-        petType: '',
-        zone: '',
+const AddLocationPage: React.FC = () => {
+    const router = useRouter();
+    const { latitude, longitude, name, address } = router.params;
+
+    // Form state
+    const [formData, setFormData] = useState<LocationFormData>({
+        name: decodeURIComponent(name || ''),
+        address: decodeURIComponent(address || ''),
+        phone: '',
         description: '',
-        category: LocationCategory.OTHER,
-        adInfo: null,
-        addressComponent: null,
-        isSubmitting: false,
+        isPetFriendly: true,
+        petAreas: ['室内区域'],
+        petTypeRestrictions: ['无限制'],
+        petSizeRestrictions: ['小型宠物', '中型宠物'],
+        requiresLeash: true,
+        providesPetFood: false,
+        providesWater: true,
+        category: '咖啡厅',
+        latitude: parseFloat(latitude || '0'),
+        longitude: parseFloat(longitude || '0'),
+        photos: [],
+        rating: 0,
+        review: '',
+    });
+
+    // Handle input changes
+    const handleInputChange = (field: keyof LocationFormData, value: any) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    componentDidMount() {
-        // Get params from the URL
-        const params = Current.router?.params;
-        if (params) {
-            let adInfo = null;
-            let addressComponent = null;
+    // Toggle boolean values
+    const toggleOption = (field: keyof LocationFormData) => {
+        setFormData(prev => ({ ...prev, [field]: !prev[field] }));
+    };
 
-            try {
-                if (params.adInfo) {
-                    adInfo = JSON.parse(decodeURIComponent(params.adInfo));
-                }
-                if (params.addressComponent) {
-                    addressComponent = JSON.parse(decodeURIComponent(params.addressComponent));
-                }
-            } catch (e) {
-                console.error('Error parsing location components:', e);
+    // Handle array option selection (multiple selection allowed)
+    const toggleArrayOption = (field: keyof LocationFormData, option: string) => {
+        setFormData(prev => {
+            const currentOptions = prev[field] as string[];
+            if (currentOptions.includes(option)) {
+                return { ...prev, [field]: currentOptions.filter(item => item !== option) };
+            } else {
+                return { ...prev, [field]: [...currentOptions, option] };
+            }
+        });
+    };
+
+    // Handle single selection options
+    const selectSingleOption = (field: keyof LocationFormData, option: string) => {
+        setFormData(prev => ({ ...prev, [field]: [option] }));
+    };
+
+    // Set rating
+    const setRating = (rating: number) => {
+        setFormData(prev => ({ ...prev, rating }));
+    };
+
+    // Handle form submission
+    const handleSubmit = async () => {
+        try {
+            // Validate form
+            if (!formData.name || !formData.address) {
+                Taro.showToast({
+                    title: '请填写地点名称和地址',
+                    icon: 'none',
+                });
+                return;
             }
 
-            this.setState({
-                name: decodeURIComponent(params.name || ''),
-                address: decodeURIComponent(params.address || ''),
-                latitude: parseFloat(params.latitude || '0'),
-                longitude: parseFloat(params.longitude || '0'),
-                adInfo,
-                addressComponent,
-            });
-        }
-    }
+            // Here you would typically send the data to your API
+            console.log('Submitting location data:', formData);
 
-    handleInputChange = (field: keyof LocationState, value: any) => {
-        this.setState({ [field]: value } as unknown as Pick<LocationState, keyof LocationState>);
-    };
-
-    togglePetFriendly = () => {
-        this.setState(prevState => ({
-            isPetFriendly: !prevState.isPetFriendly,
-        }));
-    };
-
-    handleSubmit = async () => {
-        // Validate form
-        const {
-            latitude,
-            longitude,
-            name,
-            address,
-            isPetFriendly,
-            petSize,
-            petType,
-            zone,
-            description,
-            category,
-            adInfo,
-            addressComponent,
-        } = this.state;
-
-        if (!name || !address) {
+            // Show success message
             Taro.showToast({
-                title: '请填写名称和地址',
-                icon: 'none',
-            });
-            return;
-        }
-
-        if (isPetFriendly && (!petSize || !petType || !zone)) {
-            Taro.showToast({
-                title: '请完成宠物相关信息',
-                icon: 'none',
-            });
-            return;
-        }
-
-        this.setState({ isSubmitting: true });
-
-        try {
-            // const {
-            //     latitude, longitude, name, address,
-            //     isPetFriendly, petSize, petType, zone,
-            //     description, category, adInfo, addressComponent
-            // } = this.state;
-
-            const locationData: AddLocationRequest = {
-                name,
-                address,
-                latitude,
-                longitude,
-                adInfo,
-                addressComponent,
-                isPetFriendly,
-                petSize,
-                petType,
-                zone,
-                description,
-                category,
-            };
-
-            // Send the data to your backend
-            await addPetFriendlyPlace(locationData);
-
-            Taro.showToast({
-                title: '添加成功！',
+                title: '地点添加成功！',
                 icon: 'success',
             });
 
-            // Wait for toast to be visible before navigating back
+            // Navigate back after a short delay
             setTimeout(() => {
                 Taro.navigateBack();
             }, 1500);
         } catch (error) {
-            console.error('Failed to submit location:', error);
+            console.error('Error submitting location:', error);
             Taro.showToast({
-                title: '添加失败，请重试',
+                title: '提交失败，请重试',
                 icon: 'none',
             });
-        } finally {
-            this.setState({ isSubmitting: false });
         }
     };
 
-    render() {
-        const {
-            name,
-            address,
-            isPetFriendly,
-            petSize,
-            petType,
-            zone,
-            description,
-            category,
-            isSubmitting,
-        } = this.state;
+    // Go back to previous page
+    const handleBack = () => {
+        Taro.navigateBack();
+    };
 
-        return (
-            <View className="location-page">
-                <View className="location-form">
-                    <Text className="form-title">添加宠物友好场所</Text>
-
-                    <View className="form-group">
-                        <Text className="form-label">名称</Text>
-                        <Input
-                            className="form-input"
-                            value={name}
-                            onInput={e => this.handleInputChange('name', e.detail.value)}
-                            placeholder="输入地点名称"
-                        />
+    return (
+        <View className="flex flex-col min-h-screen bg-gray-50">
+            {/* Header */}
+            <View className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+                <View className="flex items-center">
+                    <View className="mr-2" onClick={handleBack}>
+                        <AtIcon value="chevron-left" size="20" color="#000" />
                     </View>
-
-                    <View className="form-group">
-                        <Text className="form-label">地址</Text>
-                        <Input
-                            className="form-input"
-                            value={address}
-                            onInput={e => this.handleInputChange('address', e.detail.value)}
-                            placeholder="地点地址"
-                        />
-                    </View>
-
-                    {/* New Category Selection */}
-                    <View className="form-group">
-                        <Text className="form-label">场所类型</Text>
-                        <RadioGroup
-                            onChange={e => this.handleInputChange('category', e.detail.value)}
-                        >
-                            <View className="category-option-group">
-                                {Object.values(LocationCategory).map(cat => (
-                                    <Label
-                                        key={cat}
-                                        className={`category-option ${
-                                            category === cat ? 'selected' : ''
-                                        }`}
-                                    >
-                                        <Radio
-                                            value={cat}
-                                            checked={category === cat}
-                                            className="radio-input"
-                                        />
-                                        <Text className="radio-text">
-                                            {CategoryDisplayNames[cat]}
-                                        </Text>
-                                    </Label>
-                                ))}
-                            </View>
-                        </RadioGroup>
-                    </View>
-
-                    <View className="form-group">
-                        <Button
-                            className={`pet-friendly-button ${
-                                isPetFriendly ? 'active' : 'inactive'
-                            }`}
-                            onClick={this.togglePetFriendly}
-                        >
-                            {isPetFriendly ? '宠物友好 ✓' : '宠物友好'}
-                        </Button>
-                    </View>
-
-                    {isPetFriendly && (
-                        <>
-                            <View className="form-group">
-                                <Text className="form-label">宠物体型</Text>
-                                <RadioGroup
-                                    onChange={e =>
-                                        this.handleInputChange('petSize', e.detail.value)
-                                    }
-                                >
-                                    <View className="radio-option-group">
-                                        <Label
-                                            className={`radio-option ${
-                                                petSize === 'small' ? 'selected' : ''
-                                            }`}
-                                        >
-                                            <Radio
-                                                value="small"
-                                                checked={petSize === 'small'}
-                                                className="radio-input"
-                                            />
-                                            <Text className="radio-text">小型</Text>
-                                        </Label>
-                                        <Label
-                                            className={`radio-option ${
-                                                petSize === 'medium' ? 'selected' : ''
-                                            }`}
-                                        >
-                                            <Radio
-                                                value="medium"
-                                                checked={petSize === 'medium'}
-                                                className="radio-input"
-                                            />
-                                            <Text className="radio-text">中型</Text>
-                                        </Label>
-                                        <Label
-                                            className={`radio-option ${
-                                                petSize === 'large' ? 'selected' : ''
-                                            }`}
-                                        >
-                                            <Radio
-                                                value="large"
-                                                checked={petSize === 'large'}
-                                                className="radio-input"
-                                            />
-                                            <Text className="radio-text">大型</Text>
-                                        </Label>
-                                    </View>
-                                </RadioGroup>
-                            </View>
-
-                            <View className="form-group">
-                                <Text className="form-label">宠物种类</Text>
-                                <RadioGroup
-                                    onChange={e =>
-                                        this.handleInputChange('petType', e.detail.value)
-                                    }
-                                >
-                                    <View className="radio-option-group">
-                                        <Label
-                                            className={`radio-option ${
-                                                petType === 'cat' ? 'selected' : ''
-                                            }`}
-                                        >
-                                            <Radio
-                                                value="cat"
-                                                checked={petType === 'cat'}
-                                                className="radio-input"
-                                            />
-                                            <Text className="radio-text">猫</Text>
-                                        </Label>
-                                        <Label
-                                            className={`radio-option ${
-                                                petType === 'dog' ? 'selected' : ''
-                                            }`}
-                                        >
-                                            <Radio
-                                                value="dog"
-                                                checked={petType === 'dog'}
-                                                className="radio-input"
-                                            />
-                                            <Text className="radio-text">狗</Text>
-                                        </Label>
-                                        <Label
-                                            className={`radio-option ${
-                                                petType === 'dragon' ? 'selected' : ''
-                                            }`}
-                                        >
-                                            <Radio
-                                                value="dragon"
-                                                checked={petType === 'dragon'}
-                                                className="radio-input"
-                                            />
-                                            <Text className="radio-text">龙</Text>
-                                        </Label>
-                                    </View>
-                                </RadioGroup>
-                            </View>
-
-                            <View className="form-group">
-                                <Text className="form-label">场所区域</Text>
-                                <RadioGroup
-                                    onChange={e => this.handleInputChange('zone', e.detail.value)}
-                                >
-                                    <View className="radio-option-group">
-                                        <Label
-                                            className={`radio-option ${
-                                                zone === 'indoor' ? 'selected' : ''
-                                            }`}
-                                        >
-                                            <Radio
-                                                value="indoor"
-                                                checked={zone === 'indoor'}
-                                                className="radio-input"
-                                            />
-                                            <Text className="radio-text">室内</Text>
-                                        </Label>
-                                        <Label
-                                            className={`radio-option ${
-                                                zone === 'garden' ? 'selected' : ''
-                                            }`}
-                                        >
-                                            <Radio
-                                                value="garden"
-                                                checked={zone === 'garden'}
-                                                className="radio-input"
-                                            />
-                                            <Text className="radio-text">花园</Text>
-                                        </Label>
-                                        <Label
-                                            className={`radio-option ${
-                                                zone === 'outdoor' ? 'selected' : ''
-                                            }`}
-                                        >
-                                            <Radio
-                                                value="outdoor"
-                                                checked={zone === 'outdoor'}
-                                                className="radio-input"
-                                            />
-                                            <Text className="radio-text">户外</Text>
-                                        </Label>
-                                    </View>
-                                </RadioGroup>
-                            </View>
-                        </>
-                    )}
-
-                    <View className="form-group">
-                        <Text className="form-label">描述</Text>
-                        <Textarea
-                            className="form-textarea"
-                            value={description}
-                            onInput={e => this.handleInputChange('description', e.detail.value)}
-                            placeholder="添加关于此地点的描述（可选）"
-                        />
-                    </View>
-
-                    <Button
-                        className="submit-button"
-                        onClick={this.handleSubmit}
-                        loading={isSubmitting}
-                        disabled={isSubmitting}
-                    >
-                        提交
-                    </Button>
+                    <Text className="text-lg font-bold">添加地点</Text>
+                </View>
+                <View>
+                    <AtIcon value="help" size="20" color="#666" />
                 </View>
             </View>
-        );
-    }
-}
 
-export default LocationPage;
+            {/* Main Content - Scrollable */}
+            <ScrollView scrollY className="flex-1 p-4 pb-24">
+                {/* 位置信息 */}
+                <View className="mb-6">
+                    <Text className="block font-bold mb-3 text-gray-700">位置信息</Text>
+
+                    {/* Map Preview */}
+                    <View className="relative h-44 bg-gray-100 rounded-lg mb-4 overflow-hidden">
+                        <Map
+                            latitude={formData.latitude}
+                            longitude={formData.longitude}
+                            scale={15}
+                            showLocation
+                            style="width: 100%; height: 100%;"
+                            onError={console.error}
+                        />
+                        <View className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-green-500">
+                            <AtIcon value="map-pin" size="32" color="#10b981" />
+                        </View>
+                    </View>
+
+                    <Input
+                        className="w-full mb-3 bg-gray-100 p-3 rounded-lg"
+                        value={formData.name}
+                        onInput={e => handleInputChange('name', e.detail.value)}
+                        placeholder="地点名称"
+                        placeholderClass="text-gray-400"
+                    />
+
+                    <Input
+                        className="w-full mb-3 bg-gray-100 p-3 rounded-lg"
+                        value={formData.address}
+                        onInput={e => handleInputChange('address', e.detail.value)}
+                        placeholder="地址"
+                        placeholderClass="text-gray-400"
+                    />
+
+                    <Input
+                        className="w-full bg-gray-100 p-3 rounded-lg"
+                        value={formData.phone}
+                        onInput={e => handleInputChange('phone', e.detail.value)}
+                        placeholder="联系电话"
+                        placeholderClass="text-gray-400"
+                        type="number"
+                    />
+                </View>
+
+                {/* 宠物友好设置 */}
+                <View className="mb-6">
+                    <Text className="block font-bold mb-3 text-gray-700">宠物友好设置</Text>
+
+                    {/* 是否宠物友好 */}
+                    <View className="flex items-center justify-between mb-4 p-2">
+                        <Text className="text-gray-700">是否宠物友好</Text>
+                        <View
+                            className={`relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                                formData.isPetFriendly ? 'bg-green-500' : 'bg-gray-300'
+                            }`}
+                            onClick={() => toggleOption('isPetFriendly')}
+                        >
+                            <View
+                                className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-transform duration-200 ease-in-out ${
+                                    formData.isPetFriendly ? 'translate-x-6' : 'translate-x-0.5'
+                                }`}
+                            />
+                        </View>
+                    </View>
+
+                    {/* 宠物友好区域 */}
+                    <View className="mb-4">
+                        <Text className="block text-sm font-medium mb-2 text-gray-700">
+                            宠物友好区域
+                        </Text>
+                        <View className="flex flex-wrap">
+                            {['室内区域', '室外区域', '专属区域', '全场开放'].map(option => (
+                                <View
+                                    key={option}
+                                    className={`mr-2 mb-2 px-4 py-2 rounded-full text-sm ${
+                                        formData.petAreas.includes(option)
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-gray-200 text-gray-700'
+                                    }`}
+                                    onClick={() => toggleArrayOption('petAreas', option)}
+                                >
+                                    {option}
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+
+                    {/* 宠物品种限制 */}
+                    <View className="mb-4">
+                        <Text className="block text-sm font-medium mb-2 text-gray-700">
+                            宠物品种限制
+                        </Text>
+                        <View className="flex flex-wrap">
+                            {['无限制', '仅限犬类', '仅限猫类', '其他限制'].map(option => (
+                                <View
+                                    key={option}
+                                    className={`mr-2 mb-2 px-4 py-2 rounded-full text-sm ${
+                                        formData.petTypeRestrictions.includes(option)
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-gray-200 text-gray-700'
+                                    }`}
+                                    onClick={() =>
+                                        selectSingleOption('petTypeRestrictions', option)
+                                    }
+                                >
+                                    {option}
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+
+                    {/* 宠物体型限制 */}
+                    <View className="mb-4">
+                        <Text className="block text-sm font-medium mb-2 text-gray-700">
+                            宠物体型限制
+                        </Text>
+                        <View className="flex flex-wrap">
+                            {['小型宠物', '中型宠物', '大型宠物'].map(option => (
+                                <View
+                                    key={option}
+                                    className={`mr-2 mb-2 px-4 py-2 rounded-full text-sm ${
+                                        formData.petSizeRestrictions.includes(option)
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-gray-200 text-gray-700'
+                                    }`}
+                                    onClick={() => toggleArrayOption('petSizeRestrictions', option)}
+                                >
+                                    {option}
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                </View>
+
+                {/* 附加信息 */}
+                <View className="mb-6">
+                    <Text className="block font-bold mb-3 text-gray-700">附加信息</Text>
+
+                    {/* 宠物需要牵绳 */}
+                    <View className="flex items-center justify-between mb-4 p-2">
+                        <Text className="text-gray-700">宠物需要牵绳</Text>
+                        <View
+                            className={`relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                                formData.requiresLeash ? 'bg-green-500' : 'bg-gray-300'
+                            }`}
+                            onClick={() => toggleOption('requiresLeash')}
+                        >
+                            <View
+                                className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-transform duration-200 ease-in-out ${
+                                    formData.requiresLeash ? 'translate-x-6' : 'translate-x-0.5'
+                                }`}
+                            />
+                        </View>
+                    </View>
+
+                    {/* 提供宠物餐点 */}
+                    <View className="flex items-center justify-between mb-4 p-2">
+                        <Text className="text-gray-700">提供宠物餐点</Text>
+                        <View
+                            className={`relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                                formData.providesPetFood ? 'bg-green-500' : 'bg-gray-300'
+                            }`}
+                            onClick={() => toggleOption('providesPetFood')}
+                        >
+                            <View
+                                className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-transform duration-200 ease-in-out ${
+                                    formData.providesPetFood ? 'translate-x-6' : 'translate-x-0.5'
+                                }`}
+                            />
+                        </View>
+                    </View>
+
+                    {/* 宠物饮水设施 */}
+                    <View className="flex items-center justify-between mb-4 p-2">
+                        <Text className="text-gray-700">宠物饮水设施</Text>
+                        <View
+                            className={`relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                                formData.providesWater ? 'bg-green-500' : 'bg-gray-300'
+                            }`}
+                            onClick={() => toggleOption('providesWater')}
+                        >
+                            <View
+                                className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-transform duration-200 ease-in-out ${
+                                    formData.providesWater ? 'translate-x-6' : 'translate-x-0.5'
+                                }`}
+                            />
+                        </View>
+                    </View>
+
+                    {/* 所属分类 */}
+                    <View className="mb-4">
+                        <Text className="block text-sm font-medium mb-2 text-gray-700">
+                            所属分类
+                        </Text>
+                        <View className="flex flex-wrap">
+                            {['餐厅', '咖啡厅', '公园', '酒店', '商场', '宠物店'].map(option => (
+                                <View
+                                    key={option}
+                                    className={`mr-2 mb-2 px-4 py-2 rounded-full text-sm ${
+                                        formData.category === option
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-gray-200 text-gray-700'
+                                    }`}
+                                    onClick={() => handleInputChange('category', option)}
+                                >
+                                    {option}
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+
+                    {/* 地点描述 */}
+                    <Textarea
+                        className="w-full bg-gray-100 p-3 rounded-lg h-24"
+                        value={formData.description}
+                        onInput={e => handleInputChange('description', e.detail.value)}
+                        placeholder="地点描述（可选）"
+                        placeholderClass="text-gray-400"
+                    />
+                </View>
+
+                {/* 添加照片 */}
+                <View className="mb-6">
+                    <Text className="block font-bold mb-3 text-gray-700">添加照片</Text>
+                    <View className="flex">
+                        <View className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center mr-2">
+                            <AtIcon value="add" size="24" color="#999" />
+                        </View>
+                        {formData.photos.map((photo, index) => (
+                            <Image
+                                key={index}
+                                src={photo}
+                                className="w-20 h-20 rounded-lg mr-2 object-cover"
+                                mode="aspectFill"
+                            />
+                        ))}
+                    </View>
+                </View>
+
+                {/* 您的评价 */}
+                <View className="mb-6">
+                    <Text className="block font-bold mb-3 text-gray-700">您的评价</Text>
+                    <View className="flex mb-3">
+                        {[1, 2, 3, 4, 5].map(star => (
+                            <View key={star} onClick={() => setRating(star)}>
+                                <AtIcon
+                                    value="star-2"
+                                    size="24"
+                                    color={star <= formData.rating ? '#FBBF24' : '#D1D5DB'}
+                                />
+                            </View>
+                        ))}
+                    </View>
+                    <Textarea
+                        className="w-full bg-gray-100 p-3 rounded-lg h-24"
+                        value={formData.review}
+                        onInput={e => handleInputChange('review', e.detail.value)}
+                        placeholder="分享您的体验（可选）"
+                        placeholderClass="text-gray-400"
+                    />
+                </View>
+            </ScrollView>
+
+            {/* Submit Button - Fixed at Bottom */}
+            <View className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+                <Button
+                    className="w-full bg-green-500 text-white rounded-full py-3 flex items-center justify-center"
+                    onClick={handleSubmit}
+                >
+                    提交地点
+                </Button>
+            </View>
+        </View>
+    );
+};
+
+export default AddLocationPage;

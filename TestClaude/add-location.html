@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>宠物出行 - 添加地点</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        />
+        <link rel="stylesheet" href="styles.css" />
+        <style>
+            .form-section {
+                margin-bottom: 20px;
+            }
+
+            .form-label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 6px;
+                color: #333;
+            }
+
+            .form-input {
+                width: 100%;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 10px 12px;
+                margin-bottom: 10px;
+                background-color: #f9f9f9;
+            }
+
+            .form-textarea {
+                width: 100%;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 10px 12px;
+                height: 80px;
+                margin-bottom: 10px;
+                background-color: #f9f9f9;
+            }
+
+            .toggle-container {
+                display: flex;
+                align-items: center;
+                margin-bottom: 16px;
+            }
+
+            .toggle-label {
+                flex: 1;
+            }
+
+            .toggle {
+                position: relative;
+                display: inline-block;
+                width: 48px;
+                height: 24px;
+            }
+
+            .toggle-checkbox {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .toggle-slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                border-radius: 24px;
+                transition: 0.4s;
+            }
+
+            .toggle-slider:before {
+                position: absolute;
+                content: '';
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                border-radius: 50%;
+                transition: 0.4s;
+            }
+
+            .toggle-checkbox:checked + .toggle-slider {
+                background-color: #ff385c;
+            }
+
+            .toggle-checkbox:checked + .toggle-slider:before {
+                transform: translateX(24px);
+            }
+
+            .option-container {
+                display: flex;
+                flex-wrap: wrap;
+                margin-bottom: 16px;
+            }
+
+            .option-item {
+                background-color: #f0f0f0;
+                border-radius: 16px;
+                padding: 8px 16px;
+                margin-right: 8px;
+                margin-bottom: 8px;
+                color: #666;
+                font-size: 14px;
+            }
+
+            .option-item.selected {
+                background-color: #ff385c;
+                color: white;
+            }
+
+            .submit-btn {
+                width: 100%;
+                background-color: #ff385c;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 24px;
+                font-weight: bold;
+                text-align: center;
+                margin-top: 16px;
+            }
+
+            .submit-btn:disabled {
+                background-color: #ccc;
+            }
+
+            .map-preview {
+                height: 180px;
+                background-color: #f0f0f0;
+                border-radius: 12px;
+                overflow: hidden;
+                position: relative;
+                margin-bottom: 16px;
+            }
+
+            .location-pin {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -100%);
+                color: #ff385c;
+                font-size: 32px;
+                filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+            }
+        </style>
+    </head>
+    <body>
+        <!-- iOS状态栏 -->
+        <div class="ios-status-bar">
+            <div class="flex items-center">
+                <a href="map.html" class="mr-2">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="text-lg font-bold">添加地点</div>
+            </div>
+            <div>
+                <i class="fas fa-question-circle text-gray-500"></i>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 位置信息 -->
+            <div class="form-section">
+                <label class="form-label">位置信息</label>
+                <div class="map-preview">
+                    <img
+                        src="https://mdn.alipayobjects.com/huamei_p0cigc/afts/img/A*_qQ9QJTyQrUAAAAAAAAAAAAADuJ6AQ/original"
+                        alt="地图"
+                        class="w-full h-full object-cover"
+                    />
+                    <div class="location-pin">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                </div>
+
+                <input type="text" class="form-input" placeholder="地点名称" required />
+                <input type="text" class="form-input" placeholder="地址" required />
+                <input type="tel" class="form-input" placeholder="联系电话" />
+            </div>
+
+            <!-- 宠物友好信息 -->
+            <div class="form-section">
+                <label class="form-label">宠物友好设置</label>
+                <div class="toggle-container">
+                    <div class="toggle-label">是否宠物友好</div>
+                    <label class="toggle">
+                        <input type="checkbox" class="toggle-checkbox" checked />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-label text-sm mb-2">宠物友好区域</div>
+                    <div class="option-container">
+                        <div class="option-item selected">室内区域</div>
+                        <div class="option-item">室外区域</div>
+                        <div class="option-item">专属区域</div>
+                        <div class="option-item">全场开放</div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-label text-sm mb-2">宠物品种限制</div>
+                    <div class="option-container">
+                        <div class="option-item selected">无限制</div>
+                        <div class="option-item">仅限犬类</div>
+                        <div class="option-item">仅限猫类</div>
+                        <div class="option-item">其他限制</div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-label text-sm mb-2">宠物体型限制</div>
+                    <div class="option-container">
+                        <div class="option-item selected">小型宠物</div>
+                        <div class="option-item selected">中型宠物</div>
+                        <div class="option-item">大型宠物</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 其他信息 -->
+            <div class="form-section">
+                <label class="form-label">附加信息</label>
+                <div class="toggle-container">
+                    <div class="toggle-label">宠物需要牵绳</div>
+                    <label class="toggle">
+                        <input type="checkbox" class="toggle-checkbox" checked />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-container">
+                    <div class="toggle-label">提供宠物餐点</div>
+                    <label class="toggle">
+                        <input type="checkbox" class="toggle-checkbox" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-container">
+                    <div class="toggle-label">宠物饮水设施</div>
+                    <label class="toggle">
+                        <input type="checkbox" class="toggle-checkbox" checked />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-label text-sm mb-2">所属分类</div>
+                    <div class="option-container">
+                        <div class="option-item">餐厅</div>
+                        <div class="option-item selected">咖啡厅</div>
+                        <div class="option-item">公园</div>
+                        <div class="option-item">酒店</div>
+                        <div class="option-item">商场</div>
+                        <div class="option-item">宠物店</div>
+                    </div>
+                </div>
+
+                <textarea class="form-textarea" placeholder="地点描述（可选）"></textarea>
+            </div>
+
+            <!-- 添加照片 -->
+            <div class="form-section">
+                <label class="form-label">添加照片</label>
+                <div class="flex overflow-x-auto pb-2">
+                    <div
+                        class="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center mr-2"
+                    >
+                        <i class="fas fa-plus text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 评价 -->
+            <div class="form-section">
+                <label class="form-label">您的评价</label>
+                <div class="flex items-center mb-2">
+                    <i class="far fa-star text-xl text-yellow-400 mr-1"></i>
+                    <i class="far fa-star text-xl text-yellow-400 mr-1"></i>
+                    <i class="far fa-star text-xl text-yellow-400 mr-1"></i>
+                    <i class="far fa-star text-xl text-yellow-400 mr-1"></i>
+                    <i class="far fa-star text-xl text-yellow-400 mr-1"></i>
+                </div>
+                <textarea class="form-textarea" placeholder="分享您的体验（可选）"></textarea>
+            </div>
+
+            <!-- 提交按钮 -->
+            <button class="submit-btn">提交地点</button>
+        </div>
+    </body>
+</html>
