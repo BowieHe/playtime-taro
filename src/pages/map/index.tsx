@@ -29,6 +29,7 @@ const MapPage: React.FC = () => {
     const [filteredPlaces, setFilteredPlaces] = useState<PlaceData[]>([]);
     const [showPlacesList, setShowPlacesList] = useState(false);
     const [mapLoaded, setMapLoaded] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     // Create ref for map context
     const mapContext = useRef<any>(null);
@@ -272,6 +273,10 @@ const MapPage: React.FC = () => {
     };
 
     const togglePlacesList = () => {
+        // Set animating state to true and schedule it to be false after animation ends
+        setIsAnimating(true);
+        setTimeout(() => setIsAnimating(false), 50);
+
         setShowPlacesList(!showPlacesList);
     };
 
@@ -339,7 +344,7 @@ const MapPage: React.FC = () => {
             {/* Map Container */}
             <View className="flex-1 relative z-5">
                 {mapLoaded && (
-                    <View className="absolute inset-0" style={{ height: 'calc(100% - 30px)' }}>
+                    <View className="absolute inset-0" style={{ height: 'calc(100% - 50px)' }}>
                         <Map
                             id="petFriendlyMap"
                             style={{ width: '100%', height: '100%' }}
@@ -369,7 +374,7 @@ const MapPage: React.FC = () => {
 
                 {/* Location Button */}
                 <View
-                    className="absolute bottom-10 right-5 w-10 h-10 bg-white rounded-full flex justify-center items-center 
+                    className="absolute bottom-24 right-5 w-10 h-10 bg-white rounded-full flex justify-center items-center 
                                shadow z-30"
                     onClick={moveToCurrentLocation}
                 >
@@ -377,18 +382,29 @@ const MapPage: React.FC = () => {
                 </View>
             </View>
 
-            {/* Places List */}
+            {/* Places List - Moved up by adjusting bottom value and position */}
             <View
-                className={`bg-white border-t border-gray-100 z-10 absolute left-0 right-0 transition-all duration-300 ${
-                    showPlacesList ? 'bottom-0 max-h-[70%]' : 'bottom-0 max-h-[45px]'
+                className={`bg-white border-t border-gray-100 z-10 absolute left-0 right-0 ${
+                    !isAnimating ? (showPlacesList ? 'bottom-0' : 'bottom-[-70%]') : ''
                 }`}
+                style={{
+                    height: showPlacesList ? '70%' : '60px',
+                    bottom: 0,
+                    transition: 'height 0.15s ease-out',
+                    boxShadow: '0px -2px 10px rgba(0, 0, 0, 0.05)',
+                }}
             >
-                {/* Places List Header - Always visible */}
+                {/* Places List Header - Always visible and moved upward */}
                 <View
-                    className="h-[45px] px-4 flex items-center cursor-pointer"
+                    className="px-4 flex items-center cursor-pointer"
                     onClick={togglePlacesList}
+                    style={{
+                        height: '60px',
+                        paddingTop: '10px',
+                        paddingBottom: '10px',
+                    }}
                 >
-                    <View className="bg-gray-100 rounded-full px-4 py-2 flex items-center justify-between w-full">
+                    <View className="bg-gray-100 rounded-full px-4 py-3 flex items-center justify-between w-full">
                         <Text className="text-gray-800 text-sm">
                             附近发现{filteredPlaces.length}个宠物友好场所
                         </Text>
@@ -397,17 +413,16 @@ const MapPage: React.FC = () => {
                             size="20"
                             color="#555"
                         />
-                        {/* <Image
-                            src={showPlacesList ? ChevronDown : ChevronUp}
-                            className="w-4 h-4 text-gray-800"
-                            mode="aspectFit"
-                        /> */}
                     </View>
                 </View>
 
                 {/* Places List Content - Only visible when expanded */}
                 {showPlacesList && (
-                    <ScrollView scrollY className="max-h-[calc(70%-45px)] px-4 pb-4">
+                    <ScrollView
+                        scrollY
+                        className="px-4 pb-4"
+                        style={{ height: 'calc(100% - 60px)' }}
+                    >
                         {filteredPlaces.map(place => (
                             <View
                                 key={place.id}
