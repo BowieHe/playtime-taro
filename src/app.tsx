@@ -6,7 +6,7 @@ import { loadFont } from './utils/fontLoader';
 import './app.css';
 import './styles/common.css';
 // Import tailwind styles
-import './styles/tailwind.css';
+// import './styles/tailwind.css';
 // Comment out or remove this line if you're not using Taro UI components
 
 const store = {

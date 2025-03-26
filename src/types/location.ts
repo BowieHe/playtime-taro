@@ -36,18 +36,6 @@ export const CategoryDisplayNames = {
     [LocationCategory.OTHER]: 'Other',
 };
 
-// export interface GeoJSONPoint {
-//     type: 'Point';
-//     coordinates: [number, number]; // [longitude, latitude] in GeoJSON order
-// }
-
-// export type LocationCoordinates =
-//     | {
-//           latitude: number;
-//           longitude: number;
-//       }
-//     | GeoJSONPoint;
-
 export interface PetFriendlyPlaceWithDistance {
     distance: number;
     location: PetFriendlyPlace;
@@ -58,11 +46,6 @@ export interface PetFriendlyPlace {
     id: string;
     name: string;
     address: string;
-    // location: {
-    //     latitude: number;
-    //     longitude: number;
-    // };
-    // location: GeoJSONPoint;
     latitude: number;
     longitude: number;
     adInfo: AdInfo | null;
@@ -75,11 +58,19 @@ export interface PetFriendlyPlace {
     category: LocationCategory;
     rating?: number;
     reviews?: number;
-    amenities?: string[];
+    facilities: facilities;
     photos?: string[];
     createdAt?: string;
     updatedAt?: string;
     distance?: number; // Distance from user's current location
+}
+
+interface facilities {
+    wifi: boolean;
+    parking: boolean;
+    petSnacks: boolean;
+    PetToys: boolean;
+    PetToilet: boolean;
 }
 
 export interface PlaceSearchParams {
@@ -92,4 +83,13 @@ export interface PlaceSearchParams {
     keyword?: string;
     limit?: number;
     offset?: number;
+}
+
+export interface Review {
+    title: string;
+    content: string;
+    username: string;
+    userAvatar: string;
+    date: Date;
+    rating: number;
 }

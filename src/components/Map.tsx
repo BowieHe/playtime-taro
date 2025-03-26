@@ -18,6 +18,7 @@ interface MapComponentProps {
     transition?: boolean;
 }
 
+// todo)) add in future
 @observer
 class MapComponent extends Component<PropsWithChildren<MapComponentProps>> {
     static defaultProps = {

@@ -1,5 +1,6 @@
 import {
     AddLocationRequest,
+    PetFriendlyPlace,
     PetFriendlyPlaceWithDistance,
     PlaceSearchParams,
 } from '@/types/location';
@@ -73,4 +74,8 @@ export const getNearbyPetFriendlyPlaces = async (
         console.error('Failed to get nearby pet-friendly places:', error);
         throw error;
     }
+};
+
+export const getPlaceById = (id: string): Promise<PetFriendlyPlace> => {
+    return getRequest<PetFriendlyPlace>(`/map/${id}`);
 };

@@ -6,6 +6,7 @@ import { MapProps } from '@tarojs/components/types/Map';
 import { LocationCategory, PetFriendlyPlace } from '@/types/location';
 import { samplePetFriendlyPlaces } from '@/constants/SampleData';
 import { createMarkersFromPlaces } from '@/utils/mapUtils';
+import { getNearbyPetFriendlyPlaces } from '@/service/mapService';
 import { Search, Setting, Aim } from '@taroify/icons';
 
 const MapPage: React.FC = () => {
@@ -41,7 +42,7 @@ const MapPage: React.FC = () => {
 
         Taro.getLocation({
             type: 'gcj02',
-            success: function (res) {
+            success: async function (res) {
                 console.log('Got location:', res);
                 // Set initial location
                 setLocation({
@@ -49,14 +50,28 @@ const MapPage: React.FC = () => {
                     longitude: res.longitude,
                 });
 
-                // Set sample places
-                setPlaces(samplePetFriendlyPlaces);
+                // Get nearby places from service
+                try {
+                    const placesWithDistance = await getNearbyPetFriendlyPlaces({
+                        latitude: res.latitude,
+                        longitude: res.longitude,
+                        radius: 5000, // 5km radius
+                    });
 
-                // Create markers from sample places
-                setMarkers(createMarkersFromPlaces(samplePetFriendlyPlaces));
+                    const places = placesWithDistance.map(p => p.location);
 
-                setMapLoaded(true);
-                Taro.hideLoading();
+                    setPlaces(places);
+                    setMarkers(createMarkersFromPlaces(places));
+                } catch (error) {
+                    console.error('Failed to load nearby places:', error);
+                    Taro.showToast({
+                        title: '加载附近地点失败',
+                        icon: 'none',
+                    });
+                } finally {
+                    setMapLoaded(true);
+                    Taro.hideLoading();
+                }
 
                 // Initialize map context after a delay
                 setTimeout(() => {

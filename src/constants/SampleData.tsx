@@ -1,4 +1,4 @@
-import { LocationCategory, PetFriendlyPlace } from '../types/location';
+import { LocationCategory, PetFriendlyPlace, Review } from '../types/location';
 
 export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
     {
@@ -17,7 +17,13 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         category: LocationCategory.RESTAURANT,
         rating: 4.5,
         reviews: 128,
-        amenities: ['Outdoor seating', 'Pet water bowls', 'Pet treats'],
+        facilities: {
+            wifi: true,
+            parking: true,
+            petSnacks: true,
+            PetToys: true,
+            PetToilet: true,
+        },
         photos: ['https://example.com/paws-plates-1.jpg'],
         createdAt: '2024-01-15',
         updatedAt: '2024-03-10',
@@ -38,7 +44,13 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         category: LocationCategory.PARK,
         rating: 4.8,
         reviews: 215,
-        amenities: ['Agility equipment', 'Water stations', 'Waste bags'],
+        facilities: {
+            wifi: true,
+            parking: true,
+            petSnacks: false,
+            PetToys: true,
+            PetToilet: true,
+        },
         photos: ['https://example.com/dog-park-1.jpg'],
         createdAt: '2023-11-20',
         updatedAt: '2024-02-28',
@@ -59,7 +71,13 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         category: LocationCategory.PET_STORE,
         rating: 4.6,
         reviews: 178,
-        amenities: ['Grooming', 'Self-wash station', 'Vet clinic'],
+        facilities: {
+            wifi: true,
+            parking: true,
+            petSnacks: true,
+            PetToys: true,
+            PetToilet: false,
+        },
         photos: ['https://example.com/pet-store-1.jpg'],
         createdAt: '2024-02-05',
         updatedAt: '2024-03-15',
@@ -80,7 +98,13 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         category: LocationCategory.HOTEL,
         rating: 4.7,
         reviews: 192,
-        amenities: ['Pet beds', 'Room service for pets', 'Dog walking service'],
+        facilities: {
+            wifi: true,
+            parking: true,
+            petSnacks: true,
+            PetToys: true,
+            PetToilet: true,
+        },
         photos: ['https://example.com/hotel-1.jpg'],
         createdAt: '2023-12-10',
         updatedAt: '2024-03-05',
@@ -90,3 +114,24 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
 
 export const samplePicture =
     'https://blog-1321748307.cos.ap-shanghai.myqcloud.com/img/IMG_0472.jpeg';
+
+export const sampleUserReviews: Review[] = [
+    {
+        title: 'Great place for pets',
+        content:
+            'I love taking my dog to Paws & Plates! The outdoor seating is perfect for pets, and the staff are always friendly.',
+        username: 'doglover123',
+        userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d',
+        date: new Date('2023-12-15'),
+        rating: 5,
+    },
+    {
+        title: 'Fun for all dogs',
+        content:
+            'Happy Tails Dog Park is a great place for dogs to run and play. My dog loves the agility equipment!',
+        username: 'puppyfan',
+        userAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+        date: new Date('2024-12-15'),
+        rating: 4,
+    },
+];

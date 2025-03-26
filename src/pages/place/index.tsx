@@ -1,24 +1,6 @@
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import { useState, useEffect } from 'react';
-// Use our centralized icons file instead of direct imports
-// import {
-//     ArrowLeft,
-//     Share,
-//     Star,
-//     Success,
-//     Location,
-//     Phone,
-//     Photo,
-//     // Keeping these as is per user request
-//     FaWifi,
-//     FaHeart,
-//     FaCarCrash,
-//     GiOpenedFoodCan,
-//     MdPets,
-//     MdLocalDrink,
-//     PiToiletPaper,
-// } from '@/utils/icons';
 import { PetFriendlyPlace } from '@/types/location';
 import { samplePetFriendlyPlaces, samplePicture } from '@/constants/SampleData';
 import {
@@ -40,48 +22,64 @@ import {
     PhoneOutlined,
 } from '@taroify/icons';
 
-// Sample place data type
-// interface PlaceData {
-//     id: string;
-//     name: string;
-//     type: string;
-//     rating: number;
-//     reviewCount: number;
-//     distance: string;
-//     latitude: number;
-//     longitude: number;
-//     image: string;
-//     address: string;
-//     openingHours: string;
-//     phone: string;
-//     description: string;
-// }
-
-// Sample places data - in a real app, this would come from an API
+import { getPlaceById } from '@/service/mapService';
+import { Review } from '@/types/location';
+import { sampleUserReviews } from '@/constants/SampleData';
+import UserReviews from '@/components/place/UserReviews';
+import Facilities from '@/components/place/Facilities';
 
 const PlaceDetail = () => {
     const router = useRouter();
     const { id } = router.params;
 
     const [currentImage, setCurrentImage] = useState(1);
+    const [reviews, setReviews] = useState<Review[]>([]);
     const totalImages = 5;
     const [placeData, setPlaceData] = useState<PetFriendlyPlace | null>(null);
 
     useEffect(() => {
-        // In a real app, you would fetch the place data from an API
-        // For this demo, we're using the sample data
-        if (id) {
-            const place = samplePetFriendlyPlaces.find(p => p.id === id);
-            if (place) {
-                setPlaceData(place);
-            } else {
-                // If place not found, use the first one as fallback
+        const fetchPlaceData = async (id: string) => {
+            // In a real app, you would fetch the place data from an API
+            // For this demo, we're using the sample data
+            try {
+                // if (id) {
+                if (id === '') {
+                    Taro.showToast({
+                        title: '无效的场所 ID',
+                        icon: 'none',
+                    });
+                    console.error('no id passed');
+                    Taro.navigateBack();
+                    return;
+                }
+                const place = await getPlaceById(id);
+                if (place) {
+                    setPlaceData(place);
+                }
+                // else {
+                //     // If place not found, use the first one as fallback
+                //     setPlaceData(samplePetFriendlyPlaces[0]);
+                // }
+                // } else {
+                //     // If no ID provided, use the first place as default
+                //     setPlaceData(samplePetFriendlyPlaces[0]);
+                // }
+            } catch (error) {
+                console.error('Failed to fetch place data:', error);
                 setPlaceData(samplePetFriendlyPlaces[0]);
             }
-        } else {
-            // If no ID provided, use the first place as default
-            setPlaceData(samplePetFriendlyPlaces[0]);
-        }
+        };
+
+        const fetchReviews = async (id: string) => {
+            // todo)) fetch reviews
+            if (id == '') {
+                return;
+            }
+            setReviews(sampleUserReviews);
+        };
+
+        fetchPlaceData(id?.toString() || '');
+        fetchReviews(id?.toString() || '');
     }, [id]);
 
     const handleBack = () => {
@@ -223,89 +221,15 @@ const PlaceDetail = () => {
                     <Text className="text-gray-700">{placeData.description}</Text>
                 </View>
 
-                {/* Facilities */}
-                <View className="mb-6">
-                    <Text className="text-lg font-bold mb-3">设施服务</Text>
-                    <View className="grid grid-cols-2 gap-2">
-                        <View className="flex items-center">
-                            <ServiceOutlined size="16" color="#6B7280" className="mr-2" />
-                            <Text>免费WiFi</Text>
-                        </View>
-                        <View className="flex items-center">
-                            <Logistics size="16" color="#6B7280" className="mr-2" />
-                            <Text>停车场</Text>
-                        </View>
-                        <View className="flex items-center">
-                            <GiftCardOutlined size="16" color="#6B7280" className="mr-2" />
-                            <Text>宠物零食</Text>
-                        </View>
-                        <View className="flex items-center">
-                            <HomeOutlined size="16" color="#6B7280" className="mr-2" />
-                            <Text>宠物饮水区</Text>
-                        </View>
-                        <View className="flex items-center">
-                            <SmileCommentOutlined size="16" color="#6B7280" className="mr-2" />
-                            <Text>宠物厕所</Text>
-                        </View>
-                        <View className="flex items-center">
-                            <VideoOutlined size="16" color="#6B7280" className="mr-2" />
-                            <Text>宠物拍照区</Text>
-                        </View>
-                    </View>
-                </View>
+                <Facilities
+                    wifi={true}
+                    parking={true}
+                    petSnacks={true}
+                    PetToys={true}
+                    PetToilet={true}
+                />
 
-                {/* User Reviews */}
-                <View className="mb-6">
-                    <View className="flex justify-between items-center mb-3">
-                        <Text className="text-lg font-bold">用户评价</Text>
-                        <Text className="text-blue-500 text-sm">查看全部</Text>
-                    </View>
-
-                    <View className="mb-4">
-                        <View className="flex mb-2">
-                            <Image
-                                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330"
-                                className="w-10 h-10 rounded-full mr-3"
-                                mode="aspectFill"
-                            />
-                            <View>
-                                <Text className="font-medium">李小花</Text>
-                                <Text className="text-xs text-gray-500">2023-05-15</Text>
-                            </View>
-                        </View>
-                        <View className="flex mb-1">
-                            {[1, 2, 3, 4, 5].map(star => (
-                                <Star key={star} size="14" color="#FBBF24" />
-                            ))}
-                        </View>
-                        <Text className="text-sm">
-                            带我家金毛来这里，服务很好，有专门的宠物区域，还提供宠物零食。店员很友好，会主动和狗狗互动。
-                        </Text>
-                    </View>
-
-                    <View>
-                        <View className="flex mb-2">
-                            <Image
-                                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d"
-                                className="w-10 h-10 rounded-full mr-3"
-                                mode="aspectFill"
-                            />
-                            <View>
-                                <Text className="font-medium">王大壮</Text>
-                                <Text className="text-xs text-gray-500">2023-05-10</Text>
-                            </View>
-                        </View>
-                        <View className="flex mb-1">
-                            {[1, 2, 3, 4].map(star => (
-                                <Star key={star} size="14" color="#FBBF24" />
-                            ))}
-                            <Star size="14" color="#D1D5DB" />
-                        </View>
-                        <Text className="text-sm">
-                            环境不错，我家猫咪很喜欢这里。就是周末人有点多，建议提前预约。
-                        </Text>
-                    </View>
-                </View>
+                <UserReviews reviews={reviews} />
 
                 {/* Location */}
                 <View>
