@@ -1,83 +1,112 @@
-import { View, Text } from '@tarojs/components';
-import { PetFriendlyPlace, CategoryDisplayNames } from '@/types/location';
-// Remove CSS import since we're using Tailwind
+import React from 'react';
+import { View, Text, Image, ScrollView } from '@tarojs/components';
+import { PetFriendlyPlace } from '@/types/location';
+import { samplePicture } from '@/constants/SampleData';
+import { ArrowDown, ArrowUp } from '@taroify/icons';
 
 interface LocationListProps {
+    /**
+     * Array of pet-friendly places to display
+     */
     places: PetFriendlyPlace[];
-    onLocationSelect: (latitude: number, longitude: number) => void;
+    /**
+     * Whether the places list is currently expanded
+     */
+    showPlacesList: boolean;
+    /**
+     * Callback when user toggles the places list visibility
+     */
+    onTogglePlacesList: () => void;
+    /**
+     * Callback when user selects a place to view details
+     */
+    onPlaceSelect: (placeId: string) => void;
+    /**
+     * Whether the component is currently animating (for smooth transitions)
+     */
+    isAnimating?: boolean;
 }
 
-const LocationList: React.FC<LocationListProps> = ({ places, onLocationSelect }) => {
+/**
+ * A reusable component that displays a list of pet-friendly places with expand/collapse functionality.
+ * Includes place images, ratings, and detailed information.
+ */
+const LocationList: React.FC<LocationListProps> = ({
+    places,
+    showPlacesList,
+    onTogglePlacesList,
+    onPlaceSelect,
+    isAnimating = false,
+}) => {
     return (
-        <View className="flex-1 overflow-y-auto p-10rpx bg-white border-t border-gray-200">
-            <Text className="font-bold text-16rpx mb-10rpx text-gray-800">
-                Nearby Pet-Friendly Places ({places.length})
-            </Text>
-
-            {places.length === 0 ? (
-                <View className="flex justify-center items-center h-100rpx text-gray-500">
-                    <Text>No pet-friendly places found nearby.</Text>
-                </View>
-            ) : (
-                places.map((place, index) => {
-                    // Skip invalid places
-                    if (!place || !place.location) return null;
-
-                    // Get coordinates based on format
-                    let latitude, longitude;
-                    try {
-                        if (
-                            place.location.type === 'Point' &&
-                            Array.isArray(place.location.coordinates)
-                        ) {
-                            // GeoJSON format
-                            longitude = place.location.coordinates[0];
-                            latitude = place.location.coordinates[1];
-                        } else if ('latitude' in place.location && 'longitude' in place.location) {
-                            // Direct format
-                            latitude = place.location.latitude;
-                            longitude = place.location.longitude;
-                        } else {
-                            return null; // Invalid location format
-                        }
-
-                        if (isNaN(latitude) || isNaN(longitude)) return null;
-                    } catch (e) {
-                        console.error('Error parsing location:', e);
-                        return null;
-                    }
-
-                    return (
-                        <View
-                            className="p-10rpx border-b border-gray-200 flex flex-col active:bg-gray-50"
-                            key={place.id || `place-${index}`}
-                            hoverClass="bg-gray-50"
-                            onClick={() => {
-                                // Center map on this location when clicked
-                                if (!isNaN(latitude) && !isNaN(longitude)) {
-                                    onLocationSelect(latitude, longitude);
-                                }
-                            }}
-                        >
-                            <Text className="text-16rpx font-bold mb-4rpx text-gray-800">
-                                {place.name || 'Unnamed place'}
-                            </Text>
-                            <Text className="text-14rpx text-gray-600 mb-4rpx">
-                                {place.category
-                                    ? CategoryDisplayNames[place.category] || 'Other'
-                                    : 'Unknown category'}
-                            </Text>
-                            <Text className="text-14rpx text-gray-700 mb-4rpx">
-                                {place.address || 'No address'}
-                            </Text>
-                            {place.distance !== undefined && !isNaN(place.distance) && (
-                                <Text className="text-12rpx text-blue-600">
-                                    {(place.distance / 1000).toFixed(1)}km away
-                                </Text>
-                            )}
+        <View
+            className={`bg-white border-t border-gray-100 z-10 absolute left-0 right-0 ${
+                !isAnimating ? (showPlacesList ? 'bottom-0' : 'bottom-[-70%]') : ''
+            }`}
+            style={{
+                height: showPlacesList ? '70%' : '60px',
+                bottom: 0,
+                transition: 'height 0.15s ease-out',
+                boxShadow: '0px -2px 10px rgba(0, 0, 0, 0.05)',
+            }}
+        >
+            {/* Places List Header - Always visible */}
+            <View
+                className="px-4 flex items-center cursor-pointer"
+                onClick={onTogglePlacesList}
+                style={{
+                    height: '60px',
+                    paddingTop: '10px',
+                    paddingBottom: '10px',
+                }}
+            >
+                <View className="bg-gray-100 rounded-full px-4 py-3 flex items-center justify-between w-full">
+                    <Text className="text-gray-800 text-sm">
+                        附近发现{places.length}个宠物友好场所
+                    </Text>
+                    {showPlacesList ? (
+                        <View style={{ fontSize: '20px', color: '#555' }}>
+                            <ArrowDown />
                         </View>
-                    );
-                })
+                    ) : (
+                        <View style={{ fontSize: '20px', color: '#555' }}>
+                            <ArrowUp />
+                        </View>
+                    )}
+                </View>
+            </View>
+
+            {/* Places List Content - Only visible when expanded */}
+            {showPlacesList && (
+                <ScrollView scrollY className="px-4 pb-4" style={{ height: 'calc(100% - 60px)' }}>
+                    {places.map(place => (
+                        <View
+                            key={place.id}
+                            className="flex flex-row items-center p-3 border-b border-gray-100"
+                            onClick={() => onPlaceSelect(place.id)}
+                        >
+                            <Image
+                                src={place.photos?.[0] || samplePicture}
+                                className="w-16 h-16 rounded-lg mr-3 object-cover"
+                                mode="aspectFill"
+                            />
+                            <View className="flex-1">
+                                <Text className="font-medium text-base">{place.name}</Text>
+                                <View className="flex flex-row items-center mt-1">
+                                    <Text className="text-yellow-500 mr-1">★</Text>
+                                    <Text className="text-sm mr-2">{place.rating}</Text>
+                                    <Text className="text-xs text-gray-500">
+                                        {place.reviews}条评价
+                                    </Text>
+                                    <Text className="text-xs text-gray-500 ml-2">
+                                        · {place.distance}
+                                    </Text>
+                                </View>
+                                <Text className="text-xs text-gray-500 mt-1">{place.address}</Text>
+                            </View>
+                        </View>
+                    ))}
+                </ScrollView>
             )}
         </View>
     );

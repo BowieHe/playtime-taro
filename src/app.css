@@ -30,7 +30,7 @@
 }
 /* Define CSS variables for consistent font usage throughout the app */
 :root {
-    --font-primary: 'Maple Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-primary: 'Atma', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-weight-regular: 400;
     --font-weight-medium: 500;
     --font-weight-bold: 700;

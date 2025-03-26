@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, Input, Button, Image, Map, ScrollView, Textarea } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
-import { AtIcon } from 'taro-ui';
+import { AddOutlined, ArrowLeft, Down, InfoOutlined, StarOutlined } from '@taroify/icons';
+// import { FaChevronLeft, FaRegStar, FaMapPin, IoMdHelpCircleOutline, IoIosAdd } from '@/utils/icons';
 
 // Types
 interface LocationFormData {
@@ -126,12 +127,12 @@ const AddLocationPage: React.FC = () => {
             <View className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
                 <View className="flex items-center">
                     <View className="mr-2" onClick={handleBack}>
-                        <AtIcon value="chevron-left" size="20" color="#000" />
+                        <ArrowLeft size={20} color="#000" />
                     </View>
                     <Text className="text-lg font-bold">添加地点</Text>
                 </View>
                 <View>
-                    <AtIcon value="help" size="20" color="#666" />
+                    <InfoOutlined size={20} color="#666" />
                 </View>
             </View>
 
@@ -152,7 +153,7 @@ const AddLocationPage: React.FC = () => {
                             onError={console.error}
                         />
                         <View className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-green-500">
-                            <AtIcon value="map-pin" size="32" color="#10b981" />
+                            <Down size={32} color="#10b981" />
                         </View>
                     </View>
 
@@ -364,7 +365,7 @@ const AddLocationPage: React.FC = () => {
                     <Text className="block font-bold mb-3 text-gray-700">添加照片</Text>
                     <View className="flex">
                         <View className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center mr-2">
-                            <AtIcon value="add" size="24" color="#999" />
+                            <AddOutlined size={24} color="#999" />
                         </View>
                         {formData.photos.map((photo, index) => (
                             <Image
@@ -383,9 +384,8 @@ const AddLocationPage: React.FC = () => {
                     <View className="flex mb-3">
                         {[1, 2, 3, 4, 5].map(star => (
                             <View key={star} onClick={() => setRating(star)}>
-                                <AtIcon
-                                    value="star-2"
-                                    size="24"
+                                <StarOutlined
+                                    size={24}
                                     color={star <= formData.rating ? '#FBBF24' : '#D1D5DB'}
                                 />
                             </View>

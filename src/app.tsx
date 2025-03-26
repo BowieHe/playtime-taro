@@ -1,17 +1,17 @@
 import { Component, PropsWithChildren } from 'react';
 import { Provider } from 'mobx-react';
 import userStore from './store/user';
-import petStore from './store/pet'; // Import the pet store
+import petStore from './store/pet';
 import { loadFont } from './utils/fontLoader';
 import './app.css';
 import './styles/common.css';
-// Import tailwind styles - uncomment this line
+// Import tailwind styles
 import './styles/tailwind.css';
-import 'taro-ui/dist/style/index.scss';
+// Comment out or remove this line if you're not using Taro UI components
 
 const store = {
     userStore,
-    petStore, // Add pet store to the stores object
+    petStore,
 };
 
 class App extends Component<PropsWithChildren> {
@@ -23,10 +23,10 @@ class App extends Component<PropsWithChildren> {
             'Atma',
             'https://blog-1321748307.cos.ap-shanghai.myqcloud.com/Atma-font/Atma-Regular.ttf'
         );
-        this.loadCustomFonts(
-            "'Maple Mono'",
-            'https://cdn.jsdelivr.net/fontsource/fonts/maple-mono@latest/latin-400-normal.ttf'
-        );
+        // this.loadCustomFonts(
+        //     "'Maple Mono'",
+        //     'https://cdn.jsdelivr.net/fontsource/fonts/maple-mono@latest/latin-400-normal.ttf'
+        // );
     }
 
     loadCustomFonts = (family: string, source: string) => {

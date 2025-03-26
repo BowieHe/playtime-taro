@@ -1,32 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Input, Map, Image, ScrollView } from '@tarojs/components';
+import { View, Input, Map } from '@tarojs/components';
 import Taro from '@tarojs/taro';
+import LocationList from '@/components/LocationList';
 import { MapProps } from '@tarojs/components/types/Map';
-import SettingIcon from '@/assets/settings.png';
-import SearchIcon from '@/assets/search.png';
-import LocationIcon from '@/assets/location.png';
-import { AtIcon } from 'taro-ui';
-
-// Define a type for our place data
-interface PlaceData {
-    id: string;
-    name: string;
-    type: string;
-    rating: number;
-    reviewCount: number;
-    distance: string;
-    latitude: number;
-    longitude: number;
-    image: string;
-    address: string;
-}
+import { LocationCategory, PetFriendlyPlace } from '@/types/location';
+import { samplePetFriendlyPlaces } from '@/constants/SampleData';
+import { createMarkersFromPlaces } from '@/utils/mapUtils';
+import { Search, Setting, Aim } from '@taroify/icons';
 
 const MapPage: React.FC = () => {
+    //defalut location
     const [location, setLocation] = useState({ latitude: 39.908, longitude: 116.397 });
     const [markers, setMarkers] = useState<MapProps.marker[]>([]);
     const [activeFilter, setActiveFilter] = useState('全部');
-    const [places, setPlaces] = useState<PlaceData[]>([]);
-    const [filteredPlaces, setFilteredPlaces] = useState<PlaceData[]>([]);
+    const [places, setPlaces] = useState<PetFriendlyPlace[]>([]);
+    const [filteredPlaces, setFilteredPlaces] = useState<PetFriendlyPlace[]>([]);
     const [showPlacesList, setShowPlacesList] = useState(false);
     const [mapLoaded, setMapLoaded] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -34,71 +22,8 @@ const MapPage: React.FC = () => {
     // Create ref for map context
     const mapContext = useRef<any>(null);
 
-    const filters = ['全部', '餐厅', '咖啡厅', '公园', '酒店', '商场', '宠物店'];
-
-    // Sample place data
-    const samplePlaces: PlaceData[] = [
-        {
-            id: '1',
-            name: '宠物友好咖啡馆',
-            type: '咖啡厅',
-            rating: 4.8,
-            reviewCount: 200,
-            distance: '500米',
-            latitude: 39.908,
-            longitude: 116.402,
-            image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5',
-            address: '北京市东城区东单大街123号',
-        },
-        {
-            id: '2',
-            name: '汪星人宠物餐厅',
-            type: '餐厅',
-            rating: 4.6,
-            reviewCount: 150,
-            distance: '800米',
-            latitude: 39.91,
-            longitude: 116.392,
-            image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4',
-            address: '北京市西城区西单大街456号',
-        },
-        {
-            id: '3',
-            name: '猫语花园咖啡',
-            type: '咖啡厅',
-            rating: 4.7,
-            reviewCount: 180,
-            distance: '1.2公里',
-            latitude: 39.905,
-            longitude: 116.4,
-            image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348',
-            address: '北京市朝阳区朝阳门外大街789号',
-        },
-        {
-            id: '4',
-            name: '宠爱公园',
-            type: '公园',
-            rating: 4.5,
-            reviewCount: 320,
-            distance: '1.5公里',
-            latitude: 39.912,
-            longitude: 116.395,
-            image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b',
-            address: '北京市海淀区中关村大街101号',
-        },
-        {
-            id: '5',
-            name: '宠物欢乐主题商场',
-            type: '商场',
-            rating: 4.3,
-            reviewCount: 280,
-            distance: '2公里',
-            latitude: 39.903,
-            longitude: 116.41,
-            image: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc',
-            address: '北京市朝阳区建国路202号',
-        },
-    ];
+    const filters = Object.values(LocationCategory);
+    // const filters = ['全部', '餐厅', '咖啡厅', '公园', '酒店', '商场', '宠物店'];
 
     useEffect(() => {
         // Initialize map data
@@ -125,10 +50,10 @@ const MapPage: React.FC = () => {
                 });
 
                 // Set sample places
-                setPlaces(samplePlaces);
+                setPlaces(samplePetFriendlyPlaces);
 
                 // Create markers from sample places
-                createMarkersFromPlaces(samplePlaces);
+                setMarkers(createMarkersFromPlaces(samplePetFriendlyPlaces));
 
                 setMapLoaded(true);
                 Taro.hideLoading();
@@ -154,93 +79,24 @@ const MapPage: React.FC = () => {
                 });
 
                 // Still set the sample places and markers
-                setPlaces(samplePlaces);
-                createMarkersFromPlaces(samplePlaces);
+                // setPlaces(samplePetFriendlyPlaces);
+                // createMarkersFromPlaces(samplePetFriendlyPlaces);
             },
         });
-    };
-
-    const createMarkersFromPlaces = (placesData: PlaceData[]) => {
-        if (!placesData.length) return;
-
-        // Create valid marker objects with required properties
-        const newMarkers = placesData.map(place => {
-            // Ensure the iconPath exists and is valid
-            const iconPath = getMarkerIcon(place.type);
-
-            return {
-                id: Number(place.id),
-                latitude: place.latitude,
-                longitude: place.longitude,
-                width: 35,
-                height: 35,
-                iconPath: iconPath,
-                alpha: 1,
-                callout: {
-                    content: place.name,
-                    color: '#000000',
-                    fontSize: 14,
-                    borderRadius: 4,
-                    bgColor: '#ffffff',
-                    padding: 8,
-                    display: 'BYCLICK', // This is already cast correctly
-                    // Change this:
-                    // textAlign: 'center',
-                    // To this:
-                    textAlign: 'center' as 'center', // Specify the exact literal type
-                    anchorY: 1,
-                    anchorX: 0.5,
-                    borderWidth: 1,
-                    borderColor: '#000000',
-                },
-            };
-        });
-
-        // Cast the entire array to satisfy TypeScript
-        setMarkers(newMarkers as MapProps.marker[]);
-        console.log('Created markers:', newMarkers);
-    };
-
-    const getMarkerIcon = (placeType: string): string => {
-        // For testing, you can use a default marker first to ensure it works
-        const defaultMarker = 'https://cdn-icons-png.flaticon.com/128/684/684908.png';
-
-        // Make sure these icon URLs are accessible and valid
-        try {
-            switch (placeType) {
-                case '餐厅':
-                    return 'https://cdn-icons-png.flaticon.com/64/562/562678.png';
-                case '咖啡厅':
-                    return 'https://cdn-icons-png.flaticon.com/64/1047/1047503.png';
-                case '公园':
-                    return 'https://cdn-icons-png.flaticon.com/64/616/616494.png';
-                case '酒店':
-                    return 'https://cdn-icons-png.flaticon.com/64/2933/2933772.png';
-                case '商场':
-                    return 'https://cdn-icons-png.flaticon.com/64/3061/3061162.png';
-                case '宠物店':
-                    return 'https://cdn-icons-png.flaticon.com/64/3047/3047928.png';
-                default:
-                    return defaultMarker;
-            }
-        } catch (e) {
-            console.error('Error getting marker icon:', e);
-            return defaultMarker;
-        }
     };
 
     const filterPlaces = (filter: string) => {
         if (filter === '全部') {
             setFilteredPlaces(places);
         } else {
-            const filtered = places.filter(place => place.type === filter);
+            const filtered = places.filter(place => place.category === filter);
             setFilteredPlaces(filtered);
         }
 
         // Also update markers on the map based on the filter
         const placesToShow =
-            filter === '全部' ? places : places.filter(place => place.type === filter);
-        createMarkersFromPlaces(placesToShow);
+            filter === '全部' ? places : places.filter(place => place.category === filter);
+        setMarkers(createMarkersFromPlaces(placesToShow));
     };
 
     const onFilterSelect = (filter: string) => {
@@ -318,7 +174,8 @@ const MapPage: React.FC = () => {
             <View className="flex flex-row items-center justify-between px-4 mt-4">
                 {/* Search bar - will take most of the space but not all */}
                 <View className="flex-1 bg-white rounded-full px-4 py-2 flex items-center shadow">
-                    <Image src={SearchIcon} className="w-5 h-5 mr-2" mode="aspectFit" />
+                    <Search size={20} color="#555" />
+                    {/* <Image src={SearchIcon} className="w-5 h-5 mr-2" mode="aspectFit" /> */}
                     <Input
                         type="text"
                         placeholder="搜索宠物友好的场所"
@@ -328,7 +185,8 @@ const MapPage: React.FC = () => {
 
                 {/* Setting icon - right aligned with proper spacing */}
                 <View className="ml-2 w-10 h-10 bg-white rounded-full flex justify-center items-center">
-                    <Image src={SettingIcon} className="w-5 h-5" mode="aspectFit" />
+                    <Setting size={20} color="#555" />
+                    {/* <Image src={SettingIcon} className="w-5 h-5" mode="aspectFit" /> */}
                 </View>
             </View>
 
@@ -387,83 +245,19 @@ const MapPage: React.FC = () => {
                                shadow z-30"
                     onClick={moveToCurrentLocation}
                 >
-                    <Image src={LocationIcon} className="w-5 h-5" mode="aspectFit" />
+                    <Aim size={20} color="#555" />
+                    {/* <Image src={LocationIcon} className="w-5 h-5" mode="aspectFit" /> */}
                 </View>
             </View>
 
-            {/* Places List - Moved up by adjusting bottom value and position */}
-            <View
-                className={`bg-white border-t border-gray-100 z-10 absolute left-0 right-0 ${
-                    !isAnimating ? (showPlacesList ? 'bottom-0' : 'bottom-[-70%]') : ''
-                }`}
-                style={{
-                    height: showPlacesList ? '70%' : '60px',
-                    bottom: 0,
-                    transition: 'height 0.15s ease-out',
-                    boxShadow: '0px -2px 10px rgba(0, 0, 0, 0.05)',
-                }}
-            >
-                {/* Places List Header - Always visible and moved upward */}
-                <View
-                    className="px-4 flex items-center cursor-pointer"
-                    onClick={togglePlacesList}
-                    style={{
-                        height: '60px',
-                        paddingTop: '10px',
-                        paddingBottom: '10px',
-                    }}
-                >
-                    <View className="bg-gray-100 rounded-full px-4 py-3 flex items-center justify-between w-full">
-                        <Text className="text-gray-800 text-sm">
-                            附近发现{filteredPlaces.length}个宠物友好场所
-                        </Text>
-                        <AtIcon
-                            value={showPlacesList ? 'chevron-down' : 'chevron-up'}
-                            size="20"
-                            color="#555"
-                        />
-                    </View>
-                </View>
-
-                {/* Places List Content - Only visible when expanded */}
-                {showPlacesList && (
-                    <ScrollView
-                        scrollY
-                        className="px-4 pb-4"
-                        style={{ height: 'calc(100% - 60px)' }}
-                    >
-                        {filteredPlaces.map(place => (
-                            <View
-                                key={place.id}
-                                className="flex flex-row items-center p-3 border-b border-gray-100"
-                                onClick={() => navigateToPlaceDetail(place.id)}
-                            >
-                                <Image
-                                    src={place.image}
-                                    className="w-16 h-16 rounded-lg mr-3 object-cover"
-                                    mode="aspectFill"
-                                />
-                                <View className="flex-1">
-                                    <Text className="font-medium text-base">{place.name}</Text>
-                                    <View className="flex flex-row items-center mt-1">
-                                        <Text className="text-yellow-500 mr-1">★</Text>
-                                        <Text className="text-sm mr-2">{place.rating}</Text>
-                                        <Text className="text-xs text-gray-500">
-                                            {place.reviewCount}条评价
-                                        </Text>
-                                        <Text className="text-xs text-gray-500 ml-2">
-                                            · {place.distance}
-                                        </Text>
-                                    </View>
-                                    <Text className="text-xs text-gray-500 mt-1">
-                                        {place.address}
-                                    </Text>
-                                </View>
-                            </View>
-                        ))}
-                    </ScrollView>
-                )}
-            </View>
+            {/* Reusable Location List Component */}
+            <LocationList
+                places={filteredPlaces}
+                showPlacesList={showPlacesList}
+                onTogglePlacesList={togglePlacesList}
+                onPlaceSelect={navigateToPlaceDetail}
+                isAnimating={isAnimating}
+            />
         </View>
     );
 };

@@ -21,7 +21,7 @@ export enum LocationCategory {
     PARK = 'park',
     CAFE = 'cafe',
     PET_STORE = 'pet_store',
-    VET = 'vet',
+    MALL = 'mall',
     HOTEL = 'hotel',
     OTHER = 'other',
 }
@@ -31,15 +31,15 @@ export const CategoryDisplayNames = {
     [LocationCategory.PARK]: 'Park',
     [LocationCategory.CAFE]: 'Cafe',
     [LocationCategory.PET_STORE]: 'Pet Store',
-    [LocationCategory.VET]: 'Veterinarian',
+    [LocationCategory.MALL]: 'Shopping Mall',
     [LocationCategory.HOTEL]: 'Hotel',
     [LocationCategory.OTHER]: 'Other',
 };
 
-export interface GeoJSONPoint {
-    type: 'Point';
-    coordinates: [number, number]; // [longitude, latitude] in GeoJSON order
-}
+// export interface GeoJSONPoint {
+//     type: 'Point';
+//     coordinates: [number, number]; // [longitude, latitude] in GeoJSON order
+// }
 
 // export type LocationCoordinates =
 //     | {
@@ -53,6 +53,7 @@ export interface PetFriendlyPlaceWithDistance {
     location: PetFriendlyPlace;
 }
 
+// todo)) add operation hours
 export interface PetFriendlyPlace {
     id: string;
     name: string;
@@ -61,7 +62,9 @@ export interface PetFriendlyPlace {
     //     latitude: number;
     //     longitude: number;
     // };
-    location: GeoJSONPoint;
+    // location: GeoJSONPoint;
+    latitude: number;
+    longitude: number;
     adInfo: AdInfo | null;
     addressComponent: AddressComponent | null;
     isPetFriendly: boolean;

@@ -4,6 +4,7 @@ import prodConfig from './prod';
 import type { Plugin } from 'vite';
 import tailwindcss from 'tailwindcss';
 import { UnifiedViteWeappTailwindcssPlugin as uvtw } from 'weapp-tailwindcss/vite';
+import svgrPlugin from 'vite-plugin-svgr';
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
 export default defineConfig<'vite'>(async (merge, { command, mode }) => {
@@ -50,6 +51,7 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
                     // 由于 taro vite 默认会移除所有的 tailwindcss css 变量，所以一定要开启这个配置，进行css 变量的重新注入
                     injectAdditionalCssVarScope: true,
                 }),
+                svgrPlugin(),
             ] as Plugin[], // 从 vite 引入 type, 为了智能提示
         },
         mini: {

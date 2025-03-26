@@ -1,4 +1,5 @@
-import { PetFriendlyPlace } from '@/types/location';
+import { LocationCategory, PetFriendlyPlace } from '@/types/location';
+import { MapProps } from '@tarojs/components/types/Map';
 import Taro from '@tarojs/taro';
 
 /**
@@ -102,181 +103,72 @@ export const getScaleFromRadius = (radius: number): number => {
     return 10; // Larger radius
 };
 
-/**
- * Creates markers from pet-friendly places
- */
-export const createMarkersFromPlaces = (
-    places: PetFriendlyPlace[],
-    defaultLat: number,
-    defaultLng: number,
-    searchRadius: number = 3000 // Default to 3km
-) => {
-    if (!places || places.length === 0) {
-        return {
-            markers: [],
-            includePoints: [{ latitude: defaultLat, longitude: defaultLng }],
-            scale: getScaleFromRadius(searchRadius), // Set scale based on radius
-        };
-    }
+export const createMarkersFromPlaces = (placesData: PetFriendlyPlace[]): MapProps.marker[] => {
+    if (!placesData.length) return [];
 
+    // Create valid marker objects with required properties
+    const newMarkers = placesData.map(place => {
+        // Ensure the iconPath exists and is valid
+        const iconPath = getMarkerIcon(place.category);
+
+        return {
+            id: Number(place.id),
+            latitude: place.latitude,
+            longitude: place.longitude,
+            width: 35,
+            height: 35,
+            iconPath: iconPath,
+            alpha: 1,
+            callout: {
+                content: place.name,
+                color: '#000000',
+                fontSize: 14,
+                borderRadius: 4,
+                bgColor: '#ffffff',
+                padding: 8,
+                display: 'BYCLICK', // This is already cast correctly
+                // Change this:
+                // textAlign: 'center',
+                // To this:
+                textAlign: 'center' as 'center', // Specify the exact literal type
+                anchorY: 1,
+                anchorX: 0.5,
+                borderWidth: 1,
+                borderColor: '#000000',
+            },
+        };
+    });
+
+    // Cast the entire array to satisfy TypeScript
+    // setMarkers(newMarkers as MapProps.marker[]);
+    console.log('Created markers:', newMarkers);
+    return newMarkers as MapProps.marker[];
+};
+
+const getMarkerIcon = (placeType: LocationCategory): string => {
+    // For testing, you can use a default marker first to ensure it works
+    const defaultMarker = 'https://cdn-icons-png.flaticon.com/128/684/684908.png';
+
+    // Make sure these icon URLs are accessible and valid
     try {
-        // Filter out places with invalid coordinates
-        const validPlaces = places.filter(place => {
-            try {
-                // First check if place exists
-                if (!place || !place.location) return false;
-
-                // Handle GeoJSON format (type: "Point", coordinates: [lng, lat])
-                if (place.location.type === 'Point' && Array.isArray(place.location.coordinates)) {
-                    const lng = place.location.coordinates[0];
-                    const lat = place.location.coordinates[1];
-
-                    return (
-                        typeof lng === 'number' &&
-                        typeof lat === 'number' &&
-                        !isNaN(lng) &&
-                        !isNaN(lat) &&
-                        isFinite(lng) &&
-                        isFinite(lat)
-                    );
-                }
-                // Handle direct lat/lng format
-                else if ('latitude' in place.location && 'longitude' in place.location) {
-                    const lat = place.location.latitude;
-                    const lng = place.location.longitude;
-
-                    return (
-                        typeof lat === 'number' &&
-                        typeof lng === 'number' &&
-                        !isNaN(lat) &&
-                        !isNaN(lng) &&
-                        isFinite(lat) &&
-                        isFinite(lng)
-                    );
-                }
-
-                return false;
-            } catch (e) {
-                console.error('Error validating place:', e);
-                return false;
-            }
-        });
-
-        if (validPlaces.length === 0) {
-            return {
-                markers: [],
-                includePoints: [{ latitude: defaultLat, longitude: defaultLng }],
-                scale: getScaleFromRadius(searchRadius), // Set scale based on radius
-            };
+        switch (placeType) {
+            case LocationCategory.RESTAURANT:
+                return 'https://cdn-icons-png.flaticon.com/64/562/562678.png';
+            case LocationCategory.CAFE:
+                return 'https://cdn-icons-png.flaticon.com/64/1047/1047503.png';
+            case LocationCategory.PARK:
+                return 'https://cdn-icons-png.flaticon.com/64/616/616494.png';
+            case LocationCategory.HOTEL:
+                return 'https://cdn-icons-png.flaticon.com/64/2933/2933772.png';
+            case LocationCategory.MALL:
+                return 'https://cdn-icons-png.flaticon.com/64/3061/3061162.png';
+            case LocationCategory.PET_STORE:
+                return 'https://cdn-icons-png.flaticon.com/64/3047/3047928.png';
+            default:
+                return defaultMarker;
         }
-
-        // Use your CDN URL for the marker icon
-        const markerIconUrl =
-            'https://blog-1321748307.cos.ap-shanghai.myqcloud.com/icons/default_marker.png';
-
-        // Create markers from the pet-friendly places with valid coordinates
-        const markers = validPlaces
-            .map((place, index) => {
-                try {
-                    // Ensure we have a valid ID string that's converted to a number
-                    // WeChat requires marker IDs to be numbers
-                    const markerId =
-                        typeof place.id === 'string' && /^\d+$/.test(place.id)
-                            ? Number(place.id)
-                            : index + 1; // Use index+1 as fallback ID (must be a number)
-
-                    // Get coordinates based on the format
-                    let latitude, longitude;
-
-                    if (
-                        place.location.type === 'Point' &&
-                        Array.isArray(place.location.coordinates)
-                    ) {
-                        longitude = place.location.coordinates[0];
-                        latitude = place.location.coordinates[1];
-                    } else if ('latitude' in place.location && 'longitude' in place.location) {
-                        latitude = place.location.latitude;
-                        longitude = place.location.longitude;
-                    } else {
-                        return null;
-                    }
-
-                    return {
-                        id: markerId, // Now using a numeric ID
-                        latitude,
-                        longitude,
-                        // Use the CDN URL for the marker icon
-                        iconPath: markerIconUrl,
-                        width: 25,
-                        height: 25,
-                        callout: {
-                            content: place.name || 'Unnamed place',
-                            color: '#000000',
-                            fontSize: 14,
-                            borderRadius: 4,
-                            borderWidth: 1,
-                            borderColor: '#cccccc',
-                            padding: 5,
-                            display: 'BYCLICK',
-                            textAlign: 'center',
-                        },
-                    };
-                } catch (e) {
-                    console.error('Error creating marker for place:', e, place);
-                    return null;
-                }
-            })
-            .filter(Boolean); // Remove any null markers
-
-        // Points to include in the map view
-        let includePoints: Array<{ latitude: number; longitude: number }> = [];
-
-        // Add user location to includePoints
-        includePoints.push({ latitude: defaultLat, longitude: defaultLng });
-
-        // Add valid place coordinates to includePoints
-        validPlaces.forEach(place => {
-            try {
-                let latitude, longitude;
-
-                if (place.location.type === 'Point' && Array.isArray(place.location.coordinates)) {
-                    longitude = place.location.coordinates[0];
-                    latitude = place.location.coordinates[1];
-                } else if ('latitude' in place.location && 'longitude' in place.location) {
-                    latitude = place.location.latitude;
-                    longitude = place.location.longitude;
-                } else {
-                    return;
-                }
-
-                if (
-                    typeof latitude === 'number' &&
-                    typeof longitude === 'number' &&
-                    !isNaN(latitude) &&
-                    !isNaN(longitude) &&
-                    isFinite(latitude) &&
-                    isFinite(longitude)
-                ) {
-                    includePoints.push({
-                        latitude,
-                        longitude,
-                    });
-                }
-            } catch (error) {
-                console.error('Error adding includePoint for place:', error);
-            }
-        });
-
-        // Set scale based on search radius
-        const scale = getScaleFromRadius(searchRadius);
-
-        return { markers, includePoints, scale };
-    } catch (error) {
-        console.error('Error in createMarkersFromPlaces:', error);
-        return {
-            markers: [],
-            includePoints: [{ latitude: defaultLat, longitude: defaultLng }],
-            scale: getScaleFromRadius(searchRadius),
-        };
+    } catch (e) {
+        console.error('Error getting marker icon:', e);
+        return defaultMarker;
     }
 };
