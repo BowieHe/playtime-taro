@@ -106,13 +106,14 @@ export const getScaleFromRadius = (radius: number): number => {
 export const createMarkersFromPlaces = (placesData: PetFriendlyPlace[]): MapProps.marker[] => {
     if (!placesData.length) return [];
 
+    let index = 0;
     // Create valid marker objects with required properties
     const newMarkers = placesData.map(place => {
         // Ensure the iconPath exists and is valid
         const iconPath = getMarkerIcon(place.category);
 
         return {
-            id: Number(place.id),
+            id: index++,
             latitude: place.latitude,
             longitude: place.longitude,
             width: 35,

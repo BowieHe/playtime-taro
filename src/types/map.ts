@@ -12,10 +12,9 @@ export interface SearchResult {
 export interface GeocodingResult {
     location: Coordinates;
     address: string;
-    address_format: AddressFormat | null;
     address_component: AddressComponent | null;
     ad_info: AdInfo | null;
-    formatted_addresses: AddressFormat | null;
+    formatted_addresses: FormattedAddress | null;
     poi_count: number;
     pois: POI[];
 }
@@ -27,9 +26,10 @@ export interface Coordinates {
 }
 
 // Address formatting options
-export interface AddressFormat {
+export interface FormattedAddress {
     recommend: string;
     rough: string;
+    standard_address: string;
 }
 
 // Address components breakdown
@@ -65,10 +65,9 @@ export interface POI {
 export interface LocationResponse {
     location: Coordinates;
     address: string;
-    address_format: AddressFormat;
     address_component: AddressComponent;
     ad_info: AdInfo;
-    formatted_addresses: AddressFormat;
+    formatted_addresses: FormattedAddress;
     poi_count: number;
     pois: POI[];
 }

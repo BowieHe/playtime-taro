@@ -1,6 +1,6 @@
 import { AddressComponent, AdInfo } from './map';
 
-export interface AddLocationRequest {
+export interface AddPlaceRequest {
     name: string;
     address: string;
     latitude: number;

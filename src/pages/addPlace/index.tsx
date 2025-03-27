@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Input, Button, Image, Map, ScrollView, Textarea } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
-import { AddOutlined, ArrowLeft, Down, InfoOutlined, StarOutlined } from '@taroify/icons';
-// import { FaChevronLeft, FaRegStar, FaMapPin, IoMdHelpCircleOutline, IoIosAdd } from '@/utils/icons';
+import { AddOutlined, ArrowLeft, InfoOutlined, StarOutlined } from '@taroify/icons';
+import { reverseGeocode } from '@/service/mapService';
+import { AddressComponent, AdInfo } from '@/types/map';
+import { AddPlaceRequest } from '@/types/location';
+import { addPetFriendlyPlace } from '@/service/placeService';
 
 // Types
-interface LocationFormData {
+interface PlaceFormData {
     name: string;
     address: string;
     phone: string;
@@ -25,14 +28,12 @@ interface LocationFormData {
     review: string;
 }
 
-const AddLocationPage: React.FC = () => {
+const AddPlacePage: React.FC = () => {
     const router = useRouter();
-    const { latitude, longitude, name, address } = router.params;
 
-    // Form state
-    const [formData, setFormData] = useState<LocationFormData>({
-        name: decodeURIComponent(name || ''),
-        address: decodeURIComponent(address || ''),
+    const [formData, setFormData] = useState<PlaceFormData>({
+        name: '',
+        address: '',
         phone: '',
         description: '',
         isPetFriendly: true,
@@ -43,25 +44,56 @@ const AddLocationPage: React.FC = () => {
         providesPetFood: false,
         providesWater: true,
         category: '咖啡厅',
-        latitude: parseFloat(latitude || '0'),
-        longitude: parseFloat(longitude || '0'),
+        latitude: 0,
+        longitude: 0,
         photos: [],
         rating: 0,
         review: '',
     });
+    const [adInfo, setAdInfo] = useState<AdInfo | null>(null);
+    const [addressComponent, setAddresssComponent] = useState<AddressComponent | null>(null);
+
+    useEffect(() => {
+        //reverse to get the address info
+        const reverse = async (latitude: number, longitude: number) => {
+            const result = await reverseGeocode(latitude, longitude);
+            console.log('get result from reverse geolocation', result);
+            setAdInfo(result.ad_info);
+            setAddresssComponent(result.address_component);
+            handleInputChange('address', result.address || '未知地址');
+        };
+
+        const { latitude, longitude, name } = router.params;
+
+        if (!latitude || !longitude) {
+            Taro.showToast({
+                title: '无效的地点坐标',
+                icon: 'none',
+            });
+            return;
+        }
+        const lat = parseFloat(latitude);
+        const lng = parseFloat(longitude);
+
+        reverse(lat, lng);
+
+        handleInputChange('name', name ? decodeURIComponent(name) : '');
+        handleInputChange('latitude', lat);
+        handleInputChange('longitude', lng);
+    }, []);
 
     // Handle input changes
-    const handleInputChange = (field: keyof LocationFormData, value: any) => {
+    const handleInputChange = (field: keyof PlaceFormData, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
     // Toggle boolean values
-    const toggleOption = (field: keyof LocationFormData) => {
+    const toggleOption = (field: keyof PlaceFormData) => {
         setFormData(prev => ({ ...prev, [field]: !prev[field] }));
     };
 
     // Handle array option selection (multiple selection allowed)
-    const toggleArrayOption = (field: keyof LocationFormData, option: string) => {
+    const toggleArrayOption = (field: keyof PlaceFormData, option: string) => {
         setFormData(prev => {
             const currentOptions = prev[field] as string[];
             if (currentOptions.includes(option)) {
@@ -73,7 +105,7 @@ const AddLocationPage: React.FC = () => {
     };
 
     // Handle single selection options
-    const selectSingleOption = (field: keyof LocationFormData, option: string) => {
+    const selectSingleOption = (field: keyof PlaceFormData, option: string) => {
         setFormData(prev => ({ ...prev, [field]: [option] }));
     };
 
@@ -94,8 +126,21 @@ const AddLocationPage: React.FC = () => {
                 return;
             }
 
-            // Here you would typically send the data to your API
-            console.log('Submitting location data:', formData);
+            const place: AddPlaceRequest = {
+                name: formData.name,
+                address: formData.address,
+                latitude: formData.latitude,
+                longitude: formData.longitude,
+                adInfo: adInfo,
+                addressComponent: addressComponent,
+                isPetFriendly: formData.isPetFriendly,
+                petSize: formData.petSizeRestrictions.join(','),
+                petType: formData.petTypeRestrictions.join(','),
+                zone: '',
+                description: formData.description,
+                category: formData.category,
+            };
+            addPetFriendlyPlace(place);
 
             // Show success message
             Taro.showToast({
@@ -122,7 +167,7 @@ const AddLocationPage: React.FC = () => {
     };
 
     return (
-        <View className="flex flex-col min-h-screen bg-gray-50">
+        <View className="flex flex-col min-h-screen bg-gray-50 overflow-hidden max-w-screen-md mx-auto w-full">
             {/* Header */}
             <View className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
                 <View className="flex items-center">
@@ -149,16 +194,26 @@ const AddLocationPage: React.FC = () => {
                             longitude={formData.longitude}
                             scale={15}
                             showLocation
+                            markers={[
+                                {
+                                    id: 1,
+                                    latitude: formData.latitude,
+                                    longitude: formData.longitude,
+                                    iconPath:
+                                        'https://blog-1321748307.cos.ap-shanghai.myqcloud.com/icons/Map_Pin.png',
+                                    width: 30,
+                                    height: 30,
+                                },
+                            ]}
                             style="width: 100%; height: 100%;"
                             onError={console.error}
                         />
-                        <View className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-green-500">
-                            <Down size={32} color="#10b981" />
-                        </View>
+                        {/* Optional: Keep the overlay icon if needed, but the marker is usually preferred */}
+                        {/* <View className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-green-500"><Down size={32} color="#10b981" /></View> */}
                     </View>
 
                     <Input
-                        className="w-full mb-3 bg-gray-100 p-3 rounded-lg"
+                        className="w-full mb-3 bg-gray-100 px-4 py-3 rounded-lg"
                         value={formData.name}
                         onInput={e => handleInputChange('name', e.detail.value)}
                         placeholder="地点名称"
@@ -166,7 +221,7 @@ const AddLocationPage: React.FC = () => {
                     />
 
                     <Input
-                        className="w-full mb-3 bg-gray-100 p-3 rounded-lg"
+                        className="w-full mb-3 bg-gray-100 px-4 py-3 rounded-lg"
                         value={formData.address}
                         onInput={e => handleInputChange('address', e.detail.value)}
                         placeholder="地址"
@@ -174,7 +229,7 @@ const AddLocationPage: React.FC = () => {
                     />
 
                     <Input
-                        className="w-full bg-gray-100 p-3 rounded-lg"
+                        className="w-full bg-gray-100 px-4 py-3 rounded-lg"
                         value={formData.phone}
                         onInput={e => handleInputChange('phone', e.detail.value)}
                         placeholder="联系电话"
@@ -209,7 +264,7 @@ const AddLocationPage: React.FC = () => {
                         <Text className="block text-sm font-medium mb-2 text-gray-700">
                             宠物友好区域
                         </Text>
-                        <View className="flex flex-wrap">
+                        <View className="flex flex-wrap gap-2">
                             {['室内区域', '室外区域', '专属区域', '全场开放'].map(option => (
                                 <View
                                     key={option}
@@ -231,7 +286,7 @@ const AddLocationPage: React.FC = () => {
                         <Text className="block text-sm font-medium mb-2 text-gray-700">
                             宠物品种限制
                         </Text>
-                        <View className="flex flex-wrap">
+                        <View className="flex flex-wrap gap-2">
                             {['无限制', '仅限犬类', '仅限猫类', '其他限制'].map(option => (
                                 <View
                                     key={option}
@@ -255,7 +310,7 @@ const AddLocationPage: React.FC = () => {
                         <Text className="block text-sm font-medium mb-2 text-gray-700">
                             宠物体型限制
                         </Text>
-                        <View className="flex flex-wrap">
+                        <View className="flex flex-wrap gap-2">
                             {['小型宠物', '中型宠物', '大型宠物'].map(option => (
                                 <View
                                     key={option}
@@ -333,7 +388,7 @@ const AddLocationPage: React.FC = () => {
                         <Text className="block text-sm font-medium mb-2 text-gray-700">
                             所属分类
                         </Text>
-                        <View className="flex flex-wrap">
+                        <View className="flex flex-wrap gap-2">
                             {['餐厅', '咖啡厅', '公园', '酒店', '商场', '宠物店'].map(option => (
                                 <View
                                     key={option}
@@ -414,4 +469,4 @@ const AddLocationPage: React.FC = () => {
     );
 };
 
-export default AddLocationPage;
+export default AddPlacePage;

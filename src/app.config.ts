@@ -4,7 +4,7 @@ export default defineAppConfig({
         'pages/map/index',
         'pages/user/index',
         'pages/pet/index',
-        'pages/location/index',
+        'pages/addPlace/index',
         'pages/place/index',
         // Add any other pages your app uses
     ],

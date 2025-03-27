@@ -4,7 +4,6 @@ import Taro from '@tarojs/taro';
 import LocationList from '@/components/LocationList';
 import { MapProps } from '@tarojs/components/types/Map';
 import { LocationCategory, PetFriendlyPlace } from '@/types/location';
-import { samplePetFriendlyPlaces } from '@/constants/SampleData';
 import { createMarkersFromPlaces } from '@/utils/mapUtils';
 import { getNearbyPetFriendlyPlaces } from '@/service/mapService';
 import { Search, Setting, Aim } from '@taroify/icons';
@@ -164,7 +163,8 @@ const MapPage: React.FC = () => {
         if (e && e.markerId !== undefined) {
             const markerId = e.markerId;
             // Find the corresponding place
-            const place = places.find(p => Number(p.id) === markerId);
+            const place = places[markerId];
+
             if (place) {
                 navigateToPlaceDetail(place.id);
             } else {
@@ -177,9 +177,9 @@ const MapPage: React.FC = () => {
 
     const handlePOITap = e => {
         console.log('POI tapped:', e);
-
+        const details = e.detail;
         Taro.navigateTo({
-            url: `/pages/location/index?latitude=${e.latitude}&longitude=${e.longitude}`,
+            url: `/pages/addPlace/index?latitude=${details.latitude}&longitude=${details.longitude}&name=${details.name}`,
         });
     };
 

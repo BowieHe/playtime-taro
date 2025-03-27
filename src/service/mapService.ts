@@ -1,5 +1,5 @@
 import {
-    AddLocationRequest,
+    AddPlaceRequest,
     PetFriendlyPlace,
     PetFriendlyPlaceWithDistance,
     PlaceSearchParams,
@@ -26,23 +26,10 @@ export const reverseGeocode = async (
             location: { lat: latitude, lng: longitude },
             poi_count: 0,
             pois: [],
-            address_format: null,
             address_component: null,
             ad_info: null,
             formatted_addresses: null,
         };
-    }
-};
-
-export const addPetFriendlyPlace = async (place: AddLocationRequest) => {
-    try {
-        console.log('Sending place data to backend:', place);
-
-        // Ensure the full object with adInfo and addressComponent is being sent
-        return postRequest('map', place);
-    } catch (error) {
-        console.error('Failed to add pet-friendly place:', error);
-        throw error;
     }
 };
 
@@ -74,8 +61,4 @@ export const getNearbyPetFriendlyPlaces = async (
         console.error('Failed to get nearby pet-friendly places:', error);
         throw error;
     }
-};
-
-export const getPlaceById = (id: string): Promise<PetFriendlyPlace> => {
-    return getRequest<PetFriendlyPlace>(`/map/${id}`);
 };
