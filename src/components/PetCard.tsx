@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import { Pet } from '@/types/pet';
+import { getPetSizeDisplay } from '@/service/petService';
 
 interface PetCardProps {
     pet: Pet;
@@ -38,18 +39,20 @@ const PetCard: React.FC<PetCardProps> = ({ pet, onClick, className = '' }) => {
 
             {/* Pet info */}
             <View className="absolute bottom-0 left-0 w-full p-3 text-white z-30">
-                <Text className="text-lg font-semibold mb-1.5 text-white">{pet.name}</Text>
                 <View className="flex flex-wrap gap-2 mb-1.5">
+                    <Text className="text-lg font-semibold mb-1.5 text-white">{pet.name}</Text>
                     <View className="bg-white/20 backdrop-blur-sm rounded-md px-2 py-0.5 text-xs flex items-center">
                         <Text className="text-[#4ade80] mr-1">🎂</Text>
                         <Text>{pet.age || '?'}岁</Text>
                     </View>
                     <View className="bg-white/20 backdrop-blur-sm rounded-md px-2 py-0.5 text-xs flex items-center">
                         <Text className="text-[#4ade80] mr-1">⚖️</Text>
-                        <Text>{pet.size || '未知'}</Text>
+                        <Text>{getPetSizeDisplay(pet.size) || '未知'}</Text>
                     </View>
                 </View>
-                <Text className="text-sm line-clamp-2 text-white/90">{pet.desc || '暂无介绍'}</Text>
+                {pet.character && (
+                    <Text className="text-sm line-clamp-2 text-white/90">{pet.character}</Text>
+                )}
                 <View className="flex items-center text-xs mt-2 text-white/80">
                     <Text className="text-[#4ade80] mr-1">🕒</Text>
                     {/* todo)) add pet last time activities in future */}

@@ -5,10 +5,10 @@ export interface Pet {
     gender: PetGender;
     size: PetSize;
     breed: string;
-    desc: string;
+    character: string;
     avatar: string;
     age: number;
 }
 
 export type PetGender = 'male' | 'female';
-export type PetSize = 'small' | 'medium' | 'large';
+export type PetSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';

@@ -56,6 +56,7 @@ export const getPetById = async (id: string): Promise<Pet> => {
  */
 export const updatePet = async (id: string, petData: Partial<Pet>): Promise<Pet> => {
     try {
+        console.log('update pet', id, petData);
         return await putRequest<Pet>(`pet/${id}`, petData);
     } catch (error) {
         console.error(`Error updating pet with ID ${id}:`, error);
@@ -88,5 +89,22 @@ export const getAllPets = async (): Promise<Pet[]> => {
     } catch (error) {
         console.error('Error getting all pets:', error);
         throw error;
+    }
+};
+
+export const getPetSizeDisplay = (size: string): string => {
+    switch (size) {
+        case 'xsmall':
+            return '超小体';
+        case 'small':
+            return '小体';
+        case 'medium':
+            return '标体';
+        case 'large':
+            return '大体';
+        case 'xlarge':
+            return '超大体';
+        default:
+            return '';
     }
 };

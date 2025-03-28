@@ -136,7 +136,7 @@ class Index extends Component<PageProps, PageState> {
 
         return (
             // <View className="w-full bg-white dark:bg-[#181818] rounded-2xl shadow-md mb-4 p-4 relative">
-            <View className="w-full bg-white dark:bg-[#181818] rounded-2xl mb-4 p-4 relative">
+            <View className="w-full bg-white dark:bg-[#181818] rounded-2xl mb-4 relative">
                 <View className="flex items-center">
                     <View className="relative">
                         {user && user.avatarUrl ? (
@@ -171,13 +171,13 @@ class Index extends Component<PageProps, PageState> {
                     </View>
                 </View>
                 <Button
-                    className="absolute top-4 right-4 bg-gray-200 dark:bg-gray-700 w-8 h-8 rounded-lg flex items-center justify-center text-gray-700 dark:text-white"
+                    className="absolute top-2 right-4 bg-gray-200 dark:bg-gray-700 w-8 h-8 rounded-lg flex items-center justify-center text-gray-700 dark:text-white"
                     onClick={() => this.navigateToUser(user)}
                 >
                     ✏️
                 </Button>
                 <Button
-                    className="absolute bottom-4 right-4 bg-[#22c55e] text-white rounded-lg py-1.5 px-3 font-medium text-sm flex items-center"
+                    className="absolute bottom-2 right-4 bg-[#22c55e] text-white rounded-lg py-1.5 px-3 font-medium text-sm flex items-center"
                     onClick={() => this.navigateToPetCreate(user.id || '')}
                 >
                     <Text className="mr-1">+</Text>
@@ -238,8 +238,8 @@ class Index extends Component<PageProps, PageState> {
         return (
             <View className="flex flex-col items-center w-full min-h-[calc(100vh-40px)] relative pb-40 overflow-x-hidden box-border max-w-[100vw] bg-[#ffffff] dark:bg-[#121212] text-[#334155] dark:text-white">
                 <Header className="text-center py-4">
-                    <Text className="text-48rpx font-bold text-[#22c55e]">PlayTime</Text>
-                    <Text className="text-36rpx opacity-80 mt-0.5 text-[#22c55e]">
+                    {/* <Text className="text-48rpx font-bold text-[#22c55e]">PlayTime</Text> */}
+                    <Text className="text-48rpx font-bold opacity-80 mt-0.5 text-[#22c55e]">
                         from playtime to game time
                     </Text>
                 </Header>
