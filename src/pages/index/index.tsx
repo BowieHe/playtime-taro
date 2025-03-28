@@ -6,7 +6,6 @@ import { UserStore } from '@/store/user';
 import { PetStore } from '@/store/pet';
 import { validLogin } from '@/service/userService';
 import { getPetsByOwner } from '@/service/petService';
-import './index.css';
 import PlayButton from '@/components/PlayButton';
 import PetCard from '@/components/PetCard';
 import { reaction } from 'mobx';
@@ -27,7 +26,6 @@ interface PageState {
 @inject('store')
 @observer
 class Index extends Component<PageProps, PageState> {
-    // Store the reaction disposer so we can clean it up later
     private userReactionDisposer: any;
     private initialCheckDone = false;
 
@@ -36,24 +34,19 @@ class Index extends Component<PageProps, PageState> {
     };
 
     componentDidMount() {
-        // Set up reaction to observe user changes
         this.userReactionDisposer = reaction(
-            // Track the user.id property
             () => this.props.store.userStore.user?.id,
-            // React when it changes
             userId => {
                 console.log('User ID changed in reaction:', userId);
                 if (userId) {
                     this.loadUserPets(userId);
                 }
             },
-            // Options
             {
-                fireImmediately: true, // Run immediately with current value
+                fireImmediately: true,
             }
         );
 
-        // Initial login check only if needed
         if (!this.props.store.userStore.user?.id) {
             this.checkUserLoginStatus();
         }
@@ -62,24 +55,19 @@ class Index extends Component<PageProps, PageState> {
     }
 
     componentWillUnmount() {
-        // Clean up the reaction when component unmounts
         if (this.userReactionDisposer) {
             this.userReactionDisposer();
         }
     }
 
-    // Only refresh data in componentDidShow, without redundant login checks
     componentDidShow() {
         console.log('Index page shown');
         const { user } = this.props.store.userStore;
 
-        // If we already have a user, just refresh their pets
         if (user && user.id) {
             console.log('User exists, refreshing pet data');
             this.loadUserPets(user.id);
-        }
-        // Only check login again if we don't have a user and haven't done initial check
-        else if (!this.initialCheckDone) {
+        } else if (!this.initialCheckDone) {
             console.log('No user yet and initial check not done, checking login status');
             this.checkUserLoginStatus();
         }
@@ -114,7 +102,6 @@ class Index extends Component<PageProps, PageState> {
             const user = await validLogin();
             console.log('Login check successful, user:', user);
             userStore.setUser(user);
-            // Note: No need to manually call loadUserPets here as the reaction will handle it
         } catch (error) {
             console.error('Login check failed:', error);
         }
@@ -148,29 +135,54 @@ class Index extends Component<PageProps, PageState> {
         if (!user || !user.openId) return null;
 
         return (
-            <View className="user-info-display">
-                {user && user.avatarUrl ? (
-                    <Image className="app-avatar" src={user.avatarUrl} mode="aspectFill" />
-                ) : (
-                    <View className="avatar-placeholder">
-                        <Text>No Avatar</Text>
+            // <View className="w-full bg-white dark:bg-[#181818] rounded-2xl shadow-md mb-4 p-4 relative">
+            <View className="w-full bg-white dark:bg-[#181818] rounded-2xl mb-4 p-4 relative">
+                <View className="flex items-center">
+                    <View className="relative">
+                        {user && user.avatarUrl ? (
+                            <Image
+                                className="w-20 h-20 rounded-full object-cover border-2 border-[#22c55e]"
+                                src={user.avatarUrl}
+                                mode="aspectFill"
+                            />
+                        ) : (
+                            <View className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
+                                <Text>No Avatar</Text>
+                            </View>
+                        )}
                     </View>
-                )}
-
-                <View className="button-group">
-                    <Button
-                        className="update-profile-btn"
-                        onClick={() => this.navigateToUser(user)}
-                    >
-                        修改资料
-                    </Button>
-                    <Button
-                        className="add-pet-btn"
-                        onClick={() => this.navigateToPetCreate(user.id || '')}
-                    >
-                        添加宠物
-                    </Button>
+                    <View className="pl-4 flex-1">
+                        <Text className="text-lg font-semibold text-gray-800 dark:text-white pr-8">
+                            {user.nickName || 'User'}
+                        </Text>
+                        <View className="flex text-sm text-gray-600 dark:text-gray-300 mt-1 opacity-80">
+                            <View className="flex items-center mr-4">
+                                <Text className="text-[#22c55e] mr-1">📍</Text>
+                                <Text>{0} 活动</Text>
+                            </View>
+                            <View className="flex items-center">
+                                <Text className="text-[#22c55e] mr-1">🐾</Text>
+                                <Text>
+                                    {this.props.store.petStore.petsByOwner(user.id || '').length}{' '}
+                                    宠物
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
                 </View>
+                <Button
+                    className="absolute top-4 right-4 bg-gray-200 dark:bg-gray-700 w-8 h-8 rounded-lg flex items-center justify-center text-gray-700 dark:text-white"
+                    onClick={() => this.navigateToUser(user)}
+                >
+                    ✏️
+                </Button>
+                <Button
+                    className="absolute bottom-4 right-4 bg-[#22c55e] text-white rounded-lg py-1.5 px-3 font-medium text-sm flex items-center"
+                    onClick={() => this.navigateToPetCreate(user.id || '')}
+                >
+                    <Text className="mr-1">+</Text>
+                    <Text>添加宠物</Text>
+                </Button>
             </View>
         );
     };
@@ -182,16 +194,18 @@ class Index extends Component<PageProps, PageState> {
         const { isLoading } = this.state;
 
         return (
-            <View className="pet-section">
-                <View className="section-header">
-                    <Text className="section-title">我的宠物</Text>
-                    <Text className="section-subtitle">My Pets</Text>
+            <View className="w-full mb-10">
+                <View className="flex items-center mb-3">
+                    <Text className="text-[#22c55e] mr-2 text-lg">🐾</Text>
+                    <Text className="text-lg font-semibold text-gray-800 dark:text-white">
+                        我的宠物
+                    </Text>
                 </View>
 
                 {isLoading ? (
-                    <View className="loading-indicator">加载中...</View>
+                    <View className="py-4 text-center text-[#666]">加载中...</View>
                 ) : userPets.length > 0 ? (
-                    <View className="pet-cards-container">
+                    <View className="w-full flex flex-col gap-4">
                         {userPets.map(pet => (
                             <PetCard
                                 key={pet.id}
@@ -203,11 +217,11 @@ class Index extends Component<PageProps, PageState> {
                         ))}
                     </View>
                 ) : (
-                    <View className="no-pets-message">
+                    <View className="py-6 text-center text-[#666] flex flex-col gap-2">
                         <Text>您还没有添加宠物</Text>
                         <Text>You haven't added any pets yet</Text>
                         <Button
-                            className="add-first-pet-btn"
+                            className="mt-3 bg-[#4caf50] text-white text-sm py-2 px-4 rounded-lg"
                             onClick={() => this.navigateToPetCreate(user?.id || '')}
                         >
                             添加第一个宠物
@@ -222,16 +236,21 @@ class Index extends Component<PageProps, PageState> {
         const { user } = this.props.store.userStore;
 
         return (
-            <View className="index">
-                {/* <View className="bg-red-500 text-white p-4 m-4 rounded-lg text-center text-lg font-bold">
-                    Hello Tailwind CSS!
-                </View> */}
-                <Header className="index-header" />
-                <View className="index-content">
+            <View className="flex flex-col items-center w-full min-h-[calc(100vh-40px)] relative pb-40 overflow-x-hidden box-border max-w-[100vw] bg-[#ffffff] dark:bg-[#121212] text-[#334155] dark:text-white">
+                <Header className="text-center py-4">
+                    <Text className="text-48rpx font-bold text-[#22c55e]">PlayTime</Text>
+                    <Text className="text-36rpx opacity-80 mt-0.5 text-[#22c55e]">
+                        from playtime to game time
+                    </Text>
+                </Header>
+                <View className="w-full px-2 flex-1 flex flex-col items-center box-border">
                     {this.renderUserInfo()}
                     {this.renderPetsList()}
                 </View>
-                <PlayButton user={user} />
+                <PlayButton
+                    user={user}
+                    className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-[120px] h-[120px] bg-[#22c55e] text-white rounded-full text-3xl font-bold shadow-lg shadow-green-400/40 flex items-center justify-center translate-y-1/3 hover:translate-y-[30%] hover:shadow-xl hover:shadow-green-400/50 active:scale-95"
+                />
             </View>
         );
     }

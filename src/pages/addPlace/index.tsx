@@ -156,6 +156,7 @@ const AddPlacePage: React.FC = () => {
                     // todo)) add pet id in review?
                     const review: Review = {
                         placeId: result.id,
+                        userId: user.id ? user.id : '',
                         username: user.nickName,
                         userAvatar: user.avatarUrl,
                         rating: formData.rating,

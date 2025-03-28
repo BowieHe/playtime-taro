@@ -56,6 +56,7 @@ export const getNearbyPetFriendlyPlaces = async (
         if (!response) {
             return [];
         }
+        console.log('get nearby pet friendly places response', response);
         return response;
     } catch (error) {
         console.error('Failed to get nearby pet-friendly places:', error);

@@ -1,6 +1,15 @@
 import { PlaceCategory, PetFriendlyPlace } from '@/types/place';
 import { MapProps } from '@tarojs/components/types/Map';
 import Taro from '@tarojs/taro';
+import {
+    CafeIcon,
+    HotelIcon,
+    MallIcon,
+    MapPinIcon,
+    ParkIcon,
+    PetStoreIcon,
+    RestaurantIcon,
+} from './icons';
 
 /**
  * Checks if location permission is granted
@@ -148,23 +157,23 @@ export const createMarkersFromPlaces = (placesData: PetFriendlyPlace[]): MapProp
 
 const getMarkerIcon = (placeType: PlaceCategory): string => {
     // For testing, you can use a default marker first to ensure it works
-    const defaultMarker = 'https://cdn-icons-png.flaticon.com/128/684/684908.png';
+    const defaultMarker = MapPinIcon;
 
     // Make sure these icon URLs are accessible and valid
     try {
         switch (placeType) {
             case PlaceCategory.RESTAURANT:
-                return 'https://cdn-icons-png.flaticon.com/64/562/562678.png';
+                return RestaurantIcon;
             case PlaceCategory.CAFE:
-                return 'https://cdn-icons-png.flaticon.com/64/1047/1047503.png';
+                return CafeIcon;
             case PlaceCategory.PARK:
-                return 'https://cdn-icons-png.flaticon.com/64/616/616494.png';
+                return ParkIcon;
             case PlaceCategory.HOTEL:
-                return 'https://cdn-icons-png.flaticon.com/64/2933/2933772.png';
+                return HotelIcon;
             case PlaceCategory.MALL:
-                return 'https://cdn-icons-png.flaticon.com/64/3061/3061162.png';
+                return MallIcon;
             case PlaceCategory.PET_STORE:
-                return 'https://cdn-icons-png.flaticon.com/64/3047/3047928.png';
+                return PetStoreIcon;
             default:
                 return defaultMarker;
         }

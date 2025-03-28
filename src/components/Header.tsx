@@ -3,19 +3,22 @@ import { View, Text } from '@tarojs/components';
 
 interface HeaderProps {
     className?: string;
+    children?: React.ReactNode;
 }
 
-const Header: React.FC<HeaderProps> = ({ className = '' }) => {
+const Header: React.FC<HeaderProps> = ({ className = '', children }) => {
     return (
-        <View
-            className={`flex flex-col items-center w-full py-20rpx max-w-full overflow-x-hidden box-border ${className}`}
-        >
-            <Text className="text-center text-48rpx font-bold text-green-500 font-[var(--font-primary)] p-0 m-0 leading-tight w-full max-w-full overflow-x-hidden box-border">
-                PlayTime
-            </Text>
-            <Text className="text-center text-36rpx text-green-500 font-[var(--font-primary)] p-0 mt-5rpx w-full max-w-full overflow-x-hidden break-words box-border">
-                From Playtime, To Game Time
-            </Text>
+        <View className={`flex flex-col text-center py-4 ${className}`}>
+            {children || (
+                <>
+                    <Text className="text-48rpx font-bold text-[#22c55e] block font-[var(--font-primary)]">
+                        PlayTime
+                    </Text>
+                    <Text className="text-36rpx opacity-80 mt-0.5 block text-[#22c55e] font-[var(--font-primary)]">
+                        from playtime to game time
+                    </Text>
+                </>
+            )}
         </View>
     );
 };
