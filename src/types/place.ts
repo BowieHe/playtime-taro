@@ -1,4 +1,5 @@
 import { AddressComponent, AdInfo } from './map';
+import { PetSize, PlaceCategory } from '@/utils/EnumUtil';
 
 export interface AddPlaceRequest {
     name: string;
@@ -8,22 +9,11 @@ export interface AddPlaceRequest {
     adInfo: AdInfo | null;
     addressComponent: AddressComponent | null;
     isPetFriendly: boolean;
-    petSize: string;
-    petType: string;
-    zone: string;
+    petSize: PetSize[];
+    petType: string[];
+    zone: string[];
     description: string;
     category: string; // Add category field
-}
-
-// Define location categories
-export enum PlaceCategory {
-    RESTAURANT = 'restaurant',
-    PARK = 'park',
-    CAFE = 'cafe',
-    PET_STORE = 'pet_store',
-    MALL = 'mall',
-    HOTEL = 'hotel',
-    OTHER = 'other',
 }
 
 export const CategoryDisplayNames = {
@@ -51,9 +41,9 @@ export interface PetFriendlyPlace {
     adInfo: AdInfo | null;
     addressComponent: AddressComponent | null;
     isPetFriendly: boolean;
-    petSize: string;
-    petType: string;
-    zone: string;
+    petSize: PetSize[];
+    petType: string[];
+    zone: string[];
     description: string;
     category: PlaceCategory;
     rating?: number;

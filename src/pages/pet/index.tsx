@@ -3,9 +3,10 @@ import { View, Button, Text, Input, Image, Textarea } from '@tarojs/components';
 import { observer, inject } from 'mobx-react';
 import Taro from '@tarojs/taro';
 import { PetStore } from '@/store/pet';
-import { Pet as PetInfo, PetSize, PetGender } from '@/types/pet';
+import { Pet as PetInfo, PetGender } from '@/types/pet';
 import { createPet, updatePet } from '@/service/petService';
 import { uploadImage } from '@/service/wechatService';
+import { getPetSizeTranslation, PetSize } from '@/utils/EnumUtil';
 
 interface PageProps extends PropsWithChildren {
     store: {
@@ -44,13 +45,10 @@ class PetPage extends Component<PageProps, PageState> {
         { value: 'female', display: '母' },
     ];
 
-    sizeOptions: OptionType[] = [
-        { value: 'xsmall', display: '超小体' },
-        { value: 'small', display: '小体' },
-        { value: 'medium', display: '标体' },
-        { value: 'large', display: '大体' },
-        { value: 'xlarge', display: '超大体' },
-    ];
+    sizeOptions: OptionType[] = Object.values(PetSize).map(size => ({
+        value: size,
+        display: getPetSizeTranslation(size),
+    }));
 
     constructor(props) {
         super(props);
@@ -61,7 +59,7 @@ class PetPage extends Component<PageProps, PageState> {
                 avatar: '',
                 breed: '',
                 gender: 'male',
-                size: 'medium',
+                size: PetSize.M,
                 character: '',
                 age: 0,
             },

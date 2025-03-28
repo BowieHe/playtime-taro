@@ -1,4 +1,5 @@
-import { PlaceCategory, PetFriendlyPlace, Review } from '../types/place';
+import { PetFriendlyPlace, Review } from '../types/place';
+import { PetSize, PlaceCategory } from '@/utils/EnumUtil';
 
 export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
     {
@@ -10,9 +11,9 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         adInfo: null,
         addressComponent: null,
         isPetFriendly: true,
-        petSize: 'medium',
-        petType: 'dog',
-        zone: 'Xuhui District',
+        petSize: [PetSize.S, PetSize.M],
+        petType: ['dog'],
+        zone: ['Xuhui District'],
         description: 'A cozy restaurant with outdoor seating for pets and special pet menus',
         category: PlaceCategory.RESTAURANT,
         rating: 4.5,
@@ -37,9 +38,9 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         adInfo: null,
         addressComponent: null,
         isPetFriendly: true,
-        petSize: 'all',
-        petType: 'dog',
-        zone: "Jing'an District",
+        petSize: [PetSize.L, PetSize.XL],
+        petType: ['dog'],
+        zone: ["Jing'an District"],
         description: 'Large fenced dog park with separate areas for small and large dogs',
         category: PlaceCategory.PARK,
         rating: 4.8,
@@ -64,9 +65,9 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         adInfo: null,
         addressComponent: null,
         isPetFriendly: true,
-        petSize: 'all',
-        petType: 'all',
-        zone: 'Huangpu District',
+        petSize: [PetSize.S, PetSize.M],
+        petType: ['all'],
+        zone: ['Huangpu District'],
         description: 'Comprehensive pet store with food, toys, and grooming services',
         category: PlaceCategory.PET_STORE,
         rating: 4.6,
@@ -91,9 +92,9 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         adInfo: null,
         addressComponent: null,
         isPetFriendly: true,
-        petSize: 'small,medium',
-        petType: 'dog,cat',
-        zone: 'Pudong District',
+        petSize: [PetSize.L, PetSize.XL],
+        petType: ['dog', 'cat'],
+        zone: ['Pudong District'],
         description: 'Luxury hotel with pet-friendly rooms and dedicated pet concierge',
         category: PlaceCategory.HOTEL,
         rating: 4.7,
@@ -117,7 +118,8 @@ export const samplePicture =
 
 export const sampleUserReviews: Review[] = [
     {
-        title: 'Great place for pets',
+        placeId: '1',
+        userId: 'user123',
         content:
             'I love taking my dog to Paws & Plates! The outdoor seating is perfect for pets, and the staff are always friendly.',
         username: 'doglover123',
@@ -126,7 +128,8 @@ export const sampleUserReviews: Review[] = [
         rating: 5,
     },
     {
-        title: 'Fun for all dogs',
+        placeId: '2',
+        userId: 'user456',
         content:
             'Happy Tails Dog Park is a great place for dogs to run and play. My dog loves the agility equipment!',
         username: 'puppyfan',

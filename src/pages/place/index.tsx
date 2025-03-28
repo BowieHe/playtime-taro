@@ -104,12 +104,12 @@ const PlaceDetail = () => {
                     src={placeData.photos?.[0] || samplePicture}
                     mode="aspectFill"
                 />
-                <View
+                {/* <View
                     className="absolute top-4 left-4 w-9 h-9 bg-white bg-opacity-80 rounded-full flex items-center justify-center"
                     onClick={handleBack}
                 >
                     <ArrowLeft size="18" color="#000" />
-                </View>
+                </View> */}
                 <View
                     className="absolute top-4 right-4 w-9 h-9 bg-white bg-opacity-80 rounded-full flex items-center justify-center"
                     onClick={handleShare}
@@ -144,7 +144,7 @@ const PlaceDetail = () => {
                 />
 
                 {/* Place Description */}
-                <View className="mb-6">
+                <View className="flex flex-col mb-6">
                     <Text className="text-lg font-bold mb-3">场所介绍</Text>
                     <Text className="text-gray-700">{placeData.description}</Text>
                 </View>

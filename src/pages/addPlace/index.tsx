@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Input, Button, Image, Map, ScrollView, Textarea } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
-import { AddOutlined, ArrowLeft, InfoOutlined, StarOutlined } from '@taroify/icons';
+import { AddOutlined, StarOutlined } from '@taroify/icons';
 import { reverseGeocode } from '@/service/mapService';
 import { AddressComponent, AdInfo } from '@/types/map';
 import { AddPlaceRequest, Review } from '@/types/place';
 import { addPetFriendlyPlace, addReview } from '@/service/placeService';
 import userStore from '@/store/user';
 import { MapPinIcon } from '@/utils/icons';
+import {
+    getCategoryTranslation,
+    getPetSizeTranslation,
+    PetSize,
+    PlaceCategory,
+} from '@/utils/EnumUtil';
 
 // Types
 interface PlaceFormData {
@@ -18,11 +24,11 @@ interface PlaceFormData {
     isPetFriendly: boolean;
     petAreas: string[];
     petTypeRestrictions: string[];
-    petSizeRestrictions: string[];
+    petSizeRestrictions: PetSize[];
     requiresLeash: boolean;
     providesPetFood: boolean;
     providesWater: boolean;
-    category: string;
+    category: PlaceCategory;
     latitude: number;
     longitude: number;
     photos: string[];
@@ -41,11 +47,11 @@ const AddPlacePage: React.FC = () => {
         isPetFriendly: true,
         petAreas: ['室内区域'],
         petTypeRestrictions: ['无限制'],
-        petSizeRestrictions: ['小型宠物', '中型宠物'],
+        petSizeRestrictions: [PetSize.S, PetSize.M],
         requiresLeash: true,
         providesPetFood: false,
         providesWater: true,
-        category: '咖啡厅',
+        category: PlaceCategory.CAFE,
         latitude: 0,
         longitude: 0,
         photos: [],
@@ -136,9 +142,9 @@ const AddPlacePage: React.FC = () => {
                 adInfo: adInfo,
                 addressComponent: addressComponent,
                 isPetFriendly: formData.isPetFriendly,
-                petSize: formData.petSizeRestrictions.join(','),
-                petType: formData.petTypeRestrictions.join(','),
-                zone: '',
+                petSize: formData.petSizeRestrictions,
+                petType: formData.petTypeRestrictions,
+                zone: formData.petAreas,
                 description: formData.description,
                 category: formData.category,
             };
@@ -196,7 +202,7 @@ const AddPlacePage: React.FC = () => {
     return (
         <View className="flex flex-col min-h-screen bg-gray-50 overflow-hidden max-w-screen-md mx-auto w-full">
             {/* Header */}
-            <View className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+            {/* <View className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
                 <View className="flex items-center">
                     <View className="mr-2" onClick={handleBack}>
                         <ArrowLeft size={20} color="#000" />
@@ -206,7 +212,7 @@ const AddPlacePage: React.FC = () => {
                 <View>
                     <InfoOutlined size={20} color="#666" />
                 </View>
-            </View>
+            </View> */}
 
             {/* Main Content - Scrollable */}
             <ScrollView scrollY className="flex-1 p-4 pb-24">
@@ -335,7 +341,7 @@ const AddPlacePage: React.FC = () => {
                             宠物体型限制
                         </Text>
                         <View className="flex flex-wrap gap-2">
-                            {['小型宠物', '中型宠物', '大型宠物'].map(option => (
+                            {Object.values(PetSize).map(option => (
                                 <View
                                     key={option}
                                     className={`mr-2 mb-2 px-4 py-2 rounded-full text-sm ${
@@ -345,7 +351,7 @@ const AddPlacePage: React.FC = () => {
                                     }`}
                                     onClick={() => toggleArrayOption('petSizeRestrictions', option)}
                                 >
-                                    {option}
+                                    {getPetSizeTranslation(option)}
                                 </View>
                             ))}
                         </View>
@@ -413,19 +419,21 @@ const AddPlacePage: React.FC = () => {
                             所属分类
                         </Text>
                         <View className="flex flex-wrap gap-2">
-                            {['餐厅', '咖啡厅', '公园', '酒店', '商场', '宠物店'].map(option => (
-                                <View
-                                    key={option}
-                                    className={`mr-2 mb-2 px-4 py-2 rounded-full text-sm ${
-                                        formData.category === option
-                                            ? 'bg-green-500 text-white'
-                                            : 'bg-gray-200 text-gray-700'
-                                    }`}
-                                    onClick={() => handleInputChange('category', option)}
-                                >
-                                    {option}
-                                </View>
-                            ))}
+                            {Object.values(PlaceCategory)
+                                .filter(category => category !== PlaceCategory.ALL)
+                                .map(option => (
+                                    <View
+                                        key={option}
+                                        className={`mr-2 mb-2 px-4 py-2 rounded-full text-sm ${
+                                            formData.category === option
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-gray-200 text-gray-700'
+                                        }`}
+                                        onClick={() => handleInputChange('category', option)}
+                                    >
+                                        {getCategoryTranslation(option)}
+                                    </View>
+                                ))}
                         </View>
                     </View>
 

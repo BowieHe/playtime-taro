@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text } from '@tarojs/components';
 import { BulbOutlined, FlagOutlined, LocationOutlined, Success } from '@taroify/icons';
+import { getPetSizeTranslation, PetSize } from '@/utils/EnumUtil';
 
 interface PetPolicyProps {
     isPetFriendly: boolean;
-    petSize: string;
-    petType: string;
-    zone: string;
+    petSize: PetSize[];
+    petType: string[];
+    zone: string[];
 }
 
 const PetPolicy: React.FC<PetPolicyProps> = ({ isPetFriendly, petSize, petType, zone }) => {
@@ -42,7 +43,8 @@ const PetPolicy: React.FC<PetPolicyProps> = ({ isPetFriendly, petSize, petType, 
                         <View>
                             <Text className="font-medium">体型要求</Text>
                             <Text className="text-sm text-gray-500 block">
-                                可携带{petSize}及以下的宠物
+                                可携带{petSize.map(size => getPetSizeTranslation(size)).join(',')}
+                                及以下的宠物
                             </Text>
                         </View>
                     </View>
@@ -53,7 +55,7 @@ const PetPolicy: React.FC<PetPolicyProps> = ({ isPetFriendly, petSize, petType, 
                         <View>
                             <Text className="font-medium">品种要求</Text>
                             <Text className="text-sm text-gray-500 block">
-                                允许携带的品种：{petType}
+                                允许携带的品种：{petType.join(', ')}
                             </Text>
                         </View>
                     </View>
@@ -64,7 +66,7 @@ const PetPolicy: React.FC<PetPolicyProps> = ({ isPetFriendly, petSize, petType, 
                         <View>
                             <Text className="font-medium">活动区域</Text>
                             <Text className="text-sm text-gray-500 block">
-                                宠物可在指定区域活动：{zone}
+                                宠物可在指定区域活动：{zone.join(', ')}
                             </Text>
                         </View>
                     </View>

@@ -1,3 +1,5 @@
+import { PetSize } from '@/utils/EnumUtil';
+
 export interface Pet {
     id?: string;
     ownerId: string;
@@ -11,4 +13,3 @@ export interface Pet {
 }
 
 export type PetGender = 'male' | 'female';
-export type PetSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';

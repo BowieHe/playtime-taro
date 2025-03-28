@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import { Pet } from '@/types/pet';
-import { getPetSizeDisplay } from '@/service/petService';
+import { getPetSizeTranslation } from '@/utils/EnumUtil';
 
 interface PetCardProps {
     pet: Pet;
@@ -47,7 +47,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet, onClick, className = '' }) => {
                     </View>
                     <View className="bg-white/20 backdrop-blur-sm rounded-md px-2 py-0.5 text-xs flex items-center">
                         <Text className="text-[#4ade80] mr-1">⚖️</Text>
-                        <Text>{getPetSizeDisplay(pet.size) || '未知'}</Text>
+                        <Text>{getPetSizeTranslation(pet.size)}</Text>
                     </View>
                 </View>
                 {pet.character && (

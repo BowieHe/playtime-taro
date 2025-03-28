@@ -1,11 +1,6 @@
-import {
-    AddPlaceRequest,
-    PetFriendlyPlace,
-    PetFriendlyPlaceWithDistance,
-    PlaceSearchParams,
-} from '@/types/place';
+import { PetFriendlyPlaceWithDistance, PlaceSearchParams } from '@/types/place';
 import { GeocodingResult } from '@/types/map';
-import { getRequest, postRequest } from '@/utils/httpRequest';
+import { getRequest } from '@/utils/httpRequest';
 
 // Function to handle reverse geocoding through your backend
 export const reverseGeocode = async (

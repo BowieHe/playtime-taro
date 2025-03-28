@@ -1,6 +1,7 @@
 import { View, Input, Picker, Button } from '@tarojs/components';
-import { PlaceCategory, CategoryDisplayNames } from '@/types/place';
+import { CategoryDisplayNames } from '@/types/place';
 // Remove CSS import since we're using Tailwind
+import { getCategoryTranslation, PlaceCategory } from '@/utils/EnumUtil';
 
 interface SearchBarProps {
     keyword: string;
@@ -27,9 +28,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
     transition, // Optional prop
 }) => {
     // Category selector options
-    const categoryOptions = Object.values(PlaceCategory).map(
-        cat => CategoryDisplayNames[cat] || String(cat)
-    );
+    // const categoryOptions = Object.values(PlaceCategory).map(
+    //     cat => CategoryDisplayNames[cat] || String(cat)
+    // );
+    const categoryOptions = Object.values(PlaceCategory).map(cat => {
+        return getCategoryTranslation(cat);
+    });
+
     const categoryIndex = selectedCategory
         ? Object.values(PlaceCategory).indexOf(selectedCategory as PlaceCategory)
         : -1;

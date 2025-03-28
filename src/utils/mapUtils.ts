@@ -1,4 +1,4 @@
-import { PlaceCategory, PetFriendlyPlace } from '@/types/place';
+import { PetFriendlyPlace } from '@/types/place';
 import { MapProps } from '@tarojs/components/types/Map';
 import Taro from '@tarojs/taro';
 import {
@@ -10,6 +10,7 @@ import {
     PetStoreIcon,
     RestaurantIcon,
 } from './icons';
+import { PlaceCategory } from '@/utils/EnumUtil';
 
 /**
  * Checks if location permission is granted
@@ -119,6 +120,7 @@ export const createMarkersFromPlaces = (placesData: PetFriendlyPlace[]): MapProp
     // Create valid marker objects with required properties
     const newMarkers = placesData.map(place => {
         // Ensure the iconPath exists and is valid
+        console.log('creating marker for place', place);
         const iconPath = getMarkerIcon(place.category);
 
         return {
