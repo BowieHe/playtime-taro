@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
-import { PetFriendlyPlace } from '@/types/location';
+import { PetFriendlyPlace } from '@/types/place';
 import { samplePicture } from '@/constants/SampleData';
 import { ArrowDown, ArrowUp } from '@taroify/icons';
 

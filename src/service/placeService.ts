@@ -1,12 +1,12 @@
-import { AddPlaceRequest, PetFriendlyPlace } from '@/types/location';
+import { AddPlaceRequest, PetFriendlyPlace, Review } from '@/types/place';
 import { getRequest, postRequest } from '@/utils/httpRequest';
 
-export const addPetFriendlyPlace = async (place: AddPlaceRequest) => {
+export const addPetFriendlyPlace = async (place: AddPlaceRequest): Promise<PetFriendlyPlace> => {
     try {
         console.log('Sending place data to backend:', place);
 
         // Ensure the full object with adInfo and addressComponent is being sent
-        return postRequest('map', place);
+        return postRequest<PetFriendlyPlace>('map', place);
     } catch (error) {
         console.error('Failed to add pet-friendly place:', error);
         throw error;
@@ -15,4 +15,24 @@ export const addPetFriendlyPlace = async (place: AddPlaceRequest) => {
 
 export const getPlaceById = (id: string): Promise<PetFriendlyPlace> => {
     return getRequest<PetFriendlyPlace>(`/map/${id}`);
+};
+
+export const addReview = (review: Review) => {
+    try {
+        return postRequest('/place/review', review);
+    } catch (error) {
+        console.error('falied to create review', error);
+        throw error;
+    }
+};
+
+// this id is a place id
+export const getReviewsByPlace = (id: string): Promise<Review[]> => {
+    try {
+        const uri = `/place/${id}/reviews`;
+        return getRequest<Review[]>(uri);
+    } catch (error) {
+        console.error(`failed to get place: ${id}'s reviews `, error);
+        throw error;
+    }
 };

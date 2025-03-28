@@ -1,16 +1,16 @@
-import { View, Text, Image, ScrollView } from '@tarojs/components';
+import { View, Text, Image, ScrollView, Map } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import { useState, useEffect } from 'react';
-import { PetFriendlyPlace } from '@/types/location';
+import { PetFriendlyPlace } from '@/types/place';
 import { samplePetFriendlyPlaces, samplePicture } from '@/constants/SampleData';
 import { ArrowLeft, Share, Star, Location, LikeOutlined, PhoneOutlined } from '@taroify/icons';
 
-import { Review } from '@/types/location';
-import { sampleUserReviews } from '@/constants/SampleData';
+import { Review } from '@/types/place';
 import UserReviews from '@/components/place/UserReviews';
 import Facilities from '@/components/place/Facilities';
 import PetPolicy from '@/components/place/PetPolicy';
-import { getPlaceById } from '@/service/placeService';
+import { getPlaceById, getReviewsByPlace } from '@/service/placeService';
+import { MapPinIcon } from '@/utils/icons';
 
 const PlaceDetail = () => {
     const router = useRouter();
@@ -40,14 +40,6 @@ const PlaceDetail = () => {
                 if (place) {
                     setPlaceData(place);
                 }
-                // else {
-                //     // If place not found, use the first one as fallback
-                //     setPlaceData(samplePetFriendlyPlaces[0]);
-                // }
-                // } else {
-                //     // If no ID provided, use the first place as default
-                //     setPlaceData(samplePetFriendlyPlaces[0]);
-                // }
             } catch (error) {
                 console.error('Failed to fetch place data:', error);
                 setPlaceData(samplePetFriendlyPlaces[0]);
@@ -55,11 +47,19 @@ const PlaceDetail = () => {
         };
 
         const fetchReviews = async (id: string) => {
-            // todo)) fetch reviews
+            // todo)) fetch
             if (id == '') {
                 return;
             }
-            setReviews(sampleUserReviews);
+            try {
+                const reviews = await getReviewsByPlace(id);
+                setReviews(reviews);
+            } catch (error) {
+                Taro.showToast({
+                    title: '无法获取当前评论',
+                    icon: 'error',
+                });
+            }
         };
 
         fetchPlaceData(id?.toString() || '');
@@ -75,19 +75,6 @@ const PlaceDetail = () => {
             withShareTicket: true,
         });
     };
-
-    // const handlePhoneCall = () => {
-    //     if (placeData?.phone) {
-    //         Taro.makePhoneCall({
-    //             phoneNumber: placeData.phone,
-    //         });
-    //     } else {
-    //         Taro.showToast({
-    //             title: '无可用电话号码',
-    //             icon: 'none',
-    //         });
-    //     }
-    // };
 
     const handleNavigation = () => {
         if (placeData) {
@@ -175,17 +162,25 @@ const PlaceDetail = () => {
                 {/* Location */}
                 <View>
                     <Text className="text-lg font-bold mb-3">位置信息</Text>
-                    <View className="bg-gray-100 h-40 rounded-lg mb-2 relative">
-                        <Image
-                            src="https://mdn.alipayobjects.com/huamei_p0cigc/afts/img/A*_qQ9QJTyQrUAAAAAAAAAAAAADuJ6AQ/original"
-                            className="w-full h-full object-cover rounded-lg"
-                            mode="aspectFill"
+                    <View className="relative h-44 bg-gray-100 rounded-lg mb-4 overflow-hidden">
+                        <Map
+                            latitude={placeData.latitude}
+                            longitude={placeData.longitude}
+                            scale={15}
+                            showLocation
+                            markers={[
+                                {
+                                    id: 1,
+                                    latitude: placeData.latitude,
+                                    longitude: placeData.longitude,
+                                    iconPath: MapPinIcon,
+                                    width: 30,
+                                    height: 30,
+                                },
+                            ]}
+                            style="width: 100%; height: 100%;"
+                            onError={console.error}
                         />
-                        <View className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                            <View className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white">
-                                <Location size="20" color="#fff" />
-                            </View>
-                        </View>
                     </View>
                     <Text className="text-gray-700">{placeData.address}</Text>
                 </View>

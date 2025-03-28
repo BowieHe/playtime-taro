@@ -4,8 +4,10 @@ import Taro, { useRouter } from '@tarojs/taro';
 import { AddOutlined, ArrowLeft, InfoOutlined, StarOutlined } from '@taroify/icons';
 import { reverseGeocode } from '@/service/mapService';
 import { AddressComponent, AdInfo } from '@/types/map';
-import { AddPlaceRequest } from '@/types/location';
-import { addPetFriendlyPlace } from '@/service/placeService';
+import { AddPlaceRequest, Review } from '@/types/place';
+import { addPetFriendlyPlace, addReview } from '@/service/placeService';
+import userStore from '@/store/user';
+import { MapPinIcon } from '@/utils/icons';
 
 // Types
 interface PlaceFormData {
@@ -140,7 +142,31 @@ const AddPlacePage: React.FC = () => {
                 description: formData.description,
                 category: formData.category,
             };
-            addPetFriendlyPlace(place);
+
+            // todo)) add user id to identify why create
+
+            const addPromise = addPetFriendlyPlace(place);
+
+            // Add review if contains rating star
+            if (formData.rating > 0 || formData.review.length > 0) {
+                console.log('contains review, upload');
+                addPromise.then(result => {
+                    console.log('finish add place with res:', result);
+                    const user = userStore.getUser();
+                    // todo)) add pet id in review?
+                    const review: Review = {
+                        placeId: result.id,
+                        username: user.nickName,
+                        userAvatar: user.avatarUrl,
+                        rating: formData.rating,
+                        content: formData.review,
+                        date: new Date(),
+                    };
+                    // TODO: Implement review submission
+                    console.log('Review to submit:', review);
+                    addReview(review);
+                });
+            }
 
             // Show success message
             Taro.showToast({
@@ -199,8 +225,7 @@ const AddPlacePage: React.FC = () => {
                                     id: 1,
                                     latitude: formData.latitude,
                                     longitude: formData.longitude,
-                                    iconPath:
-                                        'https://blog-1321748307.cos.ap-shanghai.myqcloud.com/icons/Map_Pin.png',
+                                    iconPath: MapPinIcon,
                                     width: 30,
                                     height: 30,
                                 },
@@ -208,8 +233,6 @@ const AddPlacePage: React.FC = () => {
                             style="width: 100%; height: 100%;"
                             onError={console.error}
                         />
-                        {/* Optional: Keep the overlay icon if needed, but the marker is usually preferred */}
-                        {/* <View className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-green-500"><Down size={32} color="#10b981" /></View> */}
                     </View>
 
                     <Input

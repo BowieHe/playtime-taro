@@ -16,7 +16,7 @@ export interface AddPlaceRequest {
 }
 
 // Define location categories
-export enum LocationCategory {
+export enum PlaceCategory {
     RESTAURANT = 'restaurant',
     PARK = 'park',
     CAFE = 'cafe',
@@ -27,13 +27,13 @@ export enum LocationCategory {
 }
 
 export const CategoryDisplayNames = {
-    [LocationCategory.RESTAURANT]: 'Restaurant',
-    [LocationCategory.PARK]: 'Park',
-    [LocationCategory.CAFE]: 'Cafe',
-    [LocationCategory.PET_STORE]: 'Pet Store',
-    [LocationCategory.MALL]: 'Shopping Mall',
-    [LocationCategory.HOTEL]: 'Hotel',
-    [LocationCategory.OTHER]: 'Other',
+    [PlaceCategory.RESTAURANT]: 'Restaurant',
+    [PlaceCategory.PARK]: 'Park',
+    [PlaceCategory.CAFE]: 'Cafe',
+    [PlaceCategory.PET_STORE]: 'Pet Store',
+    [PlaceCategory.MALL]: 'Shopping Mall',
+    [PlaceCategory.HOTEL]: 'Hotel',
+    [PlaceCategory.OTHER]: 'Other',
 };
 
 export interface PetFriendlyPlaceWithDistance {
@@ -55,17 +55,17 @@ export interface PetFriendlyPlace {
     petType: string;
     zone: string;
     description: string;
-    category: LocationCategory;
+    category: PlaceCategory;
     rating?: number;
     reviews?: number;
-    facilities: facilities;
+    facilities: Facilities;
     photos?: string[];
     createdAt?: string;
     updatedAt?: string;
     distance?: number; // Distance from user's current location
 }
 
-interface facilities {
+interface Facilities {
     wifi: boolean;
     parking: boolean;
     petSnacks: boolean;
@@ -77,7 +77,7 @@ export interface PlaceSearchParams {
     latitude: number;
     longitude: number;
     radius?: number;
-    category?: LocationCategory;
+    category?: PlaceCategory;
     petSize?: string;
     petType?: string;
     keyword?: string;
@@ -86,10 +86,11 @@ export interface PlaceSearchParams {
 }
 
 export interface Review {
-    title: string;
-    content: string;
+    placeId: string;
+    userId: string;
     username: string;
     userAvatar: string;
-    date: Date;
+    content: string;
     rating: number;
+    date: Date;
 }

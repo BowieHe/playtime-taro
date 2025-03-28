@@ -3,7 +3,7 @@ import { View, Input, Map } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import LocationList from '@/components/LocationList';
 import { MapProps } from '@tarojs/components/types/Map';
-import { LocationCategory, PetFriendlyPlace } from '@/types/location';
+import { PlaceCategory, PetFriendlyPlace } from '@/types/place';
 import { createMarkersFromPlaces } from '@/utils/mapUtils';
 import { getNearbyPetFriendlyPlaces } from '@/service/mapService';
 import { Search, Setting, Aim } from '@taroify/icons';
@@ -22,7 +22,7 @@ const MapPage: React.FC = () => {
     // Create ref for map context
     const mapContext = useRef<any>(null);
 
-    const filters = Object.values(LocationCategory);
+    const filters = Object.values(PlaceCategory);
     // const filters = ['全部', '餐厅', '咖啡厅', '公园', '酒店', '商场', '宠物店'];
 
     useEffect(() => {

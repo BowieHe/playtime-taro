@@ -1,7 +1,7 @@
 import { View, Text, Image } from '@tarojs/components';
 import React from 'react';
 import RatingStars from '../RatingStars';
-import { Review } from '@/types/location';
+import { Review } from '@/types/place';
 
 interface UserReviewProps {
     reviews: Review[];

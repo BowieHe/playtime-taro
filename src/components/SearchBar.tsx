@@ -1,10 +1,10 @@
 import { View, Input, Picker, Button } from '@tarojs/components';
-import { LocationCategory, CategoryDisplayNames } from '@/types/location';
+import { PlaceCategory, CategoryDisplayNames } from '@/types/place';
 // Remove CSS import since we're using Tailwind
 
 interface SearchBarProps {
     keyword: string;
-    selectedCategory: LocationCategory | '';
+    selectedCategory: PlaceCategory | '';
     searchRadius: number;
     isLoading: boolean;
     onKeywordChange: (value: string) => void;
@@ -27,11 +27,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
     transition, // Optional prop
 }) => {
     // Category selector options
-    const categoryOptions = Object.values(LocationCategory).map(
+    const categoryOptions = Object.values(PlaceCategory).map(
         cat => CategoryDisplayNames[cat] || String(cat)
     );
     const categoryIndex = selectedCategory
-        ? Object.values(LocationCategory).indexOf(selectedCategory as LocationCategory)
+        ? Object.values(PlaceCategory).indexOf(selectedCategory as PlaceCategory)
         : -1;
 
     // Radius options

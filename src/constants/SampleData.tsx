@@ -1,4 +1,4 @@
-import { LocationCategory, PetFriendlyPlace, Review } from '../types/location';
+import { PlaceCategory, PetFriendlyPlace, Review } from '../types/place';
 
 export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
     {
@@ -14,7 +14,7 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         petType: 'dog',
         zone: 'Xuhui District',
         description: 'A cozy restaurant with outdoor seating for pets and special pet menus',
-        category: LocationCategory.RESTAURANT,
+        category: PlaceCategory.RESTAURANT,
         rating: 4.5,
         reviews: 128,
         facilities: {
@@ -41,7 +41,7 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         petType: 'dog',
         zone: "Jing'an District",
         description: 'Large fenced dog park with separate areas for small and large dogs',
-        category: LocationCategory.PARK,
+        category: PlaceCategory.PARK,
         rating: 4.8,
         reviews: 215,
         facilities: {
@@ -68,7 +68,7 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         petType: 'all',
         zone: 'Huangpu District',
         description: 'Comprehensive pet store with food, toys, and grooming services',
-        category: LocationCategory.PET_STORE,
+        category: PlaceCategory.PET_STORE,
         rating: 4.6,
         reviews: 178,
         facilities: {
@@ -95,7 +95,7 @@ export const samplePetFriendlyPlaces: PetFriendlyPlace[] = [
         petType: 'dog,cat',
         zone: 'Pudong District',
         description: 'Luxury hotel with pet-friendly rooms and dedicated pet concierge',
-        category: LocationCategory.HOTEL,
+        category: PlaceCategory.HOTEL,
         rating: 4.7,
         reviews: 192,
         facilities: {

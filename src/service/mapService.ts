@@ -3,7 +3,7 @@ import {
     PetFriendlyPlace,
     PetFriendlyPlaceWithDistance,
     PlaceSearchParams,
-} from '@/types/location';
+} from '@/types/place';
 import { GeocodingResult } from '@/types/map';
 import { getRequest, postRequest } from '@/utils/httpRequest';
 
