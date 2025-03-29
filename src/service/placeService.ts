@@ -14,12 +14,12 @@ export const addPetFriendlyPlace = async (place: AddPlaceRequest): Promise<PetFr
 };
 
 export const getPlaceById = (id: string): Promise<PetFriendlyPlace> => {
-    return getRequest<PetFriendlyPlace>(`/map/${id}`);
+    return getRequest<PetFriendlyPlace>(`/place/${id}`);
 };
 
 export const addReview = (review: Review) => {
     try {
-        return postRequest('/place/review', review);
+        return postRequest('/review', review);
     } catch (error) {
         console.error('falied to create review', error);
         throw error;
@@ -29,7 +29,7 @@ export const addReview = (review: Review) => {
 // this id is a place id
 export const getReviewsByPlace = (id: string): Promise<Review[]> => {
     try {
-        const uri = `/place/${id}/reviews`;
+        const uri = `/review/place/${id}`;
         return getRequest<Review[]>(uri);
     } catch (error) {
         console.error(`failed to get place: ${id}'s reviews `, error);

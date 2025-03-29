@@ -76,6 +76,7 @@ export interface PlaceSearchParams {
 }
 
 export interface Review {
+    id?: string;
     placeId: string;
     userId: string;
     username: string;

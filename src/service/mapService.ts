@@ -46,7 +46,7 @@ export const getNearbyPetFriendlyPlaces = async (
         if (params.offset) queryParams.append('offset', params.offset.toString());
 
         const response = await getRequest<PetFriendlyPlaceWithDistance[]>(
-            `/map/search?${queryParams.toString()}`
+            `/place/search?${queryParams.toString()}`
         );
         if (!response) {
             return [];
